@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Dimensions } from 'react-native';
 import * as Font from 'expo-font';
+import {useNavigation} from '@react-navigation/native';
 
 const screenWidth = Dimensions.get('window').width;
+
 import {
   StyleSheet,
   View,
@@ -27,7 +29,6 @@ const Login = ({ navigation }) => {
 
 
 };
-
 // Eye Icon Component (for password visibility)
 const EyeIcon = ({ visible }) => (
   <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#666">
@@ -49,12 +50,18 @@ const EyeIcon = ({ visible }) => (
 );
 
 const LoginScreen = () => {
+  const navigation = useNavigation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loginButtonPressed, setLoginButtonPressed] = useState(false);
   const [fontsLoaded, setFontsLoaded] = useState(false);
   
+  const handleSignupPress = () => {
+    setTimeout(() => {
+        navigation.navigate('createaccountscreen');
+      }, 150); // Navigate to the login screen // Navigate to the create account screen
+  };
   
   useEffect(() => {
     const loadFonts = async () => {
@@ -177,7 +184,7 @@ const LoginScreen = () => {
   <TouchableOpacity onPress={() => navigation.navigate('createaccount')}>
   <Text style={styles.accountText}> Don't have an account?{' '}
     
-      <Text style={styles.signUpLink}>Sign Up</Text>
+      <Text style={styles.signUpLink} onPress={handleSignupPress}>Sign Up</Text>
       </Text>
     </TouchableOpacity>
   

@@ -4,6 +4,7 @@ import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native'; // Correct import
 import { Svg, Path } from 'react-native-svg';
 
+const screenWidth = Dimensions.get('window').width;                                       
 // Eye Icon Component (for password visibility)
 const EyeIcon = ({ visible }) => (
   <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#666">
@@ -37,6 +38,16 @@ const CreateAccountScreen = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
+  const handleSigninPress = () => {
+    setTimeout(() => {
+        navigation.navigate('login');
+      }, 150);
+  };
+  const handleSignupPress = () => {
+    setTimeout(() => {
+        navigation.navigate('verificationScreen');
+      }, 150);
+  };
   useEffect(() => {
     const loadFonts = async () => {
       try {
@@ -189,7 +200,7 @@ const CreateAccountScreen = () => {
         {/* Terms of Use */}
         <View style={styles.termsContainer}>
           <Text style={styles.termsText}>
-            By registering, you agree to the{' '}
+            By registering, you agree to the{'\n'}
             <Text style={styles.termsLink}>Terms of Use</Text> and{' '}
             <Text style={styles.termsLink}>Privacy Policy</Text>.
           </Text>
@@ -203,13 +214,13 @@ const CreateAccountScreen = () => {
           ]}
           onPressIn={() => setSignUpButtonPressed(true)}
           onPressOut={() => setSignUpButtonPressed(false)}
-          onPress={handleSignUp}
+          onPress={handleSignupPress}
         >
           <Text 
             style={[
               styles.signUpButtonText, 
               signUpButtonPressed && styles.signUpButtonTextPressed
-            ]}
+            ]} onPress={handleSignupPress}
           >
             Sign Up
           </Text>
@@ -217,10 +228,10 @@ const CreateAccountScreen = () => {
 
         {/* Account Link */}
         <View style={styles.accountLinkContainer}>
-          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <TouchableOpacity onPress={() => navigation.navigate('login')}>
             <Text style={styles.accountText}>
               Already have an account?{' '}
-              <Text style={styles.loginLink}>Login</Text>
+              <Text style={styles.loginLink} onPress={handleSigninPress}>Login</Text>
             </Text>
           </TouchableOpacity>
         </View>
@@ -230,7 +241,154 @@ const CreateAccountScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  // Your styles here...
+  container: {
+    flex: 1,
+    backgroundColor: '#57C3EA',
+  },
+  header: {
+    backgroundColor: '#57C3EA',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start', 
+
+  },
+  logoContainer: {
+    flexDirection: 'row', 
+    alignItems: 'center',
+  },
+  logoImage: {
+    width: 70,
+    height: 70,
+    resizeMode: 'contain',
+    margin:0,
+    
+  },
+  titleContainer: {
+    alignItems: 'center',
+    paddingVertical: 10,
+    backgroundColor: '#57C3EA',
+  },
+  createAccountTitle: {
+    fontSize: 25,
+    fontWeight: '600',
+    color: '#000000FF',
+    fontFamily:'Poppins_semibold',
+  },
+  formContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+    padding: 20,
+    paddingTop:0,
+    borderTopLeftRadius: 60,
+    borderTopRightRadius: 60,
+    width: screenWidth,
+    position: 'absolute',
+    top: 170,
+    bottom: 0,
+    fontFamily: 'Poppins_semibold',
+  },
+  inputWrapper: {
+    marginBottom: -8,
+    marginTop: 30,
+    fontFamily: 'Poppins_semibold',
+  },
+  inputLabel: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 8,
+    fontWeight: '500',
+    paddingLeft: 15,
+    marginLeft:6,
+    fontFamily: 'Poppins_semibold',
+  },
+  inputBox: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    height:45,
+    borderWidth: 0.5,
+    borderColor: '#e0e0e0',
+    fontFamily: 'Poppins_semibold',
+  },
+  inputField:
+   {
+    flex: 1,
+    fontSize: 13,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    textAlign: 'left',
+    fontFamily: 'Poppins_semibold',
+  },
+  passwordInput:{
+    paddingRight: 50,
+    fontFamily: 'Poppins_semibold',
+  },
+  eyeIconContainer:{
+    position:'absolute',
+    right: 12,
+    padding: 4,
+  },
+  signUpButton: {
+    backgroundColor: '#098BEA',
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontFamily: 'Poppins_semibold',
+    width: 207,
+    height: 45,
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  signUpButtonPressed: {
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#098BEA',
+  },
+  signUpButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+    fontFamily: 'Poppins_semibold',
+  },
+  signUpButtonTextPressed: {
+    color: '#098BEA',
+    fontFamily: 'Poppins_semibold',
+  },
+  accountLinkContainer: {
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  accountText: {
+    fontSize: 14,
+    color: '#666',
+    fontFamily: 'Poppins_semibold',
+  },
+  loginLink: {
+    color: '#098BEA',
+    fontWeight: '500',
+    fontFamily: 'Poppins_semibold',
+  },
+  termsContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 17,
+    paddingHorizontal: 20,
+  },
+
+  termsText: {
+    color: '#666',
+    fontSize: 11,
+    textAlign: 'center',
+    fontFamily: 'Poppins_semibold',
+  },
+  termsLink: {
+    color: '#333',
+    fontWeight: '600',
+    fontFamily: 'Poppins_semibold',
+  }
 });
 
 export default CreateAccountScreen;

@@ -6,6 +6,8 @@ import LoginScreen from './src/screens/login.js';
 import CreateAccountScreen from './src/screens/createaccountscreen.js';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import WelcomeScreen from './src/screens/WelcomeScreen.js';
+import VerificationScreen from './src/screens/verficationScreen.js';
+import LoadingStateScreen from './src/screens/LoadingStateScreen.js';
 
 const Stack = createStackNavigator();
 const customTransition = {
@@ -104,6 +106,88 @@ export default function App(){
       <Stack.Screen 
             name="createaccountscreen" 
             component={CreateAccountScreen}
+            options={{
+              gestureEnabled: true,
+              transitionSpec: {
+                open: {
+                  animation: 'timing',
+                  config: { duration: 600 }  // Smoother, slightly longer duration
+                },
+                close: {
+                  animation: 'timing',
+                  config: { duration: 500 }
+                }
+              },
+              cardStyleInterpolator: ({ current, layouts }) => {
+                return {
+                  cardStyle: {
+                    transform: [
+                      {
+                        translateY: current.progress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [layouts.screen.height, 0], // Slide up from bottom
+                        }),
+                      },
+                    ],
+                    opacity: current.progress.interpolate({
+                      inputRange: [0, 0.5, 1],
+                      outputRange: [0, 0.7, 1], // Fade in while sliding
+                    }),
+                  },
+                  overlayStyle: {
+                    opacity: current.progress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, 0.5], // Slight overlay for depth effect
+                    }),
+                  }
+                };
+              },
+            }}
+          />
+      <Stack.Screen 
+            name="verificationScreen" 
+            component={VerificationScreen}
+            options={{
+              gestureEnabled: true,
+              transitionSpec: {
+                open: {
+                  animation: 'timing',
+                  config: { duration: 600 }  // Smoother, slightly longer duration
+                },
+                close: {
+                  animation: 'timing',
+                  config: { duration: 500 }
+                }
+              },
+              cardStyleInterpolator: ({ current, layouts }) => {
+                return {
+                  cardStyle: {
+                    transform: [
+                      {
+                        translateY: current.progress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [layouts.screen.height, 0], // Slide up from bottom
+                        }),
+                      },
+                    ],
+                    opacity: current.progress.interpolate({
+                      inputRange: [0, 0.5, 1],
+                      outputRange: [0, 0.7, 1], // Fade in while sliding
+                    }),
+                  },
+                  overlayStyle: {
+                    opacity: current.progress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, 0.5], // Slight overlay for depth effect
+                    }),
+                  }
+                };
+              },
+            }}
+          />
+      <Stack.Screen 
+            name="LoadingState" 
+            component={LoadingStateScreen}
             options={{
               gestureEnabled: true,
               transitionSpec: {

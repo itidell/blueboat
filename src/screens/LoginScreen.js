@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Dimensions } from 'react-native';
 import * as Font from 'expo-font';
 import {useNavigation} from '@react-navigation/native';
-
-const screenWidth = Dimensions.get('window').width;
-
 import {
   StyleSheet,
   View,
@@ -29,6 +26,7 @@ const Login = ({ navigation }) => {
 
 
 };
+const screenWidth = Dimensions.get('window').width;
 // Eye Icon Component (for password visibility)
 const EyeIcon = ({ visible }) => (
   <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#666">
@@ -67,9 +65,6 @@ const LoginScreen = () => {
     const loadFonts = async () => {
       await Font.loadAsync({
         'Poppins_semibold': require('../../assets/fonts/Poppins-SemiBold.ttf'),
-        'NotoSerif_Condensed_Bold' :require('../../assets/fonts/NotoSerif_Condensed-Bold.ttf'),
-        'SecularOne-Regular': require('../../assets/fonts/SecularOne-Regular.ttf'),
-
       });
       setFontsLoaded(true);
     };
@@ -90,7 +85,7 @@ const LoginScreen = () => {
         <View style={styles.logoContainer}>
           {/* Using Image from assets instead of SVG component */}
           <Image 
-            source={require('../../assets/logo.png')} 
+            source={require('../../assets/imges/logo.png')} 
             style={styles.logoImage}
           />
         </View>

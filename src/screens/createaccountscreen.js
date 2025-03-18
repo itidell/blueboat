@@ -53,8 +53,6 @@ const CreateAccountScreen = () => {
       try {
         await Font.loadAsync({
           'Poppins_semibold': require('../../assets/fonts/Poppins-SemiBold.ttf'),
-          'NotoSerif_Condensed_Bold': require('../../assets/fonts/NotoSerif_Condensed-Bold.ttf'),
-          'SecularOne-Regular': require('../../assets/fonts/SecularOne-Regular.ttf'),
         });
         setFontsLoaded(true);
       } catch (error) {
@@ -101,7 +99,7 @@ const CreateAccountScreen = () => {
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image 
-            source={require('../../assets/logo.png')} 
+            source={require('../../assets/imges/logo.png')} 
             style={styles.logoImage}
           />
         </View>

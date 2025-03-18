@@ -57,7 +57,13 @@ const LoginScreen = () => {
   
   const handleSignupPress = () => {
     setTimeout(() => {
-        navigation.navigate('createaccountscreen');
+        navigation.navigate('CreateAccount');
+      }, 150); // Navigate to the login screen // Navigate to the create account screen
+  };
+  
+  const handleForgetPasswordPress = () => {
+    setTimeout(() => {
+        navigation.navigate('ForgetPassword');
       }, 150); // Navigate to the login screen // Navigate to the create account screen
   };
   
@@ -134,7 +140,7 @@ const LoginScreen = () => {
         </View>
 
         {/* Forgot Password */}
-        <TouchableOpacity style={styles.forgotPasswordContainer}>
+        <TouchableOpacity style={styles.forgotPasswordContainer} onPress={handleForgetPasswordPress}>
           <Text style={styles.forgotPasswordText}> Forgot Password? </Text>
         </TouchableOpacity>
 
@@ -167,7 +173,7 @@ const LoginScreen = () => {
         {/* Google Login - Vertical layout */}
         <View style={styles.googleContainer}>
           <Image
-            source={require('../../assets/Google.png')}
+            source={require('../../assets/imges/Google.png')}
             style={styles.googleIcon}
           />
           <Text style={styles.googleText}>Google</Text>
@@ -219,7 +225,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 15,
     backgroundColor: '#57C3EA',
-    fontFamily: 'SecularOne-Regular',
   },
   loginTitle: {
     marginTop:0,

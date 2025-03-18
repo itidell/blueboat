@@ -50,7 +50,7 @@ const SplashScreen = ({ navigation }) => {
     <Animated.View style={[styles.container,{backgroundColor}]}>      
       <SharedElement id="logo">
         <Animated.Image
-          source={require('../../assets/logo.png')}
+          source={require('../../assets/imges/logo.png')}
           style={[
             styles.logo,
             {

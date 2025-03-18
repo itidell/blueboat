@@ -59,21 +59,21 @@ const WelcomeScreen = () => {
   // Handle login button press
   const handleLoginPress = () => {
     setTimeout(() => {
-        navigation.navigate('login');
+        navigation.navigate('Login');
       }, 150); // Navigate to the login screen
   };
 
   // Handle signup button press
   const handleSignupPress = () => {
     setTimeout(() => {
-        navigation.navigate('createaccountscreen');
+        navigation.navigate('CreateAccount');
       }, 150); // Navigate to the login screen // Navigate to the create account screen
   };
   return (
     <View style={styles.container}>
       <SharedElement id="logo" style={styles.logoContainer}>
         <Animated.Image
-          source={require('../../assets/logo.png')}
+          source={require('../../assets/imges/logo.png')}
           style={[
             styles.logo
           ]}

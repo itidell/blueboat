@@ -218,7 +218,7 @@ const CreateAccountScreen = () => {
 
         {/* Account Link */}
         <View style={styles.accountLinkContainer}>
-          <TouchableOpacity onPress={() => navigation.navigate('login')}>
+          <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
             <Text style={styles.accountText}>
               Already have an account?{' '}
               <Text style={styles.loginLink} onPress={handleSigninPress}>Login</Text>

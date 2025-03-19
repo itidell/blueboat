@@ -48,6 +48,12 @@ const CreateAccountScreen = () => {
         navigation.navigate('Verification');
       }, 150);
   };
+  const handleBackHome = () => {
+    setTimeout(() => {
+        navigation.navigate('Welcome');
+    }, 150)
+  };
+
   useEffect(() => {
     const loadFonts = async () => {
       try {
@@ -98,10 +104,12 @@ const CreateAccountScreen = () => {
       {/* Header with Logo */}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
-          <Image 
-            source={require('../../../assets/imges/logo.png')} 
-            style={styles.logoImage}
-          />
+          <TouchableOpacity onPress={handleBackHome}>
+            <Image 
+              source={require('../../../assets/imges/logo.png')} 
+              style={styles.logoImage}
+            />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -111,7 +119,7 @@ const CreateAccountScreen = () => {
       </View>
 
       {/* Form Container */}
-      <ScrollView style={[styles.formContainer, { width: screenWidth }]} showsVerticalScrollIndicator={false}>
+      <View style={styles.formContainer}>
         {/* Full Name Input */}
         <View style={styles.inputWrapper}>
           <Text style={styles.inputLabel}>Full Name</Text>
@@ -226,7 +234,7 @@ const CreateAccountScreen = () => {
             </Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
@@ -272,7 +280,7 @@ const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     backgroundColor: 'white',
-    paddingLeft: 20,
+    padding: 20,
     borderTopLeftRadius: 60,
     borderTopRightRadius: 60,
     width: screenWidth,

@@ -15,7 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Svg, Path, Circle } from 'react-native-svg';
 
 
-const LoadingStatePasswordScreen = () => {
+const SuccessOperationScreen = () => {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -134,7 +134,7 @@ const LoadingStatePasswordScreen = () => {
       // Navigate to next screen after animation completes
       const timer = setTimeout(() => {
         // Uncomment and replace 'Home' with your actual next screen
-        navigation.replace('NewPassword');
+        navigation.replace('Welcome');
       }, 1500);
       
       return () => {
@@ -296,7 +296,7 @@ const LoadingStatePasswordScreen = () => {
               { opacity: loadingTextOpacity }
             ]}
           >
-            Confirming your email...
+            Changing Password...
           </Animated.Text>
         </View>
       )}
@@ -353,10 +353,8 @@ const LoadingStatePasswordScreen = () => {
 
           {/* Confirmation Text */}
           <Animated.View style={[styles.confirmationContainer, { opacity: textOpacity, transform: [{ translateY: textPosition }] }]}>
-            <Text style={styles.confirmationText}>Email Confirmed</Text>
-            <Text style={styles.successText}>
-              Your account is ready to use
-            </Text>
+            <Text style={styles.confirmationText}>Password Has been </Text>
+            <Text style={styles.successText}>Changed successfully</Text>
           </Animated.View>
         </>
       )}
@@ -422,4 +420,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default LoadingStatePasswordScreen;
+export default SuccessOperationScreen;

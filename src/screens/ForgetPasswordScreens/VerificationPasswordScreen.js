@@ -187,7 +187,7 @@ const VerificationPasswordScreen = () => {
           onPress={() => navigation.goBack()}
           activeOpacity={0.7}>
             <Image
-              source = {require('../../../assets/imges/left-chevron.png')}
+              source = {require('../../../assets/imges/left-chevron-white.png')}
               style={styles.backButtonIcon}
             />
         </TouchableOpacity>
@@ -344,14 +344,13 @@ const styles = StyleSheet.create({
   backButton:{
     position: 'absolute',
     bottom:20,
-    left: 15, 
+    left: 0, 
     padding: 10,
     zIndex: 10,
   },
   backButtonIcon :{
-    width: 30,
-    height: 30,
-    tintColor:'#FFF'
+    width: 50,
+    height: 50,
   }
 });
 

@@ -23,7 +23,7 @@ const ErrorIcon = () => (
     </G>
   </Svg>
 )
-const VerificationPasswordScreen = () => {
+const VerificationScreen = () => {
   const navigation = useNavigation();
   const [code, setCode] = useState(['', '', '', '', '']);
   const [verifyButtonPressed, setVerifyButtonPressed] = useState(false);
@@ -38,7 +38,7 @@ const VerificationPasswordScreen = () => {
       console.log('Verifying code:', code.join(''));
       setErrorMessage('');
       setTimeout(() => {
-        navigation.navigate('LoadingStatePassword');
+        navigation.navigate('LoadingState');
       }, 150);
     } else {
       setErrorMessage('Please enter all digits of the verification code')
@@ -355,4 +355,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default VerificationPasswordScreen;
+export default VerificationScreen;

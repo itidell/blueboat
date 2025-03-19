@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Animated, StatusBar } from 'react-native';
 import * as Font from 'expo-font';
 import {SharedElement} from 'react-navigation-shared-element';
 import { useNavigation } from '@react-navigation/native';
@@ -71,6 +71,7 @@ const WelcomeScreen = () => {
   };
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
       <SharedElement id="logo" style={styles.logoContainer}>
         <Animated.Image
           source={require('../../assets/imges/logo.png')}

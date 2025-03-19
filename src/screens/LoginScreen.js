@@ -55,11 +55,23 @@ const LoginScreen = () => {
   const [loginButtonPressed, setLoginButtonPressed] = useState(false);
   const [fontsLoaded, setFontsLoaded] = useState(false);
   
+  const handleBackHome = () => {
+    setTimeout(() => {
+        navigation.navigate('Welcome');
+    }, 150)
+  }
+
   const handleSignupPress = () => {
     setTimeout(() => {
         navigation.navigate('CreateAccount');
       }, 150); // Navigate to the login screen // Navigate to the create account screen
   };
+
+  //const handleLoginPress = () => {
+    //setTimeout(() => {
+      //  navigation.navigate('Home');
+      //}, 150); // Navigate to the login screen // Navigate to the create account screen
+  //};
   
   const handleForgetPasswordPress = () => {
     setTimeout(() => {
@@ -89,11 +101,12 @@ const LoginScreen = () => {
       {/* Header with Logo and title */}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
-          {/* Using Image from assets instead of SVG component */}
-          <Image 
-            source={require('../../assets/imges/logo.png')} 
-            style={styles.logoImage}
-          />
+          <TouchableOpacity onPress={handleBackHome}>
+            <Image 
+              source={require('../../assets/imges/logo.png')} 
+              style={styles.logoImage}
+            />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -152,6 +165,7 @@ const LoginScreen = () => {
           ]}
           onPressIn={() => setLoginButtonPressed(true)}
           onPressOut={() => setLoginButtonPressed(false)}
+          //onPress={handleLoginPress}
         >
           <Text 
             style={[

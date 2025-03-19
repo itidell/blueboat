@@ -14,7 +14,8 @@ import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
 import { Svg, Path, Circle } from 'react-native-svg';
 
-const LoadingStateScreen = ({ route }) => {
+
+const LoadingStateScreen = () => {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -89,7 +90,7 @@ const LoadingStateScreen = ({ route }) => {
       // Simulate a loading process
       const timer = setTimeout(() => {
         endLoadingAnimation();
-      }, 2000);
+      }, 1000);
       
       return () => clearTimeout(timer);
     }
@@ -133,8 +134,8 @@ const LoadingStateScreen = ({ route }) => {
       // Navigate to next screen after animation completes
       const timer = setTimeout(() => {
         // Uncomment and replace 'Home' with your actual next screen
-        // navigation.replace('Home');
-      }, 3000);
+        //navigation.replace('');
+      }, 1500);
       
       return () => {
         clearTimeout(timer);

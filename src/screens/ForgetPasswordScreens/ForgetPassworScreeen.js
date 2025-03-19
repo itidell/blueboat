@@ -31,16 +31,15 @@ const ForgetPasswordScreen = () =>{
             navigation.navigate('VerficationPaswword')
         },150);
     };
-
-    const handleBackToLogin = () => {
-        setTimeout(() => {
-            navigation.navigate('Login');
-        }, 150)
-    }
-    
     const handleBackToSignup = () => {
         setTimeout(() => {
             navigation.navigate('CreateAccount');
+        }, 150)
+    }
+
+    const handleBackHome = () => {
+        setTimeout(() => {
+            navigation.navigate('Welcome');
         }, 150)
     }
     
@@ -92,10 +91,12 @@ const ForgetPasswordScreen = () =>{
             
             <View style={styles.header}>
                 <View style={styles.logoContainer}>
-                    <Image
-                        source={require('../../../assets/imges/logo.png')}
-                        style={styles.logoImage}
-                    />
+                    <TouchableOpacity onPress={handleBackHome}>
+                        <Image
+                            source={require('../../../assets/imges/logo.png')}
+                            style={styles.logoImage}
+                        />
+                    </TouchableOpacity>
                 </View>
             </View>
 
@@ -104,10 +105,6 @@ const ForgetPasswordScreen = () =>{
             </View>
 
             <View style={[styles.formContainer, {width: screenWidth}]}>
-                <View style={styles.resetContainer}>
-                    <Text style={styles.ressetText}>Reset Password?</Text>
-                </View>
-
                 <View style={styles.inputWrapper}>
                     <Text style={styles.inputLabel}>Email Address</Text>
                     <View style={styles.inputBox}>
@@ -148,16 +145,6 @@ const ForgetPasswordScreen = () =>{
                         Next
                     </Text>
                 </TouchableOpacity>
-
-                <View style = {styles.backToLoginContainer}>
-                    <TouchableOpacity >
-                        <Text style={styles.backToLoginText}>
-                            Remember your password?{' '}
-                            <Text style={styles.loginLink} onPress={handleBackToLogin}>Log In</Text>
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-                
                 <View style={styles.backToSignupContainer}>
                     <TouchableOpacity>
                         <Text style={styles.backToSignupText}>
@@ -231,20 +218,9 @@ const styles = StyleSheet.create({
         bottom: 0,
         fontFamily: 'Poppins_semibold',
     },
-    resetContainer:{
-        marginTop: 46,
-        marginBottom: 30,
-        alignItems: 'center',
-    },
-    ressetText:{
-        fontSize: 20,
-        fontWeight: '600',
-        color: "#333",
-        fontFamily: 'Poppins_semibold',
-    },
     inputWrapper:{
         marginBottom: -46,
-        marginTop: 30,
+        marginTop: 120,
         fontFamily:'Poppins_semibold',
     },
     inputLabel:{
@@ -311,8 +287,8 @@ const styles = StyleSheet.create({
         width:207,
         height:45,
         alignSelf: 'center',
-        marginTop: 60,
-        marginBottom: 40,
+        marginTop: 100,
+        marginBottom: 150,
     },
     nextButtonPressed:{
         backgroundColor:"rgba(9, 139, 234, 0.8)",
@@ -327,23 +303,9 @@ const styles = StyleSheet.create({
         color:'white',
         fontFamily:'Poppins_semibold',
     },
-    backToLoginContainer:{
-        alignItems:'center',
-        marginTop:20,
-    },
-    backToLoginText:{
-        fontSize:14,
-        color: '#666',
-        fontFamily: 'Poppins_semibold',
-    },
-    loginLink:{
-        color: '#098BEA',
-        fontWeight: '500',
-        fontFamily: 'Poppins_semibold',
-    },
     backToSignupContainer:{
         alignItems:'center',
-        marginTop:8,
+        marginTop:35,
     },
     backToSignupText:{
         fontSize:14,
@@ -358,14 +320,13 @@ const styles = StyleSheet.create({
     backButton: {
         position: 'absolute',
         bottom: 20,
-        left: 15,
+        left: 0,
         padding: 10,
         zIndex: 10,
     },
     backButtonIcon: {
-        width: 30,
-        height: 30,
-        tintColor: '#098BEA',
+        width: 50,
+        height: 50,
     },
 });
 

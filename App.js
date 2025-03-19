@@ -14,7 +14,8 @@ import LoadingStateScreen from './src/screens/SignupScreens/LoadingStateScreen.j
 import ForgetPasswordScreen from './src/screens/ForgetPasswordScreens/ForgetPassworScreeen.js';
 import VerificationPasswordScreen from './src/screens/ForgetPasswordScreens/VerificationPasswordScreen.js';
 import LoadingStatePasswordScreen from './src/screens/ForgetPasswordScreens/LoadingStatePasswordScreen.js';
-
+import NewPasswordScreen from './src/screens/ForgetPasswordScreens/NewPasswordScreen.js';
+import SuccessOperationScreen from './src/screens/ForgetPasswordScreens/SuccessOperationScreen.js'; 
 const Stack = createStackNavigator();
 const customTransition = {
   animation: 'timing',
@@ -317,6 +318,88 @@ export default function App(){
       <Stack.Screen 
             name="LoadingStatePassword" 
             component={LoadingStatePasswordScreen}
+            options={{
+              gestureEnabled: true,
+              transitionSpec: {
+                open: {
+                  animation: 'timing',
+                  config: { duration: 600 }  // Smoother, slightly longer duration
+                },
+                close: {
+                  animation: 'timing',
+                  config: { duration: 500 }
+                }
+              },
+              cardStyleInterpolator: ({ current, layouts }) => {
+                return {
+                  cardStyle: {
+                    transform: [
+                      {
+                        translateX: current.progress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [layouts.screen.width, 0], // Slide up from bottom
+                        }),
+                      },
+                    ],
+                    opacity: current.progress.interpolate({
+                      inputRange: [0, 1, 1],
+                      outputRange: [0, 1, 1], // Fade in while sliding
+                    }),
+                  },
+                  overlayStyle: {
+                    opacity: current.progress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, 0.5], // Slight overlay for depth effect
+                    }),
+                  }
+                };
+              },
+            }}
+          />
+      <Stack.Screen 
+            name="NewPassword" 
+            component={NewPasswordScreen}
+            options={{
+              gestureEnabled: true,
+              transitionSpec: {
+                open: {
+                  animation: 'timing',
+                  config: { duration: 600 }  // Smoother, slightly longer duration
+                },
+                close: {
+                  animation: 'timing',
+                  config: { duration: 500 }
+                }
+              },
+              cardStyleInterpolator: ({ current, layouts }) => {
+                return {
+                  cardStyle: {
+                    transform: [
+                      {
+                        translateX: current.progress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [layouts.screen.width, 0], // Slide up from bottom
+                        }),
+                      },
+                    ],
+                    opacity: current.progress.interpolate({
+                      inputRange: [0, 1, 1],
+                      outputRange: [0, 1, 1], // Fade in while sliding
+                    }),
+                  },
+                  overlayStyle: {
+                    opacity: current.progress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, 0.5], // Slight overlay for depth effect
+                    }),
+                  }
+                };
+              },
+            }}
+          />
+      <Stack.Screen 
+            name="SuccessOperation" 
+            component={SuccessOperationScreen}
             options={{
               gestureEnabled: true,
               transitionSpec: {

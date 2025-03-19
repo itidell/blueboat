@@ -13,7 +13,7 @@ import {
 import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
 
-const VerificationScreen = () => {
+const ForgetPasswordVerificationScreen = () => {
   const navigation = useNavigation();
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [verifyButtonPressed, setVerifyButtonPressed] = useState(false);
@@ -30,7 +30,7 @@ const VerificationScreen = () => {
     const loadFonts = async () => {
       try {
         await Font.loadAsync({
-          'Poppins_semibold': require('../../assets/fonts/Poppins-SemiBold.ttf'),
+          'Poppins_semibold': require('../../../assets/fonts/Poppins-SemiBold.ttf'),
         });
         setFontsLoaded(true);
       } catch (error) {
@@ -100,7 +100,7 @@ const VerificationScreen = () => {
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image 
-            source={require('../../assets/imges/logo.png')} 
+            source={require('../../../assets/imges/logo.png')} 
             style={styles.logoImage}
           />
         </View>
@@ -287,4 +287,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default VerificationScreen;
+export default ForgetPasswordVerificationScreen;

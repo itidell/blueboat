@@ -40,12 +40,12 @@ const CreateAccountScreen = () => {
 
   const handleSigninPress = () => {
     setTimeout(() => {
-        navigation.navigate('login');
+        navigation.navigate('Login');
       }, 150);
   };
   const handleSignupPress = () => {
     setTimeout(() => {
-        navigation.navigate('verificationScreen');
+        navigation.navigate('Verification');
       }, 150);
   };
   useEffect(() => {
@@ -65,10 +65,10 @@ const CreateAccountScreen = () => {
       setScreenWidth(window.width);
     };
 
-    Dimensions.addEventListener('change', updateDimensions);
+    const subscription = Dimensions.addEventListener("change", updateDimensions);
 
     return () => {
-      Dimensions.removeEventListener('change', updateDimensions);
+      subscription.remove(); // Proper cleanup
     };
   }, []);
 
@@ -219,6 +219,7 @@ const CreateAccountScreen = () => {
         {/* Account Link */}
         <View style={styles.accountLinkContainer}>
           <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
+          
             <Text style={styles.accountText}>
               Already have an account?{' '}
               <Text style={styles.loginLink} onPress={handleSigninPress}>Login</Text>

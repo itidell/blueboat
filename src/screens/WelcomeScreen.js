@@ -59,14 +59,14 @@ const WelcomeScreen = () => {
   // Handle login button press
   const handleLoginPress = () => {
     setTimeout(() => {
-        navigation.navigate('login');
+        navigation.navigate('Login');
       }, 150); // Navigate to the login screen
   };
 
   // Handle signup button press
   const handleSignupPress = () => {
     setTimeout(() => {
-        navigation.navigate('createaccountscreen');
+        navigation.navigate('CreateAccount');
       }, 150); // Navigate to the login screen // Navigate to the create account screen
   };
   return (

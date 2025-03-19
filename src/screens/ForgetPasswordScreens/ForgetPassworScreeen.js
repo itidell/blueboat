@@ -1,24 +1,34 @@
 import React, {useState, useEffect} from "react";
-import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, StatusBar } from "react-native";
+import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, StatusBar, Keyboard } from "react-native";
 import * as Font from 'expo-font';
 import { useNavigation } from "@react-navigation/native";
-
+import Svg, {Path, G} from 'react-native-svg';
 const screenWidth = Dimensions.get('window').width;
+const ErrorIcon = () => (
+  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <G id="SVGRepo_iconCarrier">
+      <Path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#FF3830" strokeWidth="2" />
+      <Path d="M12 8L12 13" stroke="#FF3830" strokeWidth="2" strokeLinecap="round" />
+      <Path d="M12 16V15.9888" stroke="#FF3830" strokeWidth="2" strokeLinecap="round" />
+    </G>
+  </Svg>
+)
 const ForgetPasswordScreen = () =>{
     const navigation = useNavigation();
     const [email, setEmail] = useState('');
     const [nextButtonPressed, setNextButtonPressed] = useState(false);
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
-    
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false)
     const handleNextPress = () =>{
         if(!email || !email.includes('@')){
-            alert('Please enter valid email address');
+            setErrorMessage('Please enter valid email address');
             return;
         }
 
         setTimeout(() => {
-            navigation.navigate('Verification')
+            navigation.navigate('VerficationPaswword')
         },150);
     };
 
@@ -49,9 +59,22 @@ const ForgetPasswordScreen = () =>{
 
         const updateDimensions = ({window}) =>{setScreenWidth(window.width);};
         const subscription = Dimensions.addEventListener("change", updateDimensions);
-      
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () =>{
+                setKeyboardVisible(true);
+            }
+        );
+        const keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                setKeyboardVisible(false);
+            }
+        );
         return () => {
-          subscription.remove(); // Proper cleanup
+            keyboardDidShowListener.remove();
+            keyboardDidHideListener.remove();
+            subscription.remove(); // Proper cleanup
         };
     },[]);
     
@@ -98,7 +121,14 @@ const ForgetPasswordScreen = () =>{
                         />
                     </View>
                 </View>
-
+                {errorMessage ?(
+                    <View style={styles.errorContainer}>
+                        <View style= {styles.errorIconTextContainer}>
+                            <ErrorIcon style= {styles.errorIcon}/>
+                            <Text style={styles.errorText}>{errorMessage}</Text>
+                        </View>
+                    </View>
+                ) : null}
                 <TouchableOpacity
                     style={[
                         styles.nextButton,
@@ -138,16 +168,18 @@ const ForgetPasswordScreen = () =>{
                 </View>
             </View>
             {/* Bottom left back button as shown in the reference image */}
-            <TouchableOpacity 
-                style={styles.backButton}
-                onPress={() => navigation.goBack()}
-                activeOpacity={0.7}
-            >
-                <Image
-                    source={require('../../../assets/imges/left-chevron.png')} 
-                    style={styles.backButtonIcon}
-                />
-            </TouchableOpacity>
+            {!isKeyboardVisible &&(
+                <TouchableOpacity 
+                    style={styles.backButton}
+                    onPress={() => navigation.goBack()}
+                    activeOpacity={0.7}
+                >
+                    <Image
+                        source={require('../../../assets/imges/left-chevron.png')} 
+                        style={styles.backButtonIcon}
+                    />
+                </TouchableOpacity>
+            )}
         </SafeAreaView>
     );
 };
@@ -211,7 +243,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins_semibold',
     },
     inputWrapper:{
-        marginBottom: -8,
+        marginBottom: -46,
         marginTop: 30,
         fontFamily:'Poppins_semibold',
     },
@@ -242,6 +274,34 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         fontFamily: 'Poppins_semibold',
     },
+    errorContainer:{
+        marginTop: 0,
+        marginBottom: 25,
+        paddingHorizontal: 10,
+        alignItems:'center',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        top: 50,
+    },
+      errorIconTextContainer:{
+        flexDirection : 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width:'auto',
+      },
+      errorText:{
+        color:'#FF3830',
+        fontFamily:'Poppins_semibold',
+        fontSize: 12,
+        marginLeft: 8,
+        textAlign:'left', 
+      },
+      errorIcon:{
+        marginTop: 2,
+        height:20,
+        width:20,
+      },
     nextButton:{
         backgroundColor:'#098BEA',
         borderRadius:40,
@@ -281,13 +341,6 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         fontFamily: 'Poppins_semibold',
     },
-    backButton: {
-        position: 'absolute',
-        bottom: 20,
-        left: 15,
-        padding: 10,
-        zIndex: 10,
-    },
     backToSignupContainer:{
         alignItems:'center',
         marginTop:8,
@@ -301,6 +354,13 @@ const styles = StyleSheet.create({
         color: '#098BEA',
         fontWeight: '500',
         fontFamily: 'Poppins_semibold',
+    },
+    backButton: {
+        position: 'absolute',
+        bottom: 20,
+        left: 15,
+        padding: 10,
+        zIndex: 10,
     },
     backButtonIcon: {
         width: 30,

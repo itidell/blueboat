@@ -12,20 +12,39 @@ import {
 } from 'react-native';
 import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
+import Svg, {Path, G} from 'react-native-svg';
 
-const ForgetPasswordVerificationScreen = () => {
+const ErrorIcon = () => (
+  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <G id="SVGRepo_iconCarrier">
+      <Path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#FF3830" strokeWidth="2" />
+      <Path d="M12 8L12 13" stroke="#FF3830" strokeWidth="2" strokeLinecap="round" />
+      <Path d="M12 16V15.9888" stroke="#FF3830" strokeWidth="2" strokeLinecap="round" />
+    </G>
+  </Svg>
+)
+const VerificationPasswordScreen = () => {
   const navigation = useNavigation();
-  const [code, setCode] = useState(['', '', '', '', '', '']);
+  const [code, setCode] = useState(['', '', '', '', '']);
   const [verifyButtonPressed, setVerifyButtonPressed] = useState(false);
   const [sendAgainButtonPressed, setSendAgainButtonPressed] = useState(false);
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const inputRefs = useRef([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false)
 
   const handleVerificationPress = () => {
-    setTimeout(() => {
-        navigation.navigate('LoadingState');
+    if (code.every(digit => digit !== '')) {
+      console.log('Verifying code:', code.join(''));
+      setErrorMessage('');
+      setTimeout(() => {
+        navigation.navigate('LoadingStatePassword');
       }, 150);
+    } else {
+      setErrorMessage('Please enter all digits of the verification code')
+    }
   };
+
   useEffect(() => {
     const loadFonts = async () => {
       try {
@@ -38,50 +57,43 @@ const ForgetPasswordVerificationScreen = () => {
       }
     };
     loadFonts();
+
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisible(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible(false)
+      }
+    );
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    }
   }, []);
 
   const handleCodeChange = (text, index) => {
-    // Create a new array to avoid direct state mutation
     const newCode = [...code];
-    
-    // Only accept numbers
     const cleanedText = text.replace(/[^0-9]/g, '');
     newCode[index] = cleanedText;
-    
-    // Update the state
     setCode(newCode);
-    
-    // Auto advance to next input if this one is filled
-    if (cleanedText && index < 5) {
+    if (cleanedText && index < 4) {
       inputRefs.current[index + 1].focus();
     }
   };
 
   const handleKeyPress = (event, index) => {
-    // If backspace is pressed and current field is empty, go to previous field
     if (event.nativeEvent.key === 'Backspace' && !code[index] && index > 0) {
       inputRefs.current[index - 1].focus();
     }
   };
 
-  const handleVerify = () => {
-    // Check if all fields are filled
-    if (code.every(digit => digit !== '')) {
-      // Process verification logic here
-      console.log('Verifying code:', code.join(''));
-      
-      // Navigate to next screen or show success state
-      // navigation.navigate('NextScreen');
-    } else {
-      alert('Please enter all digits of the verification code');
-    }
-  };
-
   const handleSendAgain = () => {
-    // Logic to resend verification code
     console.log('Resending verification code');
-    
-    // You might want to add a cooldown period here
   };
 
   if (!fontsLoaded) {
@@ -135,6 +147,14 @@ const ForgetPasswordVerificationScreen = () => {
           </View>
         ))}
       </View>
+      {errorMessage ?(
+        <View style={styles.errorContainer}>
+          <View style ={styles.errorIconTextContainer}>
+            <ErrorIcon style={styles.errorIcon}/> 
+            <Text style={styles.errorText}>{errorMessage}</Text>
+          </View>
+        </View>
+      ) : null}
 
       {/* Verify Button */}
       <TouchableOpacity 
@@ -161,6 +181,17 @@ const ForgetPasswordVerificationScreen = () => {
       >
         <Text style={styles.sendAgainButtonText}>Send Again</Text>
       </TouchableOpacity>
+      {!isKeyboardVisible &&(
+        <TouchableOpacity 
+          style = {styles.backButton}
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.7}>
+            <Image
+              source = {require('../../../assets/imges/left-chevron.png')}
+              style={styles.backButtonIcon}
+            />
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 };
@@ -176,11 +207,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start', // Changed from 'center' to 'flex-start' to align left
-
+    justifyContent: 'flex-start', 
   },
   logoContainer: {
-    flexDirection: 'row', // Changed to row layout
+    flexDirection: 'row', 
     alignItems: 'center',
   },
   logoImage: {
@@ -222,22 +252,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   codeInputWrapper: {
+    width: 60,
+    height: 60,
     margin: 8,
     borderWidth: 2,
     borderColor: 'white',
-    borderRadius: 50,
+    borderRadius: 30,
     overflow: 'hidden',
     backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
   },
   codeInput: {
-    width: 40,
-    height: 40,
+    width: '100%',
+    height: '100%',
     textAlign: 'center',
     fontSize: 20,
     fontWeight: '600',
     color: 'white',
+    padding: 0,
+    textAlignVertical: 'center',
   },
   verifyButton: {
     top: 50,
@@ -262,6 +296,28 @@ const styles = StyleSheet.create({
     width: '100%',
     textAlign: 'center',
   },
+  errorContainer:{
+    marginTop: 24,
+    paddingHorizontal: 20,
+    alignItems:'center',
+    top: 50,
+  },
+  errorIconTextContainer:{
+    flexDirection : 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    width:'auto',
+  },
+  errorText:{
+    color:'#FF3830',
+    fontFamily:'Poppins_semibold',
+    fontSize: 14,
+    marginLeft: 8,
+    textAlign:'left', 
+  },
+  errorIcon:{
+    marginTop: 2,
+  },
   sendAgainButton: {
     top: 50,
     backgroundColor: "#cce1f5",
@@ -285,6 +341,18 @@ const styles = StyleSheet.create({
     width: '100%',
     textAlign: 'center',
   },
+  backButton:{
+    position: 'absolute',
+    bottom:20,
+    left: 15, 
+    padding: 10,
+    zIndex: 10,
+  },
+  backButtonIcon :{
+    width: 30,
+    height: 30,
+    tintColor:'#FFF'
+  }
 });
 
-export default ForgetPasswordVerificationScreen;
+export default VerificationPasswordScreen;

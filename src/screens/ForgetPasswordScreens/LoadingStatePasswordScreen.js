@@ -14,7 +14,8 @@ import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
 import { Svg, Path, Circle } from 'react-native-svg';
 
-const LoadingStatePasswordScreen = ({ route }) => {
+
+const LoadingStatePasswordScreen = () => {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);

@@ -167,7 +167,7 @@ const LoginScreen = () => {
         {/* Google Login - Vertical layout */}
         <View style={styles.googleContainer}>
           <Image
-            source={require('../../assets/Google.png')}
+            source={require('../../assets/imges/Google.png')}
             style={styles.googleIcon}
           />
           <Text style={styles.googleText}>Google</Text>

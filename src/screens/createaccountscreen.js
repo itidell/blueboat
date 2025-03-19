@@ -194,15 +194,7 @@ const CreateAccountScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
-
-        {/* Terms of Use */}
-        <View style={styles.termsContainer}>
-          <Text style={styles.termsText}>
-            By registering, you agree to the{'\n'}
-            <Text style={styles.termsLink}>Terms of Use</Text> and{' '}
-            <Text style={styles.termsLink}>Privacy Policy</Text>.
-          </Text>
-        </View>
+       
 
         {/* Sign Up Button */}
         <TouchableOpacity 
@@ -257,33 +249,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoImage: {
-    width: 70,
-    height: 70,
+    width: 80,
+    height: 80,
     resizeMode: 'contain',
     margin:0,
     
   },
   titleContainer: {
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 15,
     backgroundColor: '#57C3EA',
+    fontFamily: 'SecularOne-Regular',
   },
   createAccountTitle: {
-    fontSize: 25,
-    fontWeight: '600',
+    marginTop:0,
+    fontSize: 30,
+    fontWeight: '700',
     color: '#000000FF',
-    fontFamily:'Poppins_semibold',
+    fontFamily:'SecularOne-Regular',
   },
   formContainer: {
     flex: 1,
     backgroundColor: 'white',
-    padding: 20,
-    paddingTop:0,
+    paddingLeft: 20,
     borderTopLeftRadius: 60,
     borderTopRightRadius: 60,
     width: screenWidth,
     position: 'absolute',
-    top: 170,
+    top: 200,
     bottom: 0,
     fontFamily: 'Poppins_semibold',
   },
@@ -337,6 +330,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins_semibold',
     width: 207,
     height: 45,
+    marginTop:20,
     alignSelf: 'center',
     marginBottom: 20,
   },

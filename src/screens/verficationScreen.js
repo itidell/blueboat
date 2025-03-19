@@ -102,7 +102,7 @@ const VerificationScreen = () => {
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image 
-            source={require('../../assets/logo.png')} 
+            source={require('../../assets/imges/logo.png')} 
             style={styles.logoImage}
           />
         </View>

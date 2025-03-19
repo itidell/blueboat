@@ -73,7 +73,7 @@ const WelcomeScreen = () => {
     <View style={styles.container}>
       <SharedElement id="logo" style={styles.logoContainer}>
         <Animated.Image
-          source={require('../../assets/logo.png')}
+          source={require('../../assets/imges/logo.png')}
           style={[
             styles.logo
           ]}

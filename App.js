@@ -2,12 +2,13 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import SplashScreen from "./src/screens/SplashScreen.js";
-import LoginScreen from './src/screens/login.js';
-import CreateAccountScreen from './src/screens/createaccountscreen.js';
+import LoginScreen from './src/screens/LoginScreen.js';
+import CreateAccountScreen from './src/screens/CreateAccountScreen.js'; 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import WelcomeScreen from './src/screens/WelcomeScreen.js';
-import VerificationScreen from './src/screens/verficationScreen.js';
+import VerificationScreen from './src/screens/VerficationScreen.js';
 import LoadingStateScreen from './src/screens/LoadingStateScreen.js';
+//import RobotHomeScreen from './src/screens/RobotHomeScreen.js';
 
 const Stack = createStackNavigator();
 const customTransition = {

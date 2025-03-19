@@ -185,13 +185,14 @@ const LoginScreen = () => {
         </View>
 
         {/* Google Login - Vertical layout */}
+        <TouchableOpacity onPress={() => navigation.navigate('RobotHome')}>
         <View style={styles.googleContainer}>
           <Image
             source={require('../../assets/imges/Google.png')}
             style={styles.googleIcon}
           />
           <Text style={styles.googleText}>Google</Text>
-        </View>
+        </View></TouchableOpacity>
 
         {/* Account Link */}
         <View style={styles.accountLinkContainer}>

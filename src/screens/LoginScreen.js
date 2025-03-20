@@ -67,11 +67,11 @@ const LoginScreen = () => {
       }, 150); // Navigate to the login screen // Navigate to the create account screen
   };
 
-  //const handleLoginPress = () => {
-    //setTimeout(() => {
-      //  navigation.navigate('Home');
-      //}, 150); // Navigate to the login screen // Navigate to the create account screen
-  //};
+  const handleLoginPress = () => {
+    setTimeout(() => {
+        navigation.navigate('Home');
+      }, 150); // Navigate to the login screen // Navigate to the create account screen
+  };
   
   const handleForgetPasswordPress = () => {
     setTimeout(() => {
@@ -165,7 +165,7 @@ const LoginScreen = () => {
           ]}
           onPressIn={() => setLoginButtonPressed(true)}
           onPressOut={() => setLoginButtonPressed(false)}
-          //onPress={handleLoginPress}
+          onPress={handleLoginPress}
         >
           <Text 
             style={[

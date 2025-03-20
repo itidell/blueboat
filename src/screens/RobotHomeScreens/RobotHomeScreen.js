@@ -2,13 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Dimensions, StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar } from 'react-native';
 import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
+import LanguageSelector from '../Componets/LanguageSelector';
+import NotificationController from '../Componets/NotificationController';
+import { isEnabled } from 'react-native/Libraries/Performance/Systrace';
 
 const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [batteryLevel, setBatteryLevel] = useState(robotBatteryLevel);
   const [activeTab, setActiveTab] = useState('home');
+  const [selectedLanguage, setSelectedLanguage] = useState('EN');
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const { robotId } = route.params;
+
   useEffect(() => {
     const loadFonts = async () => {
       await Font.loadAsync({
@@ -46,6 +52,13 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
   const handleProfilePress = () =>{
     navigation.navigate('ProfileScreen')
   };
+  const handleLanguageChange = (language) => {
+    setSelectedLanguage(language);
+    console.log('Language selected:', language);
+  };
+  const handleNotificationChange = (isEnabled) =>{
+    setNotificationsEnabled(isEnabled);
+  }
   if (!fontsLoaded) return <View style={styles.container}><Text>Loading...</Text></View>;
   
   return (
@@ -68,18 +81,14 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
         </View>
         
         <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.languageButton}>
-            <Image 
-              source={require('../../../assets/imges/language.png')}
-              style={styles.iconSmall}
+            <LanguageSelector
+              onLanguageChange={handleLanguageChange}
+              initialLanguage={selectedLanguage}
             />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.notificationButton}>
-            <Image 
-              source={require('../../../assets/imges/bell.png')}
-              style={styles.iconSmall}
+            <NotificationController
+              onNotificationChange={handleNotificationChange}
+              initialState={notificationsEnabled}
             />
-          </TouchableOpacity>
         </View>
       </View>
 
@@ -240,12 +249,6 @@ const styles = StyleSheet.create({
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  languageButton: {
-    marginRight: 15,
-  },
-  notificationButton: {
-    marginRight: 8,
   },
   iconSmall: {
     width: 30,

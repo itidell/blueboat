@@ -2,12 +2,15 @@ import React, {useState, useEffect} from "react";
 import { Dimensions, StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar } from "react-native";
 import * as Font from 'expo-font';
 import { useNavigation } from "@react-navigation/native";
-import LanguageSelector from "./Componets/LanguageSelector";
+import LanguageSelector from "../Componets/LanguageSelector";
+import NotificationController from "../Componets/NotificationController";
+
 const HomeScreen = () => {
     const navigation = useNavigation();
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const [activeTab, setActiveTab] = useState('home');
     const [selectedLanguage, setSelectedLanguage] = useState('EN');
+    const [notificationsEnabled, setNotificationsEnabled] = useState(true)
     const [robots, setRobots] = useState([
         { id: 'ROBOT_1', status: 'OFF' },
         { id: 'ROBOT_2', status: 'ON' },
@@ -18,7 +21,6 @@ const HomeScreen = () => {
     const navigateToRobotHome = (robotId) =>{
         navigation.navigate('RobotHome', {robotId});
     };
-    
     const handleAddNewRobotPress = () =>{
         navigation.navigate('AddRobot')
     };
@@ -35,6 +37,9 @@ const HomeScreen = () => {
         setSelectedLanguage(language);
         console.log('Language selected:', language);
     };
+    const handleNotificationChange = (isEnabled) =>{
+        setNotificationsEnabled(isEnabled);
+    }
 
     useEffect(() => {
         const loadFonts = async () => {
@@ -68,12 +73,10 @@ const HomeScreen = () => {
                         onLanguageChange={handleLanguageChange}
                         initialLanguage={selectedLanguage}
                     />
-                    <TouchableOpacity style={styles.notificationButton}>
-                        <Image 
-                            source={require('../../assets/imges/bell.png')}
-                            style={styles.iconSmall}
-                        />
-                    </TouchableOpacity>
+                    <NotificationController
+                        onNotificationChange={handleNotificationChange}
+                        initialState={notificationsEnabled}
+                    />
                 </View>
             </View>
 
@@ -290,12 +293,6 @@ const styles = StyleSheet.create({
     headerRight:{
         flexDirection: 'row',
         alignItems: 'center',
-    },
-    languageButton:{
-        marginRight: 15,
-    },
-    notificationButton:{
-        marginRight: 8,
     },
     iconSmall:{
         width: 30,

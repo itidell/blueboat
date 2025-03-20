@@ -3,13 +3,16 @@ import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBa
 import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
 import LanguageSelector from '../Componets/LanguageSelector';
+import NotificationController from '../Componets/NotificationController';
+import { isEnabled } from 'react-native/Libraries/Performance/Systrace';
 
 const AddRobotScreen = () => {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [robotId, setRobotId] = useState('');
-  const [activeTab, setActiveTab] = useState('add'); // Set 'add' as the active tab
+  const [activeTab, setActiveTab] = useState('add');
   const [selectedLanguage, setSelectedLanguage] = useState('EN');
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   useEffect(() => {
     const loadFonts = async () => {
@@ -24,7 +27,6 @@ const AddRobotScreen = () => {
 
 
   const handleSave = () => {
-    // Save the robot ID logic here
     navigation.navigate('RobotHome',{robotId});
   };
   const handleCancel = () => {
@@ -46,6 +48,9 @@ const AddRobotScreen = () => {
     setSelectedLanguage(language);
     console.log('Language selected', language);
   };
+  const handleNotificationChange = (isEnabled) =>{
+    setNotificationsEnabled(isEnabled);
+  }
 
   if (!fontsLoaded) return <View style={styles.container}><Text>Loading...</Text></View>;
   
@@ -73,12 +78,10 @@ const AddRobotScreen = () => {
             onLanguageChange={handleLanguageChange}
             initialLanguage={selectedLanguage}
           />
-          <TouchableOpacity style={styles.notificationButton}>
-            <Image 
-              source={require('../../../assets/imges/bell.png')}
-              style={styles.iconSmall}
-            />
-          </TouchableOpacity>
+          <NotificationController
+            onNotificationChange={handleNotificationChange}
+            initialState={notificationsEnabled}
+          />
         </View>
       </View>
 
@@ -202,12 +205,6 @@ const styles = StyleSheet.create({
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  languageButton: {
-    marginRight: 15,
-  },
-  notificationButton: {
-    marginRight: 8,
   },
   iconSmall: {
     width: 30,

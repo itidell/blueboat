@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Dimensions, StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar } from 'react-native';
 import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
+import LanguageSelector from '../../Componets/LanguageSelector';
+import NotificationController from '../../Componets/NotificationController';
 
 const LiveStreamingScreen = ({ robotBatteryLevel = 70, route }) => {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [batteryLevel, setBatteryLevel] = useState(robotBatteryLevel);
+  const [selectedLanguage, setSelectedLanguage] = useState('EN');
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const {robotId} = route.params;
   useEffect(() => {
     const loadFonts = async () => {
@@ -31,6 +35,13 @@ const LiveStreamingScreen = ({ robotBatteryLevel = 70, route }) => {
   const handleGoBack = () => {
     navigation.goBack();
   };
+  const handleLanguageChange = (language) =>{
+    setSelectedLanguage(language);
+    console.log('Language selected', language);
+  };
+  const handleNotificationChange = (isEnabled) =>{
+    setNotificationsEnabled(isEnabled);
+  };
 
   if (!fontsLoaded) return <View style={styles.container}><Text>Loading...</Text></View>;
   
@@ -54,18 +65,14 @@ const LiveStreamingScreen = ({ robotBatteryLevel = 70, route }) => {
         </View>
         
         <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.languageButton}>
-            <Image 
-              source={require('../../../assets/imges/language.png')}
-              style={styles.iconSmall}
+            <LanguageSelector
+              onLanguageChange={handleLanguageChange}
+              initialLanguage={selectedLanguage}
             />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.notificationButton}>
-            <Image 
-              source={require('../../../assets/imges/bell.png')}
-              style={styles.iconSmall}
+            <NotificationController
+              onNotificationChange={handleNotificationChange}
+              initialState={notificationsEnabled}
             />
-          </TouchableOpacity>
         </View>
       </View>
 
@@ -95,7 +102,7 @@ const LiveStreamingScreen = ({ robotBatteryLevel = 70, route }) => {
 
       {/* Bottom Navigation Bar */}
       <View style={styles.bottomNavbar}>
-        <TouchableOpacity style={styles.navbarItem} onPress={() => navigation.navigate('RobotHome')}>
+        <TouchableOpacity style={styles.navbarItem} onPress={() => navigation.navigate('RobotHome', {robotId})}>
           <View style={styles.navbarIconContainer}>
             <Image 
               source={require('../../../assets/imges/home.png')}
@@ -166,12 +173,6 @@ const styles = StyleSheet.create({
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  languageButton: {
-    marginRight: 15,
-  },
-  notificationButton: {
-    marginRight: 8,
   },
   iconSmall: {
     width: 30,

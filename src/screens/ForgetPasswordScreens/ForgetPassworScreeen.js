@@ -28,7 +28,7 @@ const ForgetPasswordScreen = () =>{
         }
 
         setTimeout(() => {
-            navigation.navigate('VerficationPaswword')
+            navigation.navigate('VerficationPassword')
         },150);
     };
     const handleBackToSignup = () => {

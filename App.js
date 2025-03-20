@@ -26,7 +26,7 @@ const Stack = createStackNavigator();
 const customTransition = {
   animation: 'timing',
   config: {
-    duration: 400, // Adjust duration as needed
+    duration: 400,
   }
 };
 export default function App(){
@@ -83,7 +83,7 @@ export default function App(){
               transitionSpec: {
                 open: {
                   animation: 'timing',
-                  config: { duration: 600 }  // Smoother, slightly longer duration
+                  config: { duration: 600 }  
                 },
                 close: {
                   animation: 'timing',
@@ -97,19 +97,19 @@ export default function App(){
                       {
                         translateX: current.progress.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [layouts.screen.width, 0], // Slide up from bottom
+                          outputRange: [layouts.screen.width, 0], 
                         }),
                       },
                     ],
                     opacity: current.progress.interpolate({
                       inputRange: [0, 0.5, 1],
-                      outputRange: [0, 0.7, 1], // Fade in while sliding
+                      outputRange: [0, 0.7, 1], 
                     }),
                   },
                   overlayStyle: {
                     opacity: current.progress.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, 0.5], // Slight overlay for depth effect
+                      outputRange: [0, 0.5],
                     }),
                   }
                 };
@@ -124,7 +124,7 @@ export default function App(){
               transitionSpec: {
                 open: {
                   animation: 'timing',
-                  config: { duration: 600 }  // Smoother, slightly longer duration
+                  config: { duration: 600 }  
                 },
                 close: {
                   animation: 'timing',
@@ -138,19 +138,19 @@ export default function App(){
                       {
                         translateX: current.progress.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [layouts.screen.width, 0], // Slide up from bottom
+                          outputRange: [layouts.screen.width, 0], 
                         }),
                       },
                     ],
                     opacity: current.progress.interpolate({
                       inputRange: [0, 0.5, 1],
-                      outputRange: [0, 0.7, 1], // Fade in while sliding
+                      outputRange: [0, 0.7, 1], 
                     }),
                   },
                   overlayStyle: {
                     opacity: current.progress.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, 0.5], // Slight overlay for depth effect
+                      outputRange: [0, 0.5], 
                     }),
                   }
                 };
@@ -165,7 +165,7 @@ export default function App(){
               transitionSpec: {
                 open: {
                   animation: 'timing',
-                  config: { duration: 600 }  // Smoother, slightly longer duration
+                  config: { duration: 600 }  
                 },
                 close: {
                   animation: 'timing',
@@ -179,19 +179,19 @@ export default function App(){
                       {
                         translateX: current.progress.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [layouts.screen.width, 0], // Slide up from bottom
+                          outputRange: [layouts.screen.width, 0], 
                         }),
                       },
                     ],
                     opacity: current.progress.interpolate({
                       inputRange: [0, 0.5, 1],
-                      outputRange: [0, 0.7, 1], // Fade in while sliding
+                      outputRange: [0, 0.7, 1], 
                     }),
                   },
                   overlayStyle: {
                     opacity: current.progress.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, 0.5], // Slight overlay for depth effect
+                      outputRange: [0, 0.5], 
                     }),
                   }
                 };
@@ -206,7 +206,7 @@ export default function App(){
               transitionSpec: {
                 open: {
                   animation: 'timing',
-                  config: { duration: 600 }  // Smoother, slightly longer duration
+                  config: { duration: 600 }  
                 },
                 close: {
                   animation: 'timing',
@@ -220,19 +220,19 @@ export default function App(){
                       {
                         translateX: current.progress.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [layouts.screen.width, 0], // Slide up from bottom
+                          outputRange: [layouts.screen.width, 0], 
                         }),
                       },
                     ],
                     opacity: current.progress.interpolate({
                       inputRange: [0, 1, 1],
-                      outputRange: [0, 1, 1], // Fade in while sliding
+                      outputRange: [0, 1, 1], 
                     }),
                   },
                   overlayStyle: {
                     opacity: current.progress.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, 0.5], // Slight overlay for depth effect
+                      outputRange: [0, 0.5], 
                     }),
                   }
                 };
@@ -247,7 +247,7 @@ export default function App(){
               transitionSpec: {
                 open: {
                   animation: 'timing',
-                  config: { duration: 600 }  // Smoother, slightly longer duration
+                  config: { duration: 600 }  
                 },
                 close: {
                   animation: 'timing',
@@ -261,19 +261,19 @@ export default function App(){
                       {
                         translateX: current.progress.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [layouts.screen.width, 0], // Slide up from bottom
+                          outputRange: [layouts.screen.width, 0], 
                         }),
                       },
                     ],
                     opacity: current.progress.interpolate({
                       inputRange: [0, 1, 1],
-                      outputRange: [0, 1, 1], // Fade in while sliding
+                      outputRange: [0, 1, 1], 
                     }),
                   },
                   overlayStyle: {
                     opacity: current.progress.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, 0.5], // Slight overlay for depth effect
+                      outputRange: [0, 0.5], 
                     }),
                   }
                 };
@@ -288,7 +288,7 @@ export default function App(){
               transitionSpec: {
                 open: {
                   animation: 'timing',
-                  config: { duration: 600 }  // Smoother, slightly longer duration
+                  config: { duration: 600 }  
                 },
                 close: {
                   animation: 'timing',
@@ -302,25 +302,105 @@ export default function App(){
                       {
                         translateX: current.progress.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [layouts.screen.width, 0], // Slide up from bottom
+                          outputRange: [layouts.screen.width, 0],
                         }),
                       },
                     ],
                     opacity: current.progress.interpolate({
                       inputRange: [0, 1, 1],
-                      outputRange: [0, 1, 1], // Fade in while sliding
+                      outputRange: [0, 1, 1], 
                     }),
                   },
                   overlayStyle: {
                     opacity: current.progress.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, 0.5], // Slight overlay for depth effect
+                      outputRange: [0, 0.5], 
                     }),
                   }
                 };
               },
             }}
           />
+            <Stack.Screen
+                    name="NewPassword"
+                    component={NewPasswordScreen}
+                    options={{
+                      gestureEnabled: true,
+                      transitionSpec: {
+                        open: {
+                          animation: 'timing',
+                          config: { duration: 600 } 
+                        },
+                        close: {
+                          animation: 'timing',
+                          config: { duration: 500 }
+                        }
+                      },
+                      cardStyleInterpolator: ({ current, layouts }) => {
+                        return {
+                          cardStyle: {
+                            transform: [
+                              {
+                                translateX: current.progress.interpolate({
+                                  inputRange: [0, 1],
+                                  outputRange: [layouts.screen.width, 0], 
+                                }),
+                              },
+                            ],
+                            opacity: current.progress.interpolate({
+                              inputRange: [0, 1, 1],
+                              outputRange: [0, 1, 1], 
+                            }),
+                          },
+                          overlayStyle: {
+                            opacity: current.progress.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [0, 0.5], 
+                            }),
+                          }
+                        };
+                      },
+                    }} />
+                  <Stack.Screen
+                      name="SuccessOperation"
+                      component={SuccessOperationScreen}
+                      options={{
+                        gestureEnabled: true,
+                        transitionSpec: {
+                          open: {
+                            animation: 'timing',
+                            config: { duration: 600 } 
+                          },
+                          close: {
+                            animation: 'timing',
+                            config: { duration: 500 }
+                          }
+                        },
+                        cardStyleInterpolator: ({ current, layouts }) => {
+                          return {
+                            cardStyle: {
+                              transform: [
+                                {
+                                  translateX: current.progress.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [layouts.screen.width, 0], 
+                                  }),
+                                },
+                              ],
+                              opacity: current.progress.interpolate({
+                                inputRange: [0, 1, 1],
+                                outputRange: [0, 1, 1], 
+                              }),
+                            },
+                            overlayStyle: {
+                              opacity: current.progress.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [0, 0.5], 
+                              }),
+                            }
+                          };
+                        },
+                      }} />
       <Stack.Screen 
             name="VerficationPassword" 
             component={VerificationPasswordScreen}
@@ -329,7 +409,7 @@ export default function App(){
               transitionSpec: {
                 open: {
                   animation: 'timing',
-                  config: { duration: 600 }  // Smoother, slightly longer duration
+                  config: { duration: 600 } 
                 },
                 close: {
                   animation: 'timing',
@@ -343,19 +423,19 @@ export default function App(){
                       {
                         translateX: current.progress.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [layouts.screen.width, 0], // Slide up from bottom
+                          outputRange: [layouts.screen.width, 0], 
                         }),
                       },
                     ],
                     opacity: current.progress.interpolate({
                       inputRange: [0, 1, 1],
-                      outputRange: [0, 1, 1], // Fade in while sliding
+                      outputRange: [0, 1, 1], 
                     }),
                   },
                   overlayStyle: {
                     opacity: current.progress.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, 0.5], // Slight overlay for depth effect
+                      outputRange: [0, 0.5], 
                     }),
                   }
                 };
@@ -370,7 +450,7 @@ export default function App(){
               transitionSpec: {
                 open: {
                   animation: 'timing',
-                  config: { duration: 600 }  // Smoother, slightly longer duration
+                  config: { duration: 600 }  
                 },
                 close: {
                   animation: 'timing',
@@ -384,19 +464,19 @@ export default function App(){
                       {
                         translateX: current.progress.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [layouts.screen.width, 0], // Slide up from bottom
+                          outputRange: [layouts.screen.width, 0], 
                         }),
                       },
                     ],
                     opacity: current.progress.interpolate({
                       inputRange: [0, 1, 1],
-                      outputRange: [0, 1, 1], // Fade in while sliding
+                      outputRange: [0, 1, 1], 
                     }),
                   },
                   overlayStyle: {
                     opacity: current.progress.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, 0.5], // Slight overlay for depth effect
+                      outputRange: [0, 0.5],
                     }),
                   }
                 };
@@ -417,18 +497,18 @@ export default function App(){
                 transform: [{
                   translateX: current.progress.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [layouts.screen.width, 0], // Slide in from right
+                    outputRange: [layouts.screen.width, 0], 
                   }),
                 }],
                 opacity: current.progress.interpolate({
                   inputRange: [0, 0.5, 1],
-                  outputRange: [0, 0.7, 1], // Smooth fade in
+                  outputRange: [0, 0.7, 1], 
                 }),
               },
               overlayStyle: {
                 opacity: current.progress.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [0, 0.5], // Subtle background overlay
+                  outputRange: [0, 0.5],
                 }),
               }
             }),
@@ -448,18 +528,18 @@ export default function App(){
                 transform: [{
                   translateX: current.progress.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [layouts.screen.width, 0], // Slide in from right
+                    outputRange: [layouts.screen.width, 0], 
                   }),
                 }],
                 opacity: current.progress.interpolate({
                   inputRange: [0, 0.5, 1],
-                  outputRange: [0, 0.7, 1], // Smooth fade in
+                  outputRange: [0, 0.7, 1], 
                 }),
               },
               overlayStyle: {
                 opacity: current.progress.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [0, 0.5], // Subtle background overlay
+                  outputRange: [0, 0.5],
                 }),
               }
             }),
@@ -481,104 +561,25 @@ export default function App(){
                       {
                         translateX: current.progress.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [layouts.screen.width, 0], // Slide up from bottom
+                          outputRange: [layouts.screen.width, 0], 
                         }),
                       },
                     ],
                     opacity: current.progress.interpolate({
                       inputRange: [0, 1, 1],
-                      outputRange: [0, 1, 1], // Fade in while sliding
+                      outputRange: [0, 1, 1],
                     }),
                   },
                   overlayStyle: {
                     opacity: current.progress.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, 0.5], // Slight overlay for depth effect
+                      outputRange: [0, 0.5], 
                     }),
                   }
                 };
               },
             }}
           />
-      <Stack.Screen
-              name="NewPassword"
-              component={NewPasswordScreen}
-              options={{
-                gestureEnabled: true,
-                transitionSpec: {
-                  open: {
-                    animation: 'timing',
-                    config: { duration: 600 } // Smoother, slightly longer duration
-                  },
-                  close: {
-                    animation: 'timing',
-                    config: { duration: 500 }
-                  }
-                },
-                cardStyleInterpolator: ({ current, layouts }) => {
-                  return {
-                    cardStyle: {
-                      transform: [
-                        {
-                          translateX: current.progress.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [layouts.screen.width, 0], // Slide up from bottom
-                          }),
-                        },
-                      ],
-                      opacity: current.progress.interpolate({
-                        inputRange: [0, 1, 1],
-                        outputRange: [0, 1, 1], // Fade in while sliding
-                      }),
-                    },
-                    overlayStyle: {
-                      opacity: current.progress.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0, 0.5], // Slight overlay for depth effect
-                      }),
-                    }
-                  };
-                },
-              }} /><Stack.Screen
-                name="SuccessOperation"
-                component={SuccessOperationScreen}
-                options={{
-                  gestureEnabled: true,
-                  transitionSpec: {
-                    open: {
-                      animation: 'timing',
-                      config: { duration: 600 } // Smoother, slightly longer duration
-                    },
-                    close: {
-                      animation: 'timing',
-                      config: { duration: 500 }
-                    }
-                  },
-                  cardStyleInterpolator: ({ current, layouts }) => {
-                    return {
-                      cardStyle: {
-                        transform: [
-                          {
-                            translateX: current.progress.interpolate({
-                              inputRange: [0, 1],
-                              outputRange: [layouts.screen.width, 0], // Slide up from bottom
-                            }),
-                          },
-                        ],
-                        opacity: current.progress.interpolate({
-                          inputRange: [0, 1, 1],
-                          outputRange: [0, 1, 1], // Fade in while sliding
-                        }),
-                      },
-                      overlayStyle: {
-                        opacity: current.progress.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0, 0.5], // Slight overlay for depth effect
-                        }),
-                      }
-                    };
-                  },
-                }} />
       </Stack.Navigator>
       </NavigationContainer>
     </GestureHandlerRootView>

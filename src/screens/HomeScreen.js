@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 const HomeScreen = () => {
     const navigation = useNavigation();
     const [fontsLoaded, setFontsLoaded] = useState(false);
+    const [activeTab, setActiveTab] = useState('home');
 
     const [robots, setRobots] = useState([
         { id: 'ROBOT_1', status: 'OFF' },
@@ -13,6 +14,15 @@ const HomeScreen = () => {
         { id: 'ROBOT_3', status: 'ON' },
         { id: 'ROBOT_5', status: 'OFF' },
     ])
+    
+    const navigateToRobotHome = (robotId) =>{
+        navigation.navigate('RobotHome', {robotId});
+    };
+    
+    const addNewRobot = () =>{
+        //navigation.navigate('')
+    };
+    
     useEffect(() => {
         const loadFonts = async () => {
             await Font.loadAsync({
@@ -22,17 +32,8 @@ const HomeScreen = () => {
         };
         loadFonts();
     }, []);
-
-    const navigateToRobotHome = (robotId) =>{
-        navigation.navigate('RobotHomeScreen', {robotId});
-    };
-
-    const addNewRobot = () =>{
-        //navigation.navigate('')
-    };
-
     if (!fontsLoaded) return <View style={styles.container}><Text>Loading...</Text></View>;
-
+    
     return(
         <SafeAreaView style={styles.container}>
             <StatusBar backgroundColor="#57C3EA" barStyle="dark-content" />
@@ -187,28 +188,52 @@ const HomeScreen = () => {
                 </TouchableOpacity>
             </View>
             <View style={styles.bottonNavbar}>
-                <TouchableOpacity style={styles.navbarItem}>
+                <TouchableOpacity 
+                    style={[styles.navbarItem, activeTab === 'home' ? styles.activeNavItem : null]}
+                    onPress={() =>{
+                        setActiveTab('home');
+                        navigation.navigate('HomeScreen')
+                    }}
+                    >
                     <View style={styles.navbarCenterButton}>
                         <Image
                             source={require('../../assets/imges/home.png')}
                             style={styles.navbarIcon}
-                        />
+                            />
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('SearchScreen')} style={styles.navbarItem } >
+                <TouchableOpacity 
+                    style={[styles.navbarItem, activeTab === 'search' ? styles.activeNavItem : null]}
+                    onPress={() => {
+                        setActiveTab('search');
+                        navigation.navigate('SearchScreen')
+                    }}
+                    >
                     <Image 
                         source={require('../../assets/imges/search.png')}
                         style={styles.navbarIcon}
-                    />
+                        />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.navbarCenterItem} onPress={addNewRobot}>
+                <TouchableOpacity
+                    style={[styles.navbarItem, activeTab === 'add' ? styles.activeNavItem : null]}
+                    onPress={() => {
+                        setActiveTab('add')
+                        addNewRobot
+                    }}
+                    >
                     <Image
                         source={require('../../assets/imges/add.png')}
                         style={styles.navbarCenterIcon}
-                    />
+                        />
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.navbarItem} onPress={() => navigation.navigate('ProfileScreen')}>
+                <TouchableOpacity 
+                    style={[styles.navbarItem, activeTab === 'profile' ? styles.activeNavItem : null]}
+                    onPress={() => {
+                        setActiveTab('profile');
+                        navigation.navigate('ProfileScreen');
+                    }}
+                >
                     <Image
                         source={require('../../assets/imges/profile.png')}
                         style={styles.navbarIcon}
@@ -223,7 +248,6 @@ const styles = StyleSheet.create({
     container:{
         flex: 1,
         backgroundColor: '#57C3EA',
-        fontFamily: 'Poppins_semibold',
     },
     header:{
         flexDirection: 'row',
@@ -232,12 +256,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingTop: 10,
         paddingBottom: 5,
-        fontFamily: 'Poppins_semibold',
     },
     welcomeContainer:{
         flexDirection:'row',
         alignItems: 'center',
-        fontFamily: 'Poppins_semibold',
     },
     logoImage:{
         width: 80,
@@ -249,12 +271,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
         color: '#000',
-        fontFamily: 'Poppins_semibold',
     },
     userNameText:{
         fontSize: 12,
         color: '#333',
-        fontFamily: 'Poppins_semibold',
     },
     headerRight:{
         flexDirection: 'row',
@@ -291,7 +311,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     robotItem:{
-        width: '40%',
+        width: '48%',
         alignItems: 'center',
         borderRadius: 20,
         paddingVertical: 15,
@@ -375,7 +395,7 @@ const styles = StyleSheet.create({
         right: 0,
     },
     navbarItem:{
-        padding: 0,
+        padding: 8,
     },
     navbarIcon:{
         width: 30,
@@ -387,12 +407,17 @@ const styles = StyleSheet.create({
         justifyContent:'center',
     },
     navbarCenterButton:{
-        width: 42,
-        height: 42,
-        borderRadius: 15,
-        backgroundColor: '#57C3EA',
         justifyContent: 'center',
         alignItems:'center',
+    },
+    activeNavItem: {
+        alignItems:'center',
+        justifyContent:'center',
+        width: 42,
+        height: 42,
+        backgroundColor: '#57C3EA',
+        borderRadius: 15,
+        padding: 10,
         elevation:2,
     },
     navbarCenterIcon:{

@@ -3,11 +3,11 @@ import { Dimensions, StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaVi
 import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
 
-const RobotHomeScreen = ({ robotBatteryLevel = 70 }) => {
+const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [batteryLevel, setBatteryLevel] = useState(robotBatteryLevel);
-  
+  const { robotId } = route.params;
   useEffect(() => {
     const loadFonts = async () => {
       await Font.loadAsync({
@@ -71,7 +71,7 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70 }) => {
 
       {/* Robot ID Display */}
       <View style={styles.robotIdContainer}>
-        <Text style={styles.robotIdText}>ROBOT ID: ------</Text>
+        <Text style={styles.robotIdText}>ROBOT ID: {robotId}</Text>
         <View style={styles.batteryContainer}>
           <Image 
             source={require('../../../assets/imges/battery.png')}

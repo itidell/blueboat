@@ -21,6 +21,7 @@ import SuccessOperationScreen from './src/screens/ForgetPasswordScreens/SuccessO
 import RobotHomeScreen from './src/screens/RobotHomeScreens/RobotHomeScreen.js';
 import LiveStreamingScreen from './src/screens/RobotHomeScreens/LiveStreamingScreen.js';
 import SearchScreen from './src/screens/RobotHomeScreens/SearchScreen.js';
+import AddRobotScreen from './src/screens/RobotHomeScreens/AddRobotScreen.js';
 
 const Stack = createStackNavigator();
 const customTransition = {
@@ -548,6 +549,41 @@ export default function App(){
   <Stack.Screen 
           name="SearchScreen" 
           component={SearchScreen}
+          options={{
+            gestureEnabled: true,
+            transitionSpec: {
+              open: { animation: 'timing', config: { duration: 600 } },
+              close: { animation: 'timing', config: { duration: 500 } }
+            },
+              cardStyleInterpolator: ({ current, layouts }) => {
+                return {
+                  cardStyle: {
+                    transform: [
+                      {
+                        translateX: current.progress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [layouts.screen.width, 0], 
+                        }),
+                      },
+                    ],
+                    opacity: current.progress.interpolate({
+                      inputRange: [0, 1, 1],
+                      outputRange: [0, 1, 1],
+                    }),
+                  },
+                  overlayStyle: {
+                    opacity: current.progress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, 0.5], 
+                    }),
+                  }
+                };
+              },
+            }}
+          />
+  <Stack.Screen 
+          name="AddRobot" 
+          component={AddRobotScreen}
           options={{
             gestureEnabled: true,
             transitionSpec: {

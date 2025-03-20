@@ -7,6 +7,7 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [batteryLevel, setBatteryLevel] = useState(robotBatteryLevel);
+  const [activeTab, setActiveTab] = useState('home');
   const { robotId } = route.params;
   useEffect(() => {
     const loadFonts = async () => {
@@ -30,10 +31,21 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
     return () => clearInterval(batteryMonitor);
   }, [robotBatteryLevel]);
 
-  const navigateToLiveStreaming = () => {
-    navigation.navigate('LiveStreamingScreen');
+  const handlenavigateToLiveStreamingPress = () => {
+    navigation.navigate('LiveStreaming',{robotId});
   };
-
+  const handleAddNewRobotPress = () =>{
+    navigation.navigate('AddRobot')
+  };
+  const handleHomePress = () =>{
+    navigation.navigate('Home')
+  };
+  const handleSearchPress = () =>{
+    navigation.navigate('SearchScreen')
+  };
+  const handleProfilePress = () =>{
+    navigation.navigate('ProfileScreen')
+  };
   if (!fontsLoaded) return <View style={styles.container}><Text>Loading...</Text></View>;
   
   return (
@@ -43,10 +55,12 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.welcomeContainer}>
-          <Image 
-            source={require('../../../assets/imges/Logoo.png')} 
-            style={styles.logoImage}
-          />
+        <TouchableOpacity onPress={handleHomePress} >
+            <Image
+              source={require('../../../assets/imges/Logoo.png')} 
+              style={styles.logoImage}
+            />
+          </TouchableOpacity>
           <View>
             <Text style={styles.welcomeText}>Hi, Welcome</Text>
             <Text style={styles.usernameText}>User Name</Text>
@@ -95,7 +109,7 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
             <Text style={styles.menuText}>Location</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity onPress={() => navigation.navigate('LiveStreaming')}
+          <TouchableOpacity onPress={handlenavigateToLiveStreamingPress}
             style={styles.menuItem}
             
           >
@@ -135,35 +149,56 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
 
       {/* Bottom Navigation Bar */}
       <View style={styles.bottomNavbar}>
-        <TouchableOpacity style={styles.navbarItem}>
-          <View style={styles.navbarCenterButton}>
-            <Image 
-              source={require('../../../assets/imges/home.png')}
-              style={styles.navbarIcon}
-            />
-          </View>
-        </TouchableOpacity>
-        
-        <TouchableOpacity onPress={() => navigation.navigate('SearchScreen')} style={styles.navbarItem } >
-          <Image 
-            source={require('../../../assets/imges/search.png')}
-            style={styles.navbarIcon}
-          />
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.navbarCenterItem}>
-          <Image 
-            source={require('../../../assets/imges/add.png')}
-            style={styles.navbarCenterIcon}
-          />
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.navbarItem}>
-          <Image 
-            source={require('../../../assets/imges/profile.png')}
-            style={styles.navbarIcon}
-          />
-        </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.navbarItem, activeTab === 'home' ? styles.activeNavItem : null]}
+            onPress={() =>{
+              setActiveTab('home');
+              handleHomePress();
+            }}
+          >
+            <View style={styles.navbarCenterButton}>
+                <Image
+                    source={require('../../../assets/imges/home.png')}
+                    style={styles.navbarIcon}
+                />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.navbarItem, activeTab === 'search' ? styles.activeNavItem : null]}
+            onPress={() => {
+                setActiveTab('search');
+                handleSearchPress();
+            }}
+          >
+              <Image 
+                  source={require('../../../assets/imges/search.png')}
+                  style={styles.navbarIcon}
+              />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.navbarItem, activeTab === 'add' ? styles.activeNavItem : null]}
+            onPress={() => {
+                setActiveTab('add');
+                handleAddNewRobotPress();
+            }}
+          >
+              <Image
+                  source={require('../../../assets/imges/add.png')}
+                  style={styles.navbarCenterIcon}
+              />
+          </TouchableOpacity>
+          <TouchableOpacity 
+              style={[styles.navbarItem, activeTab === 'profile' ? styles.activeNavItem : null]}
+              onPress={() => {
+                  setActiveTab('profile');
+                  handleProfilePress();
+              }}
+          >
+              <Image
+                  source={require('../../../assets/imges/profile.png')}
+                  style={styles.navbarIcon}
+              />
+          </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -299,13 +334,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   navbarCenterButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 15,
-    backgroundColor: '#57C3EA',
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 2,
+  },
+  activeNavItem: {
+    alignItems:'center',
+    justifyContent:'center',
+    width: 42,
+    height: 42,
+    backgroundColor: '#57C3EA',
+    borderRadius: 15,
+    padding: 10,
+    elevation:2,
   },
   navbarCenterIcon: {
     width: 24,

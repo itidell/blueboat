@@ -3,11 +3,11 @@ import { Dimensions, StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaVi
 import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
 
-const LiveStreamingScreen = ({ robotBatteryLevel = 70 }) => {
+const LiveStreamingScreen = ({ robotBatteryLevel = 70, route }) => {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [batteryLevel, setBatteryLevel] = useState(robotBatteryLevel);
-  
+  const {robotId} = route.params;
   useEffect(() => {
     const loadFonts = async () => {
       await Font.loadAsync({
@@ -24,7 +24,10 @@ const LiveStreamingScreen = ({ robotBatteryLevel = 70 }) => {
     
     return () => clearInterval(batteryMonitor);
   }, [robotBatteryLevel]);
-
+ 
+  const handleHomePress = () =>{
+    navigation.navigate('Home')
+  };
   const handleGoBack = () => {
     navigation.goBack();
   };
@@ -38,10 +41,12 @@ const LiveStreamingScreen = ({ robotBatteryLevel = 70 }) => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.welcomeContainer}>
-          <Image 
-            source={require('../../../assets/imges/Logoo.png')} 
-            style={styles.logoImage}
-          />
+          <TouchableOpacity onPress={handleHomePress} >
+              <Image
+                  source={require('../../../assets/imges/Logoo.png')} 
+                  style={styles.logoImage}
+              />
+          </TouchableOpacity>
           <View>
             <Text style={styles.welcomeText}>Hi, Welcome</Text>
             <Text style={styles.usernameText}>User Name</Text>
@@ -66,7 +71,7 @@ const LiveStreamingScreen = ({ robotBatteryLevel = 70 }) => {
 
       {/* Robot ID Display */}
       <View style={styles.robotIdContainer}>
-        <Text style={styles.robotIdText}>ROBOT_ID : ------</Text>
+        <Text style={styles.robotIdText}>ROBOT_ID : {robotId}</Text>
         <View style={styles.batteryContainer}>
           <Image 
             source={require('../../../assets/imges/battery.png')}

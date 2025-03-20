@@ -64,21 +64,21 @@ const LoginScreen = () => {
   const handleSignupPress = () => {
     setTimeout(() => {
         navigation.navigate('CreateAccount');
-      }, 150); // Navigate to the login screen // Navigate to the create account screen
+      }, 150); 
   };
 
   const handleLoginPress = () => {
     setTimeout(() => {
         navigation.navigate('Home');
-      }, 150); // Navigate to the login screen // Navigate to the create account screen
+      }, 150); 
   };
   
   const handleForgetPasswordPress = () => {
     setTimeout(() => {
         navigation.navigate('ForgetPassword');
-      }, 150); // Navigate to the login screen // Navigate to the create account screen
+      }, 150); 
   };
-  
+
   useEffect(() => {
     const loadFonts = async () => {
       await Font.loadAsync({
@@ -185,7 +185,7 @@ const LoginScreen = () => {
         </View>
 
         {/* Google Login - Vertical layout */}
-        <TouchableOpacity onPress={() => navigation.navigate('RobotHome')}>
+        <TouchableOpacity>
         <View style={styles.googleContainer}>
           <Image
             source={require('../../assets/imges/Google.png')}
@@ -197,7 +197,7 @@ const LoginScreen = () => {
         {/* Account Link */}
         <View style={styles.accountLinkContainer}>
   
-  <TouchableOpacity onPress={() => navigation.navigate('createaccount')}>
+  <TouchableOpacity>
   <Text style={styles.accountText}> Don't have an account?{' '}
     
       <Text style={styles.signUpLink} onPress={handleSignupPress}>Sign Up</Text>

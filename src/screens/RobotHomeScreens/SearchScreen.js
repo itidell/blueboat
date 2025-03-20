@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar, TextInput, Modal } from 'react-native';
 import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
-
+import LanguageSelector from '../Componets/LanguageSelector';
 const SearchScreen = () => {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const [notificationModalVisible, setNotificationModalVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('EN');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [activeTab, setActiveTab] = useState('search');
 
   useEffect(() => {
     const loadFonts = async () => {
@@ -26,19 +26,24 @@ const SearchScreen = () => {
     // Implement search functionality here
     console.log('Searching for:', searchQuery);
   };
-
-  const toggleLanguageModal = () => {
-    setLanguageModalVisible(!languageModalVisible);
+  const handleAddNewRobotPress = () =>{
+    navigation.navigate('AddRobot')
   };
-
+  const handleHomePress = () =>{
+    navigation.navigate('Home')
+  };
+  const handleSearchPress = () =>{
+    navigation.navigate('SearchScreen')
+  };
+  const handleProfilePress = () =>{
+    navigation.navigate('ProfileScreen')
+  };
   const toggleNotificationModal = () => {
     setNotificationModalVisible(!notificationModalVisible);
   };
 
-  const selectLanguage = (language) => {
+  const handleLanguageChange = (language) => {
     setSelectedLanguage(language);
-    setLanguageModalVisible(false);
-    // Here you would implement the actual language change in your app
     console.log('Language selected:', language);
   };
 
@@ -56,10 +61,12 @@ const SearchScreen = () => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.welcomeContainer}>
-          <Image 
-            source={require('../../../assets/imges/Logoo.png')} 
-            style={styles.logoImage}
-          />
+          <TouchableOpacity onPress={handleHomePress} >
+              <Image
+                  source={require('../../../assets/imges/Logoo.png')} 
+                  style={styles.logoImage}
+              />
+          </TouchableOpacity>
           <View>
             <Text style={styles.welcomeText}>Hi, Welcome</Text>
             <Text style={styles.usernameText}>User Name</Text>
@@ -67,12 +74,10 @@ const SearchScreen = () => {
         </View>
 
         <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.languageButton} onPress={toggleLanguageModal}>
-            <Image 
-              source={require('../../../assets/imges/language.png')}
-              style={styles.iconSmall}
-            />
-          </TouchableOpacity>
+          <LanguageSelector 
+            onLanguageChange={handleLanguageChange}
+            initialLanguage={selectedLanguage}
+          />
           <TouchableOpacity style={styles.notificationButton} onPress={toggleNotificationModal}>
             <Image 
               source={require('../../../assets/imges/bell.png')}
@@ -81,61 +86,6 @@ const SearchScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
-
-      {/* Language Selection Modal */}
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={languageModalVisible}
-        onRequestClose={toggleLanguageModal}
-      >
-        <TouchableOpacity 
-          style={styles.modalOverlay} 
-          activeOpacity={1} 
-          onPress={toggleLanguageModal}
-        >
-          <View style={styles.languageModalContainer}>
-            <View style={styles.languageModal}>
-              <View style={styles.languageModalHeader}>
-                <Text style={styles.languageModalTitle}>Select Language</Text>
-                <TouchableOpacity onPress={toggleLanguageModal} style={styles.closeButton}>
-                  <Text style={styles.closeButtonText}>×</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Language Options */}
-              <TouchableOpacity 
-                style={[styles.languageOption, selectedLanguage === 'EN' && styles.selectedLanguage]}
-                onPress={() => selectLanguage('EN')}
-              >
-                <Text style={[styles.languageOptionText, selectedLanguage === 'EN' && styles.selectedLanguageText]}>English (EN)</Text>
-                {selectedLanguage === 'EN' && <Text style={styles.checkmark}>✓</Text>}
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style={[styles.languageOption, selectedLanguage === 'AR' && styles.selectedLanguage]}
-                onPress={() => selectLanguage('AR')}
-              >
-                <Text style={[styles.languageOptionText, selectedLanguage === 'AR' && styles.selectedLanguageText]}>العربية (AR)</Text>
-                {selectedLanguage === 'AR' && <Text style={styles.checkmark}>✓</Text>}
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style={[styles.languageOption, selectedLanguage === 'FR' && styles.selectedLanguage]}
-                onPress={() => selectLanguage('FR')}
-              >
-                <Text style={[styles.languageOptionText, selectedLanguage === 'FR' && styles.selectedLanguageText]}>Français (FR)</Text>
-                {selectedLanguage === 'FR' && <Text style={styles.checkmark}>✓</Text>}
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.applyButton} onPress={toggleLanguageModal}>
-                <Text style={styles.applyButtonText}>Apply</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </TouchableOpacity>
-      </Modal>
-
       {/* Notification Modal */}
       <Modal
         animationType="fade"
@@ -205,34 +155,58 @@ const SearchScreen = () => {
 
       {/* Bottom Navigation Bar */}
       <View style={styles.bottomNavbar}>
-        <TouchableOpacity onPress={() => navigation.navigate('RobotHome')} style={styles.navbarItem}>
-          <Image 
-            source={require('../../../assets/imges/home.png')}
-            style={styles.navbarIcon}
-          />
-        </TouchableOpacity>
+                <TouchableOpacity 
+                    style={[styles.navbarItem, activeTab === 'home' ? styles.activeNavItem : null]}
+                    onPress={() =>{
+                        setActiveTab('home');
+                        handleHomePress();
+                    }}
+                    >
+                    <View style={styles.navbarCenterButton}>
+                        <Image
+                            source={require('../../../assets/imges/home.png')}
+                            style={styles.navbarIcon}
+                            />
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style={[styles.navbarItem, activeTab === 'search' ? styles.activeNavItem : null]}
+                    onPress={() => {
+                        setActiveTab('search');
+                        handleSearchPress();
+                    }}
+                    >
+                    <Image 
+                        source={require('../../../assets/imges/search.png')}
+                        style={styles.navbarIcon}
+                        />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.navbarItem, activeTab === 'add' ? styles.activeNavItem : null]}
+                    onPress={() => {
+                        setActiveTab('add');
+                        handleAddNewRobotPress();
+                    }}
+                    >
+                    <Image
+                        source={require('../../../assets/imges/add.png')}
+                        style={styles.navbarCenterIcon}
+                        />
+                </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navbarItem}>
-          <Image 
-            source={require('../../../assets/imges/search.png')}
-            style={styles.navbarIcon}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navbarItem}>
-          <Image 
-            source={require('../../../assets/imges/add.png')}
-            style={styles.navbarCenterIcon}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navbarItem}>
-          <Image 
-            source={require('../../../assets/imges/profile.png')}
-            style={styles.navbarIcon}
-          />
-        </TouchableOpacity>
-      </View>
+                <TouchableOpacity 
+                    style={[styles.navbarItem, activeTab === 'profile' ? styles.activeNavItem : null]}
+                    onPress={() => {
+                        setActiveTab('profile');
+                        handleProfilePress();
+                    }}
+                >
+                    <Image
+                        source={require('../../../assets/imges/profile.png')}
+                        style={styles.navbarIcon}
+                    />
+                </TouchableOpacity>
+            </View>
     </SafeAreaView>
   );
 };
@@ -356,12 +330,29 @@ const styles = StyleSheet.create({
     height: 30,
     resizeMode: 'contain',
   },
+  navbarCenterItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  navbarCenterButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   navbarCenterIcon: {
     width: 24,
     height: 24,
     resizeMode: 'contain',
   },
-
+  activeNavItem: {
+    alignItems:'center',
+    justifyContent:'center',
+    width: 42,
+    height: 42,
+    backgroundColor: '#57C3EA',
+    borderRadius: 15,
+    padding: 10,
+    elevation:2,
+  },
   // Language Modal Styles
   modalOverlay: {
     flex: 1,

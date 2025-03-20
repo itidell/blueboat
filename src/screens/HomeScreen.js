@@ -2,12 +2,12 @@ import React, {useState, useEffect} from "react";
 import { Dimensions, StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar } from "react-native";
 import * as Font from 'expo-font';
 import { useNavigation } from "@react-navigation/native";
-
+import LanguageSelector from "./Componets/LanguageSelector";
 const HomeScreen = () => {
     const navigation = useNavigation();
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const [activeTab, setActiveTab] = useState('home');
-
+    const [selectedLanguage, setSelectedLanguage] = useState('EN');
     const [robots, setRobots] = useState([
         { id: 'ROBOT_1', status: 'OFF' },
         { id: 'ROBOT_2', status: 'ON' },
@@ -19,10 +19,23 @@ const HomeScreen = () => {
         navigation.navigate('RobotHome', {robotId});
     };
     
-    const addNewRobot = () =>{
-        //navigation.navigate('')
+    const handleAddNewRobotPress = () =>{
+        navigation.navigate('AddRobot')
     };
-    
+    const handleHomePress = () =>{
+        navigation.navigate('Home')
+    };
+    const handleSearchPress = () =>{
+        navigation.navigate('SearchScreen')
+    };
+    const handleProfilePress = () =>{
+        navigation.navigate('ProfileScreen')
+    };
+    const handleLanguageChange = (language) => {
+        setSelectedLanguage(language);
+        console.log('Language selected:', language);
+    };
+
     useEffect(() => {
         const loadFonts = async () => {
             await Font.loadAsync({
@@ -51,12 +64,10 @@ const HomeScreen = () => {
                 </View>
 
                 <View style={styles.headerRight}>
-                    <TouchableOpacity style={styles.languageButton}>
-                        <Image
-                            source={require('../../assets/imges/language.png')}
-                            style={styles.iconSmall}
-                        />
-                    </TouchableOpacity>
+                    <LanguageSelector 
+                        onLanguageChange={handleLanguageChange}
+                        initialLanguage={selectedLanguage}
+                    />
                     <TouchableOpacity style={styles.notificationButton}>
                         <Image 
                             source={require('../../assets/imges/bell.png')}
@@ -179,7 +190,7 @@ const HomeScreen = () => {
                 </View>
                 <TouchableOpacity 
                     style = {styles.addRobotButton}
-                    onPress={addNewRobot}
+                    onPress={handleAddNewRobotPress}
                 >
                     <Image 
                         source={require('../../assets/imges/plus.png')}
@@ -187,12 +198,12 @@ const HomeScreen = () => {
                     />
                 </TouchableOpacity>
             </View>
-            <View style={styles.bottonNavbar}>
+            <View style={styles.bottomNavbar}>
                 <TouchableOpacity 
                     style={[styles.navbarItem, activeTab === 'home' ? styles.activeNavItem : null]}
                     onPress={() =>{
                         setActiveTab('home');
-                        navigation.navigate('HomeScreen')
+                        handleHomePress();
                     }}
                     >
                     <View style={styles.navbarCenterButton}>
@@ -206,7 +217,7 @@ const HomeScreen = () => {
                     style={[styles.navbarItem, activeTab === 'search' ? styles.activeNavItem : null]}
                     onPress={() => {
                         setActiveTab('search');
-                        navigation.navigate('SearchScreen')
+                        handleSearchPress();
                     }}
                     >
                     <Image 
@@ -217,8 +228,8 @@ const HomeScreen = () => {
                 <TouchableOpacity
                     style={[styles.navbarItem, activeTab === 'add' ? styles.activeNavItem : null]}
                     onPress={() => {
-                        setActiveTab('add')
-                        addNewRobot
+                        setActiveTab('add');
+                        handleAddNewRobotPress();
                     }}
                     >
                     <Image
@@ -231,7 +242,7 @@ const HomeScreen = () => {
                     style={[styles.navbarItem, activeTab === 'profile' ? styles.activeNavItem : null]}
                     onPress={() => {
                         setActiveTab('profile');
-                        navigation.navigate('ProfileScreen');
+                        handleProfilePress();
                     }}
                 >
                     <Image
@@ -380,7 +391,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
     },
-    bottonNavbar:{
+    bottomNavbar:{
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',

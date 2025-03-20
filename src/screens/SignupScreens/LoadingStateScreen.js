@@ -131,11 +131,9 @@ const LoadingStateScreen = () => {
       startAnimations();
       const pulseAnim = startPulseAnimation();
       
-      // Navigate to next screen after animation completes
       const timer = setTimeout(() => {
-        // Uncomment and replace 'Home' with your actual next screen
-        //navigation.replace('');
-      }, 1500);
+        navigation.replace('Home');
+      }, 2000);
       
       return () => {
         clearTimeout(timer);

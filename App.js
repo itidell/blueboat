@@ -23,6 +23,8 @@ import LiveStreamingScreen from './src/screens/RobotHomeScreens/LiveStreamingScr
 import SearchScreen from './src/screens/RobotHomeScreens/SearchScreen.js';
 import AddRobotScreen from './src/screens/RobotHomeScreens/AddRobotScreen.js';
 import AddRobotLoadingScreen from './src/screens/RobotHomeScreens/AddRobotLoadingScreen.js';
+import MainLayout from './src/Componets/MainLayout.js';
+import ProfileScreen from './src/screens/RobotHomeScreens/ProfileScreen.js';
 
 const Stack = createStackNavigator();
 const customTransition = {
@@ -31,6 +33,7 @@ const customTransition = {
     duration: 400,
   }
 };
+
 export default function App(){
   return(
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -444,179 +447,13 @@ export default function App(){
               },
             }}
           />
-      <Stack.Screen 
-            name="Home" 
-            component={HomeScreen}
-            options={{
-              gestureEnabled: true,
-              transitionSpec: {
-                open: {
-                  animation: 'timing',
-                  config: { duration: 600 }  
-                },
-                close: {
-                  animation: 'timing',
-                  config: { duration: 500 }
-                }
-              },
-              cardStyleInterpolator: ({ current, layouts }) => {
-                return {
-                  cardStyle: {
-                    transform: [
-                      {
-                        translateX: current.progress.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [layouts.screen.width, 0], 
-                        }),
-                      },
-                    ],
-                    opacity: current.progress.interpolate({
-                      inputRange: [0, 1, 1],
-                      outputRange: [0, 1, 1], 
-                    }),
-                  },
-                  overlayStyle: {
-                    opacity: current.progress.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0, 0.5],
-                    }),
-                  }
-                };
-              },
-            }}
-          />
-      <Stack.Screen 
-          name="RobotHome" 
-          component={RobotHomeScreen}
+        <Stack.Screen 
+          name='MainApp'
+          component={MainLayout}
           options={{
-            gestureEnabled: true,
-            transitionSpec: {
-              open: { animation: 'timing', config: { duration: 600 } },
-              close: { animation: 'timing', config: { duration: 500 } }
-            },
-            cardStyleInterpolator: ({ current, layouts }) => ({
-              cardStyle: {
-                transform: [{
-                  translateX: current.progress.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [layouts.screen.width, 0], 
-                  }),
-                }],
-                opacity: current.progress.interpolate({
-                  inputRange: [0, 0.5, 1],
-                  outputRange: [0, 0.7, 1], 
-                }),
-              },
-              overlayStyle: {
-                opacity: current.progress.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 0.5],
-                }),
-              }
-            }),
-          }}
-        />    
-  <Stack.Screen 
-          name="LiveStreaming" 
-          component={LiveStreamingScreen}
-          options={{
-            gestureEnabled: true,
-            transitionSpec: {
-              open: { animation: 'timing', config: { duration: 600 } },
-              close: { animation: 'timing', config: { duration: 500 } }
-            },
-            cardStyleInterpolator: ({ current, layouts }) => ({
-              cardStyle: {
-                transform: [{
-                  translateX: current.progress.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [layouts.screen.width, 0], 
-                  }),
-                }],
-                opacity: current.progress.interpolate({
-                  inputRange: [0, 0.5, 1],
-                  outputRange: [0, 0.7, 1], 
-                }),
-              },
-              overlayStyle: {
-                opacity: current.progress.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 0.5],
-                }),
-              }
-            }),
+            gestureEnabled: false,
           }}
         />
-  <Stack.Screen 
-          name="SearchScreen" 
-          component={SearchScreen}
-          options={{
-            gestureEnabled: true,
-            transitionSpec: {
-              open: { animation: 'timing', config: { duration: 600 } },
-              close: { animation: 'timing', config: { duration: 500 } }
-            },
-              cardStyleInterpolator: ({ current, layouts }) => {
-                return {
-                  cardStyle: {
-                    transform: [
-                      {
-                        translateX: current.progress.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [layouts.screen.width, 0], 
-                        }),
-                      },
-                    ],
-                    opacity: current.progress.interpolate({
-                      inputRange: [0, 1, 1],
-                      outputRange: [0, 1, 1],
-                    }),
-                  },
-                  overlayStyle: {
-                    opacity: current.progress.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0, 0.5], 
-                    }),
-                  }
-                };
-              },
-            }}
-          />
-  <Stack.Screen 
-          name="AddRobot" 
-          component={AddRobotScreen}
-          options={{
-            gestureEnabled: true,
-            transitionSpec: {
-              open: { animation: 'timing', config: { duration: 600 } },
-              close: { animation: 'timing', config: { duration: 500 } }
-            },
-              cardStyleInterpolator: ({ current, layouts }) => {
-                return {
-                  cardStyle: {
-                    transform: [
-                      {
-                        translateX: current.progress.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [layouts.screen.width, 0], 
-                        }),
-                      },
-                    ],
-                    opacity: current.progress.interpolate({
-                      inputRange: [0, 1, 1],
-                      outputRange: [0, 1, 1],
-                    }),
-                  },
-                  overlayStyle: {
-                    opacity: current.progress.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0, 0.5], 
-                    }),
-                  }
-                };
-              },
-            }}
-          />
   <Stack.Screen 
           name="AddRobotLoading" 
           component={AddRobotLoadingScreen}

@@ -4,14 +4,17 @@ import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
 import LanguageSelector from '../../Componets/LanguageSelector';
 import NotificationController from '../../Componets/NotificationController';
+import BottomNavBar from '../../Componets/BottomNavBar';
 
 const LiveStreamingScreen = ({ robotBatteryLevel = 70, route }) => {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [batteryLevel, setBatteryLevel] = useState(robotBatteryLevel);
   const [selectedLanguage, setSelectedLanguage] = useState('EN');
+  const [activeTab, setActiveTab] = useState('home');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const {robotId} = route.params;
+
   useEffect(() => {
     const loadFonts = async () => {
       await Font.loadAsync({
@@ -101,39 +104,7 @@ const LiveStreamingScreen = ({ robotBatteryLevel = 70, route }) => {
       </View>
 
       {/* Bottom Navigation Bar */}
-      <View style={styles.bottomNavbar}>
-        <TouchableOpacity style={styles.navbarItem} onPress={() => navigation.navigate('RobotHome', {robotId})}>
-          <View style={styles.navbarIconContainer}>
-            <Image 
-              source={require('../../../assets/imges/home.png')}
-              style={styles.navbarIcon}
-            />
-          </View>
-        </TouchableOpacity>
-        
-        <TouchableOpacity onPress={() => navigation.navigate('SearchScreen')} style={styles.navbarItem}>
-          <Image 
-            source={require('../../../assets/imges/search.png')}
-            style={styles.navbarIcon}
-          />
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.navbarItem}>
-          <View style={styles.navbarCenterButton}>
-            <Image 
-              source={require('../../../assets/imges/add.png')}
-              style={styles.navbarCenterIcon}
-            />
-          </View>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.navbarItem}>
-          <Image 
-            source={require('../../../assets/imges/profile.png')}
-            style={styles.navbarIcon}
-          />
-        </TouchableOpacity>
-      </View>
+      <BottomNavBar activeTab={activeTab} setActiveTab={setActiveTab}/>
     </SafeAreaView>
   );
 };
@@ -225,49 +196,6 @@ const styles = StyleSheet.create({
     height: 100,
     resizeMode: 'contain',
   },
-  bottomNavbar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#E8F4EA',
-    borderTopLeftRadius: 65,
-    borderTopRightRadius: 65,
-    paddingVertical: 10,
-    paddingHorizontal: 25,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  navbarItem: {
-    padding: 8,
-  },
-  navbarIcon: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain',
-  },
-  navbarIconContainer: {
-    width: 42,
-    height: 42,
-    borderRadius: 15,
-    backgroundColor: '#57C3EA',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  navbarCenterButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 15,
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  navbarCenterIcon: {
-    width: 24,
-    height: 24,
-    resizeMode: 'contain',
-  }
 });
 
 export default LiveStreamingScreen;

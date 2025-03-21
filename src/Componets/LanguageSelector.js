@@ -90,7 +90,7 @@ const LanguageSelector = ({ onLanguageChange, initialLanguage = 'EN' }) => {
 
 const styles = StyleSheet.create({
   languageButton: {
-    marginRight: 15,
+    marginRight: 10,
   },
   iconSmall: {
     width: 30,

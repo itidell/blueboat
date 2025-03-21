@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, act } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar, TextInput } from 'react-native';
 import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
-import LanguageSelector from '../Componets/LanguageSelector';
-import NotificationController from '../Componets/NotificationController';
-import { isEnabled } from 'react-native/Libraries/Performance/Systrace';
+import LanguageSelector from '../../Componets/LanguageSelector';
+import NotificationController from '../../Componets/NotificationController';
+import BottomNavBar from '../../Componets/BottomNavBar';
 
 const AddRobotScreen = () => {
   const navigation = useNavigation();
@@ -32,17 +32,8 @@ const AddRobotScreen = () => {
   const handleCancel = () => {
     navigation.goBack();
   };
-  const handleAddNewRobotPress = () =>{
-    navigation.navigate('AddRobot')
-  };
   const handleHomePress = () =>{
     navigation.navigate('Home')
-  };
-  const handleSearchPress = () =>{
-    navigation.navigate('SearchScreen')
-  };
-  const handleProfilePress = () =>{
-    navigation.navigate('ProfileScreen')
   };
   const handleLanguageChange = (language) =>{
     setSelectedLanguage(language);
@@ -110,60 +101,7 @@ const AddRobotScreen = () => {
         </View>
       </View>
 
-      {/* Bottom Navigation Bar */}
-      <View style={styles.bottomNavbar}>
-        <TouchableOpacity 
-            style={[styles.navbarItem, activeTab === 'home' ? styles.activeNavItem : null]}
-            onPress={() =>{
-              setActiveTab('home');
-              handleHomePress();
-            }}
-        >
-          <View style={styles.navbarCenterButton}>
-            <Image
-              source={require('../../../assets/imges/home.png')}
-              style={styles.navbarIcon}
-            />
-          </View>
-          </TouchableOpacity>
-            <TouchableOpacity 
-                style={[styles.navbarItem, activeTab === 'search' ? styles.activeNavItem : null]}
-                onPress={() => {
-                    setActiveTab('search');
-                    handleSearchPress();
-                }}
-            >
-              <Image 
-                  source={require('../../../assets/imges/search.png')}
-                  style={styles.navbarIcon}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={[styles.navbarItem, activeTab === 'add' ? styles.activeNavItem : null]}
-                onPress={() => {
-                  setActiveTab('add');
-                  handleAddNewRobotPress();
-                }}
-            >
-              <Image
-                source={require('../../../assets/imges/add.png')}
-                style={styles.navbarCenterIcon}
-              />
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={[styles.navbarItem, activeTab === 'profile' ? styles.activeNavItem : null]}
-              onPress={() => {
-                  setActiveTab('profile');
-                  handleProfilePress();
-              }}
-            >
-              <Image
-                  source={require('../../../assets/imges/profile.png')}
-                  style={styles.navbarIcon}
-              />
-            </TouchableOpacity>
-          </View>
+      <BottomNavBar activeTab={activeTab} setActiveTab={setActiveTab}/>
     </SafeAreaView>
   );
 };
@@ -285,47 +223,6 @@ const styles = StyleSheet.create({
       fontWeight: '600',
       fontFamily:'Poppins_semibold',
   },
-  bottomNavbar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#E8F4EA',
-    borderTopLeftRadius: 65,
-    borderTopRightRadius: 65,
-    paddingVertical: 10,
-    paddingHorizontal: 25,
-  },
-  navbarItem: {
-    padding: 8,
-  },
-  navbarIcon: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain',
-  },
-  navbarCenterItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  navbarCenterButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  activeNavItem: {
-    alignItems:'center',
-    justifyContent:'center',
-    width: 42,
-    height: 42,
-    backgroundColor: '#57C3EA',
-    borderRadius: 15,
-    padding: 10,
-    elevation:2,
-  },
-  navbarCenterIcon: {
-    width: 24,
-    height: 24,
-    resizeMode: 'contain',
-  }
 });
 
 export default AddRobotScreen;

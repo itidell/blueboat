@@ -69,7 +69,7 @@ const LoginScreen = () => {
 
   const handleLoginPress = () => {
     setTimeout(() => {
-        navigation.navigate('Home');
+        navigation.navigate('MainApp');
       }, 150); 
   };
   

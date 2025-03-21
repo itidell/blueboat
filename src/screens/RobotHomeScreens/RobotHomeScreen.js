@@ -13,7 +13,7 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
   const [activeTab, setActiveTab] = useState('home');
   const [selectedLanguage, setSelectedLanguage] = useState('EN');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const { robotId } = route.params;
+  const {robotId} = route.params;
 
   useEffect(() => {
     const loadFonts = async () => {

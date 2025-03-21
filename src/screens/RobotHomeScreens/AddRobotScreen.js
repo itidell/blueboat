@@ -27,7 +27,7 @@ const AddRobotScreen = () => {
 
 
   const handleSave = () => {
-    navigation.navigate('RobotHome',{robotId});
+    navigation.replace('AddRobotLoading',{robotId});
   };
   const handleCancel = () => {
     navigation.goBack();

@@ -56,6 +56,8 @@ const MainLayout = () => {
   return (
     <View style={styles.container}>
       <Tab.Navigator
+        lazy={true}
+        lazyPlaceholder={() => <LoadingPlaceholder />}
         tabBar={props => <BottomNavBar {...props} activeTab={activeTab} setActiveTab={setActiveTab} />}
         screenOptions={{
           headerShown: false,
@@ -64,36 +66,51 @@ const MainLayout = () => {
         <Tab.Screen 
           name="MainHome" 
           component={HomeStack}
+          options={{unmountOnBlur: true}}
           listeners={({ navigation }) => ({
           tabPress: (e) => {
-            // Prevent default action if already on the tab
-            if (!navigation.isFocused()) {
+              e.preventDefault();
               setActiveTab('home');
-              navigation.navigate('HomeMain');
-            }
+              navigation.navigate('MainHome', { screen: 'HomeMain' });
           },
         })}
         />
         <Tab.Screen 
           name="MainSearch" 
           component={SearchStack}
-          listeners={{
-            tabPress: () => setActiveTab('search'),
-          }}
+          options={{ unmountOnBlur: true }}
+          listeners={({ navigation }) => ({
+            tabPress: (e) => {
+              e.preventDefault();
+              setActiveTab('search');
+              navigation.navigate('MainSearch', { screen: 'SearchMain' });
+            },
+          })}
         />
+
         <Tab.Screen 
           name="MainAddRobot" 
           component={AddRobotStack}
-          listeners={{
-            tabPress: () => setActiveTab('add'),
-          }}
+          options={{ unmountOnBlur: true }}
+          listeners={({ navigation }) => ({
+            tabPress: (e) => {
+              e.preventDefault();
+              setActiveTab('add');
+              navigation.navigate('MainAddRobot', { screen: 'AddRobotMain' });
+            },
+          })}
         />
         <Tab.Screen 
           name="MainProfile" 
           component={ProfileStack}
-          listeners={{
-            tabPress: () => setActiveTab('profile'),
-          }}
+          options={{ unmountOnBlur: true }}
+          listeners={({ navigation }) => ({
+            tabPress: (e) => {
+              e.preventDefault();
+              setActiveTab('profile');
+              navigation.navigate('MainProfile', { screen: 'ProfileMain' });
+            },
+          })}
         />
       </Tab.Navigator>
     </View>

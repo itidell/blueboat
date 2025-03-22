@@ -15,6 +15,7 @@ const AddRobotLoadingScreen = ({route}) => {
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState('EN');
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+    const [activeTab, setActiveTab] = useState('add');
     const [isLoading, setIsLoading] = useState(true);
     const { robotId } = route.params;
 
@@ -115,6 +116,7 @@ const AddRobotLoadingScreen = ({route}) => {
               screen: 'RobotHome',
               params: { robotId } 
             });
+            setActiveTab('home');
           }, 2000);
 
           return () => {

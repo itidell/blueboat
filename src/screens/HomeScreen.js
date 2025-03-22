@@ -9,7 +9,6 @@ import BottomNavBar from "../Componets/BottomNavBar";
 const HomeScreen = () => {
     const navigation = useNavigation();
     const [fontsLoaded, setFontsLoaded] = useState(false);
-    const [activeTab, setActiveTab] = useState('home');
     const [selectedLanguage, setSelectedLanguage] = useState('EN');
     const [notificationsEnabled, setNotificationsEnabled] = useState(true)
     const [robots, setRobots] = useState([
@@ -23,7 +22,7 @@ const HomeScreen = () => {
         navigation.navigate('RobotHome', {robotId});
     };
     const handleAddNewRobotPress = () =>{
-        navigation.navigate('MainAddRobot');
+        navigation.navigate('MainAddRobot', { screen: 'AddRobotMain' });
     };
     const handleLanguageChange = (language) => {
         setSelectedLanguage(language);

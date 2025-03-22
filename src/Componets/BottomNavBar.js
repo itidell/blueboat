@@ -4,24 +4,24 @@ import { useRoute } from "@react-navigation/native";
 
 const BottomNavBar =({activeTab, setActiveTab, navigation}) =>{
 
-    const route = useRoute();
     const handleHomePress = () => {
         setActiveTab('home');
-        navigation.navigate('MainHome');;
+        navigation.navigate('MainHome', { screen: 'HomeMain' });
     };
+    
     const handleSearchPress = () => {
         setActiveTab('search');
-        navigation.navigate('MainSearch');
+        navigation.navigate('MainSearch', { screen: 'SearchMain' });
     };
+    
     const handleAddNewRobotPress = () => {
         setActiveTab('add');    
-        navigation.navigate('MainAddRobot');
+        navigation.navigate('MainAddRobot', { screen: 'AddRobotMain' });
     };
 
     const handleProfilePress = () => {
         setActiveTab('profile');
-        navigation.navigate('MainProfile');
-
+        navigation.navigate('MainProfile', { screen: 'ProfileMain' });
     };
 
     return (

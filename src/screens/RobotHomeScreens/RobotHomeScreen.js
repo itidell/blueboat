@@ -41,7 +41,7 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
     navigation.navigate('LiveStreaming',{robotId});
   };
   const handleHomePress = () =>{
-    navigation.navigate('HomeMain');
+    navigation.navigate('MainHome', { screen: 'HomeMain' });
   };
   const handleLanguageChange = (language) => {
     setSelectedLanguage(language);

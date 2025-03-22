@@ -27,13 +27,18 @@ const AddRobotScreen = () => {
 
 
   const handleSave = () => {
-    navigation.navigate('AddRobotLoading',{robotId});
+    if (robotId.trim()) {
+      navigation.navigate('AddRobotLoading', {robotId});
+    } else {
+      // Could add validation here
+      alert("Please enter a robot ID");
+    }
   };
   const handleCancel = () => {
-    navigation.goBack();
+    navigation.navigate('MainHome', { screen: 'HomeMain' });
   };
   const handleHomePress = () =>{
-    navigation.navigate('MainHome');
+    navigation.navigate('MainHome', { screen: 'HomeMain' });
   };
   const handleLanguageChange = (language) =>{
     setSelectedLanguage(language);

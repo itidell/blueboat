@@ -41,7 +41,7 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
     navigation.navigate('LiveStreaming',{robotId});
   };
   const handleHomePress = () =>{
-    navigation.navigate('Home')
+    navigation.navigate('HomeMain');
   };
   const handleLanguageChange = (language) => {
     setSelectedLanguage(language);
@@ -145,10 +145,8 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
             <Text style={styles.menuText}>Historic</Text>
           </TouchableOpacity>
         </View>
-      </View>
-
-      {/* Bottom Navigation Bar */}
-      <BottomNavBar activeTab={activeTab} setActiveTab={setActiveTab}/>
+      </View> 
+      <BottomNavBar activeTab={activeTab} setActiveTab={setActiveTab} navigation={navigation}/>
     </SafeAreaView>
   );
 };

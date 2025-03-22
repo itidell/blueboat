@@ -1,25 +1,27 @@
 import React from "react";
 import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
+import { useRoute } from "@react-navigation/native";
 
 const BottomNavBar =({activeTab, setActiveTab, navigation}) =>{
 
+    const route = useRoute();
     const handleHomePress = () => {
         setActiveTab('home');
-        navigation.navigate('MainHome');
+        navigation.navigate('MainHome');;
     };
-
     const handleSearchPress = () => {
         setActiveTab('search');
-        navigation.navigate('Search');
+        navigation.navigate('MainSearch');
     };
-    const handleAddNewRobotPress = () =>{
-        setActiveTab('add');
+    const handleAddNewRobotPress = () => {
+        setActiveTab('add');    
         navigation.navigate('MainAddRobot');
     };
 
-    const handleProfilePress = () =>{
+    const handleProfilePress = () => {
         setActiveTab('profile');
         navigation.navigate('MainProfile');
+
     };
 
     return (

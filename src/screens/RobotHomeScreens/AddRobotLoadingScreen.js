@@ -15,7 +15,6 @@ const AddRobotLoadingScreen = ({route}) => {
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState('EN');
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-    const [activeTab, setActiveTab] = useState('add');
     const [isLoading, setIsLoading] = useState(true);
     const { robotId } = route.params;
 
@@ -112,7 +111,10 @@ const AddRobotLoadingScreen = ({route}) => {
           const pulseAnim = startPulseAnimation();
           
           const timer = setTimeout(() => {
-            navigation.navigate('RobotHome', {robotId} );
+            navigation.navigate('MainHome', { 
+              screen: 'RobotHome',
+              params: { robotId } 
+            });
           }, 2000);
 
           return () => {
@@ -357,7 +359,6 @@ const AddRobotLoadingScreen = ({route}) => {
                 )}
             </View>
         </View>
-        <BottomNavBar activeTab={activeTab} setActiveTab={setActiveTab}/>
     </SafeAreaView>
   );
 };

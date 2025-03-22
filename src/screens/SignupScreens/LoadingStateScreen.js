@@ -132,7 +132,7 @@ const LoadingStateScreen = () => {
       const pulseAnim = startPulseAnimation();
       
       const timer = setTimeout(() => {
-        navigation.replace('Home');
+        navigation.replace('MainApp');
       }, 2000);
       
       return () => {

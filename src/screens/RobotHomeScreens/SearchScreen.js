@@ -30,7 +30,7 @@ const SearchScreen = () => {
     console.log('Searching for:', searchQuery);
   };
   const handleHomePress = () =>{
-    navigation.navigate('Home')
+    navigation.navigate('MainHome');
   };
   const handleLanguageChange = (language) => {
     setSelectedLanguage(language);
@@ -99,8 +99,6 @@ const SearchScreen = () => {
           <Text style={styles.searchButtonText}>Search</Text>
         </TouchableOpacity>
       </View>
-
-      <BottomNavBar activeTab={activeTab} setActiveTab={setActiveTab}/>
     </SafeAreaView>
   );
 };

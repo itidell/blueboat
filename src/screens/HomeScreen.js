@@ -23,7 +23,7 @@ const HomeScreen = () => {
         navigation.navigate('RobotHome', {robotId});
     };
     const handleAddNewRobotPress = () =>{
-        navigation.navigate('AddRobot')
+        navigation.navigate('MainAddRobot');
     };
     const handleLanguageChange = (language) => {
         setSelectedLanguage(language);
@@ -87,18 +87,8 @@ const HomeScreen = () => {
                             </View>
                             <Text style={styles.robotIdText}>ROBOT_1</Text>
                             <View style={styles.statusContainer}>
-                                {robots[0].status === 'ON' ? (
-                                    <Image 
-                                        source={require('../../assets/imges/switch-on.png')}
-                                        style={styles.iconSmall}
-                                    />
-                                ) : (
-                                    <Image 
-                                        source={require('../../assets/imges/switch-off.png')}
-                                        style={styles.iconSmall}
-                                    />
-                                )}
-                                <Text style={styles.statusText}>{robots[0].status}</Text>    
+                                <View style={[styles.statusIndicator, robots[0].status === 'ON' ? styles.statusOn : styles.statusOff]} />
+                                <Text style={styles.statusText}>{robots[0].status}</Text>   
                             </View>                           
                         </TouchableOpacity>
                         <TouchableOpacity 
@@ -113,17 +103,7 @@ const HomeScreen = () => {
                             </View>
                             <Text style={styles.robotIdText}>ROBOT_3</Text>
                             <View style={styles.statusContainer}>
-                                {robots[2].status === 'ON' ? (
-                                    <Image 
-                                        source={require('../../assets/imges/switch-on.png')}
-                                        style={styles.iconSmall}
-                                    />
-                                ) : (
-                                    <Image 
-                                        source={require('../../assets/imges/switch-off.png')}
-                                        style={styles.iconSmall}
-                                    />
-                                )}
+                                <View style={[styles.statusIndicator, robots[2].status === 'ON' ? styles.statusOn : styles.statusOff]} />
                                 <Text style={styles.statusText}>{robots[2].status}</Text>    
                             </View>                       
                         </TouchableOpacity>
@@ -141,17 +121,7 @@ const HomeScreen = () => {
                             </View>
                             <Text style={styles.robotIdText}>ROBOT_2</Text>
                             <View style={styles.statusContainer}>
-                                {robots[1].status === 'ON' ? (
-                                    <Image 
-                                        source={require('../../assets/imges/switch-on.png')}
-                                        style={styles.iconSmall}
-                                    />
-                                ) : (
-                                    <Image 
-                                        source={require('../../assets/imges/switch-off.png')}
-                                        style={styles.iconSmall}
-                                    />
-                                )}
+                                <View style={[styles.statusIndicator, robots[1].status === 'ON' ? styles.statusOn : styles.statusOff]} />
                                 <Text style={styles.statusText}>{robots[1].status}</Text>    
                             </View>                        
                         </TouchableOpacity>
@@ -167,17 +137,7 @@ const HomeScreen = () => {
                             </View>
                             <Text style={styles.robotIdText}>ROBOT_5</Text>
                             <View style={styles.statusContainer}>
-                                {robots[3].status === 'ON' ? (
-                                    <Image 
-                                        source={require('../../assets/imges/switch-on.png')}
-                                        style={styles.iconSmall}
-                                    />
-                                ) : (
-                                    <Image 
-                                        source={require('../../assets/imges/switch-off.png')}
-                                        style={styles.iconSmall}
-                                    />
-                                )}
+                                <View style={[styles.statusIndicator, robots[3].status === 'ON' ? styles.statusOn : styles.statusOff]} />
                                 <Text style={styles.statusText}>{robots[3].status}</Text>    
                             </View>                       
                         </TouchableOpacity>
@@ -193,7 +153,7 @@ const HomeScreen = () => {
                     />
                 </TouchableOpacity>
             </View>
-            <BottomNavBar activeTab={activeTab} setActiveTab={setActiveTab}/>
+
         </SafeAreaView>
     );
 };

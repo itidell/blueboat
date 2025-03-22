@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import LanguageSelector from '../../Componets/LanguageSelector';
 import NotificationController from '../../Componets/NotificationController';
 import BottomNavBar from '../../Componets/BottomNavBar';
+import RobotHomeScreen from './RobotHomeScreen';
 
 const LiveStreamingScreen = ({ robotBatteryLevel = 70, route }) => {
   const navigation = useNavigation();
@@ -33,7 +34,10 @@ const LiveStreamingScreen = ({ robotBatteryLevel = 70, route }) => {
   }, [robotBatteryLevel]);
  
   const handleHomePress = () =>{
-    navigation.navigate('Home')
+    navigation.navigate('MainHome', { 
+      screen: 'RobotHome',
+      params: { robotId } 
+    });
   };
   const handleGoBack = () => {
     navigation.goBack();
@@ -104,7 +108,7 @@ const LiveStreamingScreen = ({ robotBatteryLevel = 70, route }) => {
       </View>
 
       {/* Bottom Navigation Bar */}
-      <BottomNavBar activeTab={activeTab} setActiveTab={setActiveTab}/>
+      <BottomNavBar activeTab={activeTab} setActiveTab={setActiveTab} navigation={navigation}/>
     </SafeAreaView>
   );
 };

@@ -489,41 +489,7 @@ export default function App(){
               },
             }}
           />
-  <Stack.Screen 
-          name="RobotHome" 
-          component={RobotHomeScreen}
-          options={{
-            gestureEnabled: true,
-            transitionSpec: {
-              open: { animation: 'timing', config: { duration: 600 } },
-              close: { animation: 'timing', config: { duration: 500 } }
-            },
-              cardStyleInterpolator: ({ current, layouts }) => {
-                return {
-                  cardStyle: {
-                    transform: [
-                      {
-                        translateX: current.progress.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [layouts.screen.width, 0], 
-                        }),
-                      },
-                    ],
-                    opacity: current.progress.interpolate({
-                      inputRange: [0, 1, 1],
-                      outputRange: [0, 1, 1],
-                    }),
-                  },
-                  overlayStyle: {
-                    opacity: current.progress.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0, 0.5], 
-                    }),
-                  }
-                };
-              },
-            }}
-          />
+
       </Stack.Navigator>
       </NavigationContainer>
     </GestureHandlerRootView>

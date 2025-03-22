@@ -27,13 +27,13 @@ const AddRobotScreen = () => {
 
 
   const handleSave = () => {
-    navigation.replace('AddRobotLoading',{robotId});
+    navigation.navigate('AddRobotLoading',{robotId});
   };
   const handleCancel = () => {
     navigation.goBack();
   };
   const handleHomePress = () =>{
-    navigation.navigate('Home')
+    navigation.navigate('MainHome');
   };
   const handleLanguageChange = (language) =>{
     setSelectedLanguage(language);
@@ -100,8 +100,7 @@ const AddRobotScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
-
-      <BottomNavBar activeTab={activeTab} setActiveTab={setActiveTab}/>
+      <BottomNavBar activeTab={activeTab} setActiveTab={setActiveTab} navigation={navigation}/>
     </SafeAreaView>
   );
 };

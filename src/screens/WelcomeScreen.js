@@ -7,6 +7,8 @@ import * as Font from 'expo-font';
 const WelcomeScreen = () => {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [loginButtonPressed, setLoginButtonPressed] = useState(false);
+  const [signupButtonPressed, setSignupButtonPressed] = useState(false);
   const subtitleOpacity = useRef(new Animated.Value(0)).current;
   const button1Scale = useRef(new Animated.Value(0)).current;
   const button2Scale = useRef(new Animated.Value(0)).current;
@@ -100,13 +102,33 @@ const WelcomeScreen = () => {
       </Animated.Text>
 
       <Animated.View style={{ transform: [{ scale: button1Scale }] }}>
-        <TouchableOpacity style={styles.loginButton} onPress={handleLoginPress}>
-          <Text style={styles.loginText}>Log In</Text>
+        <TouchableOpacity style={[
+            styles.loginButton, 
+            loginButtonPressed && styles.loginButtonPressed
+          ]}
+          onPressIn={() => setLoginButtonPressed(true)}
+          onPressOut={() => setLoginButtonPressed(false)}
+          onPress={handleLoginPress}
+        >
+          <Text style={[
+              styles.loginText, 
+              loginButtonPressed && styles.loginButtonTextPressed
+          ]}
+          >
+            Log In
+          </Text>
         </TouchableOpacity>
       </Animated.View>
 
       <Animated.View style={{ transform: [{ scale: button2Scale }] }}>
-        <TouchableOpacity style={styles.signupButton} onPress={handleSignupPress}>
+        <TouchableOpacity style={[
+            styles.signupButton, 
+            signupButtonPressed && styles.signupButtonPressed
+          ]}
+          onPressIn={() => setSignupButtonPressed(true)}
+          onPressOut={() => setSignupButtonPressed(false)}
+          onPress={handleSignupPress}
+        >
           <Text style={styles.signupText}>Sign Up</Text>
         </TouchableOpacity>
       </Animated.View>
@@ -146,6 +168,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
+  loginButtonPressed: {
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#098BEA',
+  },
+  loginButtonTextPressed: {
+    color: '#098BEA',
+    fontFamily: 'Poppins_semibold',
+  },
   loginText: {
     color: '#fff',
     fontSize: 20,
@@ -170,6 +201,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     width: '100%',
     textAlign: 'center',
+  },
+  signupButtonPressed: {
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#098BEA',
+  },
+  signupButtonTextPressed: {
+    color: '#098BEA',
+    fontFamily: 'Poppins_semibold',
   },
 });
 

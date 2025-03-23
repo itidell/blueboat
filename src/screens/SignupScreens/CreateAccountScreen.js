@@ -5,36 +5,11 @@ import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image,
 import * as Font from 'expo-font';
 
 const screenWidth = Dimensions.get('window').width;             
-
-// Eye Icon Component 
-const EyeIcon = ({ visible }) => (
-  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#666">
-    {visible ? (
-      // Eye open icon
-      <>
-        <Path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" strokeWidth="1.5" />
-        <Path d="M12 9a3 3 0 0 1 0 6 3 3 0 0 1 0-6z" strokeWidth="1.5" />
-      </>
-    ) : (
-      // Eye closed icon
-      <>
-        <Path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" strokeWidth="1.5" />
-        <Path d="M12 9a3 3 0 0 1 0 6 3 3 0 0 1 0-6z" strokeWidth="1.5" />
-        <Path d="M4 4l16 16" strokeWidth="1.5" />
-      </>
-    )}
-  </Svg>
-);
-
 const CreateAccountScreen = () => {
   const navigation = useNavigation(); 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
-  const [mobileNumber, setMobileNumber] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [mobileNumber, setMobileNumber] = useState('');;
   const [signUpButtonPressed, setSignUpButtonPressed] = useState(false);
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
@@ -46,7 +21,7 @@ const CreateAccountScreen = () => {
   };
   const handleSignupPress = () => {
     setTimeout(() => {
-        navigation.navigate('Verification');
+        navigation.navigate('PasswordSetting');
       }, 150);
   };
   const handleBackHome = () => {
@@ -86,9 +61,6 @@ const CreateAccountScreen = () => {
       </View>
     );
   }
-
-  const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
-  const toggleConfirmPasswordVisibility = () => setConfirmPasswordVisible(!confirmPasswordVisible);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -155,48 +127,6 @@ const CreateAccountScreen = () => {
             />
           </View>
         </View>
-
-        {/* Password Input */}
-        <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Password</Text>
-          <View style={styles.inputBox}>
-            <TextInput
-              style={[styles.inputField, styles.passwordInput]}
-              value={password}
-              onChangeText={setPassword}
-              placeholder="••••••••"
-              secureTextEntry={!passwordVisible}
-            />
-            <TouchableOpacity 
-              style={styles.eyeIconContainer}
-              onPress={togglePasswordVisibility}
-            >
-              <EyeIcon visible={passwordVisible} />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Confirm Password Input */}
-        <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Confirm Password</Text>
-          <View style={styles.inputBox}>
-            <TextInput
-              style={[styles.inputField, styles.passwordInput]}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              placeholder="••••••••"
-              secureTextEntry={!confirmPasswordVisible}
-            />
-            <TouchableOpacity 
-              style={styles.eyeIconContainer}
-              onPress={toggleConfirmPasswordVisibility}
-            >
-              <EyeIcon visible={confirmPasswordVisible} />
-            </TouchableOpacity>
-          </View>
-        </View>
-       
-
         {/* Sign Up Button */}
         <TouchableOpacity 
           style={[
@@ -213,7 +143,7 @@ const CreateAccountScreen = () => {
               signUpButtonPressed && styles.signUpButtonTextPressed
             ]} onPress={handleSignupPress}
           >
-            Sign Up
+            Next
           </Text>
         </TouchableOpacity>
 
@@ -239,7 +169,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#57C3EA',
-    paddingVertical: 15,
+    paddingVertical: 10,
     paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
@@ -261,14 +191,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 15,
     backgroundColor: '#57C3EA',
-    fontFamily: 'SecularOne-Regular',
+    fontFamily: 'Poppins_semibold',
   },
   createAccountTitle: {
     marginTop:0,
     fontSize: 30,
     fontWeight: '700',
     color: '#000000FF',
-    fontFamily:'SecularOne-Regular',
+    fontFamily:'Poppins_semibold',
   },
   formContainer: {
     flex: 1,
@@ -284,7 +214,7 @@ const styles = StyleSheet.create({
   },
   inputWrapper: {
     marginBottom: -8,
-    marginTop: 30,
+    marginTop: 40,
     fontFamily: 'Poppins_semibold',
   },
   inputLabel: {
@@ -315,15 +245,6 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontFamily: 'Poppins_semibold',
   },
-  passwordInput:{
-    paddingRight: 50,
-    fontFamily: 'Poppins_semibold',
-  },
-  eyeIconContainer:{
-    position:'absolute',
-    right: 12,
-    padding: 4,
-  },
   signUpButton: {
     backgroundColor: '#098BEA',
     borderRadius: 40,
@@ -332,9 +253,9 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins_semibold',
     width: 207,
     height: 45,
-    marginTop:20,
+    marginTop:50,
     alignSelf: 'center',
-    marginBottom: 20,
+    marginBottom: 90,
   },
   signUpButtonPressed: {
     backgroundColor: 'white',
@@ -343,7 +264,7 @@ const styles = StyleSheet.create({
   },
   signUpButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '600',
     fontFamily: 'Poppins_semibold',
   },
@@ -353,10 +274,9 @@ const styles = StyleSheet.create({
   },
   accountLinkContainer: {
     alignItems: 'center',
-    marginBottom: 30,
   },
   accountText: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#666',
     fontFamily: 'Poppins_semibold',
   },
@@ -365,24 +285,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontFamily: 'Poppins_semibold',
   },
-  termsContainer: {
-    alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 17,
-    paddingHorizontal: 20,
-  },
-
-  termsText: {
-    color: '#666',
-    fontSize: 11,
-    textAlign: 'center',
-    fontFamily: 'Poppins_semibold',
-  },
-  termsLink: {
-    color: '#333',
-    fontWeight: '600',
-    fontFamily: 'Poppins_semibold',
-  }
 });
 
 export default CreateAccountScreen;

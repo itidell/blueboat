@@ -25,6 +25,7 @@ import AddRobotScreen from './src/screens/RobotHomeScreens/AddRobotScreen.js';
 import AddRobotLoadingScreen from './src/screens/RobotHomeScreens/AddRobotLoadingScreen.js';
 import MainLayout from './src/Componets/MainLayout.js';
 import ProfileScreen from './src/screens/RobotHomeScreens/ProfileScreen.js';
+import PasswordSettingScreen from './src/screens/SignupScreens/PasswordSettingScreen.js';
 
 const Stack = createStackNavigator();
 const customTransition = {
@@ -457,6 +458,41 @@ export default function App(){
   <Stack.Screen 
           name="AddRobotLoading" 
           component={AddRobotLoadingScreen}
+          options={{
+            gestureEnabled: true,
+            transitionSpec: {
+              open: { animation: 'timing', config: { duration: 600 } },
+              close: { animation: 'timing', config: { duration: 500 } }
+            },
+              cardStyleInterpolator: ({ current, layouts }) => {
+                return {
+                  cardStyle: {
+                    transform: [
+                      {
+                        translateX: current.progress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [layouts.screen.width, 0], 
+                        }),
+                      },
+                    ],
+                    opacity: current.progress.interpolate({
+                      inputRange: [0, 1, 1],
+                      outputRange: [0, 1, 1],
+                    }),
+                  },
+                  overlayStyle: {
+                    opacity: current.progress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, 0.5], 
+                    }),
+                  }
+                };
+              },
+            }}
+          />
+  <Stack.Screen 
+          name="PasswordSetting" 
+          component={PasswordSettingScreen}
           options={{
             gestureEnabled: true,
             transitionSpec: {

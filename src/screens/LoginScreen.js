@@ -197,11 +197,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start', // Changed from 'center' to 'flex-start' to align left
+    justifyContent: 'flex-start', 
 
   },
   logoContainer: {
-    flexDirection: 'row', // Changed to row layout
+    flexDirection: 'row', 
     alignItems: 'center',
   },
   logoImage: {
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
   },
   loginButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '600',
     fontFamily: 'Poppins_semibold',
   },

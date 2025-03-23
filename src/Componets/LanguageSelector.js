@@ -12,8 +12,6 @@ const LanguageSelector = ({ onLanguageChange, initialLanguage = 'EN' }) => {
   const selectLanguage = (language) => {
     setSelectedLanguage(language);
     setLanguageModalVisible(false);
-    
-    // Call the callback to inform parent component
     if (onLanguageChange) {
       onLanguageChange(language);
     }

@@ -1,33 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Dimensions } from 'react-native';
-import * as Font from 'expo-font';
 import {useNavigation} from '@react-navigation/native';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Image,
-  SafeAreaView,
-  StatusBar,
-} from 'react-native';
 import { Svg, Path } from 'react-native-svg';
-const Login = ({ navigation }) => {
-  // After a delay, navigate to your main app screen
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Replace 'MainScreen' with your actual main screen name
-      navigation.replace('createaccount');
-    }, 3000); // 3 second delay
+import {StyleSheet, View, Text, TextInput,  TouchableOpacity, Image,  SafeAreaView, StatusBar, Dimensions} from 'react-native';
+import * as Font from 'expo-font';
 
-    return () => clearTimeout(timer);
-  }, [navigation]);
-
-
-};
 const screenWidth = Dimensions.get('window').width;
-// Eye Icon Component (for password visibility)
+// Eye Icon Component 
 const EyeIcon = ({ visible }) => (
   <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#666">
     {visible ? (
@@ -59,24 +37,24 @@ const LoginScreen = () => {
     setTimeout(() => {
         navigation.navigate('Welcome');
     }, 150)
-  }
-
+  };
   const handleSignupPress = () => {
     setTimeout(() => {
         navigation.navigate('CreateAccount');
       }, 150); 
   };
-
   const handleLoginPress = () => {
     setTimeout(() => {
         navigation.navigate('MainApp');
       }, 150); 
   };
-  
   const handleForgetPasswordPress = () => {
     setTimeout(() => {
         navigation.navigate('ForgetPassword');
       }, 150); 
+  };
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
   };
 
   useEffect(() => {
@@ -90,9 +68,6 @@ const LoginScreen = () => {
   }, []);
   if (!fontsLoaded) return <View style={styles.container}><Text>Loading...</Text></View>;
   
-  const togglePasswordVisibility = () => {
-    setPasswordVisible(!passwordVisible);
-  };
   
   return (
     <SafeAreaView style={styles.container}>
@@ -359,13 +334,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
-    width: 207, // Match login button width
+    width: 207,
     alignSelf: 'center',
   },
   googleIcon: {
     width: 40,
     height: 40,
-    marginBottom: 0, // Space between icon and text
+    marginBottom: 0,
   },
   googleText: {
     fontSize: 16,

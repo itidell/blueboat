@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Animated, StatusBar } from 'react-native';
-import * as Font from 'expo-font';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, StatusBar } from 'react-native';
 import {SharedElement} from 'react-navigation-shared-element';
 import { useNavigation } from '@react-navigation/native';
+import * as Font from 'expo-font';
 
 const WelcomeScreen = () => {
   const navigation = useNavigation();
@@ -60,14 +60,14 @@ const WelcomeScreen = () => {
   const handleLoginPress = () => {
     setTimeout(() => {
         navigation.navigate('Login');
-      }, 150); // Navigate to the login screen
+      }, 150); 
   };
 
   // Handle signup button press
   const handleSignupPress = () => {
     setTimeout(() => {
         navigation.navigate('CreateAccount');
-      }, 150); // Navigate to the login screen // Navigate to the create account screen
+      }, 150);
   };
   return (
     <View style={styles.container}>
@@ -176,4 +176,5 @@ const styles = StyleSheet.create({
 WelcomeScreen.sharedElements = () => [
   { id: 'logo', animation: 'move', resize: 'auto' },
 ];
+
 export default WelcomeScreen;

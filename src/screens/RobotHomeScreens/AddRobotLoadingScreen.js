@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, Easing, StyleSheet, Image, TouchableOpacity, Animated } from "react-native";
-import { FontAwesome } from "@expo/vector-icons"; // Ensure you have installed this package
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import Svg, {Circle, Path} from "react-native-svg";
-import NotificationController from '../../Componets/NotificationController';
-import LanguageSelector from "../../Componets/LanguageSelector";
-import { useNavigation } from "@react-navigation/native";
 import * as Font from 'expo-font';
-import BottomNavBar from "../../Componets/BottomNavBar";
+
+import Header from "../../Componets/Header";
 
 const AddRobotLoadingScreen = ({route}) => {
     const navigation = useNavigation();
@@ -63,7 +61,6 @@ const AddRobotLoadingScreen = ({route}) => {
     }, []);
 
     useEffect(() => {
-        // Start loading animation immediately
         if (fontsLoaded) {
           startLoadingAnimation();
           
@@ -126,13 +123,11 @@ const AddRobotLoadingScreen = ({route}) => {
         });
     };
     const startPulseAnimation = () => {
-        // Create a simplified pulse animation without custom easing
         const pulseAnim = Animated.loop(
           Animated.sequence([
             Animated.timing(pulseAnimation, {
               toValue: 1.05,
               duration: 800,
-              // Using a basic easing function
               easing: Easing.sin,
               useNativeDriver: true,
             }),
@@ -160,14 +155,13 @@ const AddRobotLoadingScreen = ({route}) => {
         textOpacity.setValue(0);
         textPosition.setValue(20);
         
-        // Circle animation - simplified easing
+        // Circle animation 
         Animated.sequence([
           Animated.delay(300),
           Animated.parallel([
             Animated.timing(circleScale, {
               toValue: 1,
               duration: 700,
-              // Using a basic easing function
               easing: Easing.elastic(1),
               useNativeDriver: true,
             }),
@@ -179,7 +173,7 @@ const AddRobotLoadingScreen = ({route}) => {
           ]),
         ]).start();
         
-        // Checkmark animation - simplified easing
+        // Checkmark animation 
         Animated.sequence([
           Animated.delay(800),
           Animated.parallel([
@@ -203,13 +197,13 @@ const AddRobotLoadingScreen = ({route}) => {
             Animated.timing(circleFill, {
               toValue: 0.2,
               duration: 600,
-              easing: Easing.quad,  // Using a simple easing function
+              easing: Easing.quad,  
               useNativeDriver: true,
             }),
           ]),
         ]).start();
         
-        // Text animation - simplified easing
+        // Text animation 
         Animated.sequence([
           Animated.delay(1300),
           Animated.parallel([
@@ -233,34 +227,20 @@ const AddRobotLoadingScreen = ({route}) => {
     };
     const handleNotificationChange = (isEnabled) =>{
         setNotificationsEnabled(isEnabled);
-    }
+    };
+
   return (
     <SafeAreaView style ={styles.container}>
         <StatusBar backgroundColor="#57C3EA" barStyle="dark-content"/>
-        {/* Header */}
-        <View style={styles.header}>
-            <View style={styles.welcomeContainer}>
-                <Image
-                    source={require('../../../assets/imges/Logoo.png')} 
-                    style={styles.logoImage}
-                />
-                <View>
-                    <Text style={styles.welcomeText}>Hi, Welcome</Text>
-                    <Text style={styles.usernameText}>user name</Text>
-                </View>
-            </View>
-            <View style={styles.headerRight}>
-                <LanguageSelector
-                    onLanguageChange={handleLanguageChange}
-                    initialLanguage={selectedLanguage}
-                />
-                <NotificationController
-                    onNotificationChange={handleNotificationChange}
-                    initialState={notificationsEnabled}
-                />
-            </View>
-        </View>
 
+        {/* Header */}
+        <Header
+          selectedLanguage={selectedLanguage}
+          onLanguageChange={handleLanguageChange}
+          notificationsEnabled={notificationsEnabled}
+          onNotificationChange={handleNotificationChange}
+        />
+        
         <View style={styles.contentContainer}>
             <View style={styles.formCard}>
                 {isLoading && (
@@ -369,40 +349,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#57C3EA",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 15,
-    paddingTop: 10,
-    paddingBottom: 5,
-  },
-  welcomeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  logoImage: {
-    width: 80,
-    height: 80,
-    resizeMode: 'contain',
-    marginRight: 8,
-  },
-  welcomeText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: '#000',
-  },
-  usernameText: {
-    fontSize: 12,
-    color: "#333",
-  },
-  headerRight:{
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconSmall:{
-
   },
   contentContainer:{
     flex: 1,

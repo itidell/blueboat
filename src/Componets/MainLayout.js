@@ -1,11 +1,11 @@
-// src/components/layouts/MainLayout.js
+
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import BottomNavBar from './BottomNavBar';
 
-// Screens
+
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from '../screens/RobotHomeScreens/SearchScreen';
 import AddRobotScreen from '../screens/RobotHomeScreens/AddRobotScreen';

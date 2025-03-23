@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, StatusBar, ScrollView } from 'react-native';
-import * as Font from 'expo-font';
-import { useNavigation } from '@react-navigation/native'; // Correct import
+import { useNavigation } from '@react-navigation/native'; 
 import { Svg, Path } from 'react-native-svg';
+import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, StatusBar } from 'react-native';
+import * as Font from 'expo-font';
 
-const screenWidth = Dimensions.get('window').width;                                       
-// Eye Icon Component (for password visibility)
+const screenWidth = Dimensions.get('window').width;             
+
+// Eye Icon Component 
 const EyeIcon = ({ visible }) => (
   <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#666">
     {visible ? (
@@ -26,7 +27,7 @@ const EyeIcon = ({ visible }) => (
 );
 
 const CreateAccountScreen = () => {
-  const navigation = useNavigation(); // Correctly placed here
+  const navigation = useNavigation(); 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
@@ -74,7 +75,7 @@ const CreateAccountScreen = () => {
     const subscription = Dimensions.addEventListener("change", updateDimensions);
 
     return () => {
-      subscription.remove(); // Proper cleanup
+      subscription.remove(); 
     };
   }, []);
 
@@ -88,14 +89,6 @@ const CreateAccountScreen = () => {
 
   const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
   const toggleConfirmPasswordVisibility = () => setConfirmPasswordVisible(!confirmPasswordVisible);
-
-  const handleSignUp = () => {
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
-    // Proceed with sign-up logic
-  };
 
   return (
     <SafeAreaView style={styles.container}>

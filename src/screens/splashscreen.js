@@ -1,14 +1,13 @@
 // SplashScreen.js
 import React, { useRef, useEffect } from 'react';
 import { View, StyleSheet, Animated, Easing } from 'react-native';
-import LottieView from 'lottie-react-native';
 import { SharedElement } from 'react-navigation-shared-element';
 
 const SplashScreen = ({ navigation }) => {
-  const progress = useRef(new Animated.Value(0)).current;
   const logoScale = useRef(new Animated.Value(1)).current;
   const backgroundColorAnimation = useRef(new Animated.Value(0)).current;
   const logoPosition = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
     Animated.sequence([
       Animated.timing(logoScale, {
@@ -42,7 +41,7 @@ const SplashScreen = ({ navigation }) => {
     { 
       translateY: logoPosition.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, -120]  // Start upward movement during splash
+        outputRange: [0, -120]
       }) 
     }
   ];

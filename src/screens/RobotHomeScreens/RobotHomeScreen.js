@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Dimensions, StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar } from 'react-native';
-import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
-import LanguageSelector from '../../Componets/LanguageSelector';
-import NotificationController from '../../Componets/NotificationController';
+import * as Font from 'expo-font';
+
+import Header from '../../Componets/Header';
 import BottomNavBar from '../../Componets/BottomNavBar';
+import RobotStatusHeader from '../../Componets/RobotStatusHeader';
 
 const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
   const navigation = useNavigation();
@@ -24,12 +25,8 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
     };
     loadFonts();
     
-    // This would be replaced with your actual robot battery monitoring
     const batteryMonitor = setInterval(() => {
-      // Simulating battery updates - replace with your actual implementation
-      // that connects to your robot's battery level
       setBatteryLevel(currentLevel => {
-        // This is just a placeholder. Replace with your actual battery data source
         return robotBatteryLevel;
       });
     }, 30000); // Check every 30 seconds
@@ -57,47 +54,19 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
       <StatusBar backgroundColor="#57C3EA" barStyle="dark-content" />
       
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.welcomeContainer}>
-        <TouchableOpacity onPress={handleHomePress} >
-            <Image
-              source={require('../../../assets/imges/Logoo.png')} 
-              style={styles.logoImage}
-            />
-          </TouchableOpacity>
-          <View>
-            <Text style={styles.welcomeText}>Hi, Welcome</Text>
-            <Text style={styles.usernameText}>User Name</Text>
-          </View>
-        </View>
-        
-        <View style={styles.headerRight}>
-            <LanguageSelector
-              onLanguageChange={handleLanguageChange}
-              initialLanguage={selectedLanguage}
-            />
-            <NotificationController
-              onNotificationChange={handleNotificationChange}
-              initialState={notificationsEnabled}
-            />
-        </View>
-      </View>
-
-      {/* Robot ID Display */}
-      <View style={styles.robotIdContainer}>
-        <Text style={styles.robotIdText}>ROBOT ID: {robotId}</Text>
-        <View style={styles.batteryContainer}>
-          <Image 
-            source={require('../../../assets/imges/battery.png')}
-            style={styles.iconSmall}
-          />
-          <Text style={styles.batteryText}>{batteryLevel}%</Text>
-        </View>
-      </View>
+      <Header
+        selectedLanguage={selectedLanguage}
+        onLanguageChange={handleLanguageChange}
+        notificationsEnabled={notificationsEnabled}
+        onNotificationChange={handleNotificationChange}
+      />
+      <RobotStatusHeader
+        robotId={robotId}
+        batteryLevel={batteryLevel}
+      />
 
       {/* Main Menu Options */}
       <View style={styles.menuContainer}>
-        {/* First Row */}
         <View style={styles.menuRow}>
           <TouchableOpacity style={styles.menuItem}>
             <View style={styles.menuIconContainer}>
@@ -151,66 +120,11 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
   );
 };
 
-const screenWidth = Dimensions.get('window').width;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#57C3EA',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingTop: 10,
-    paddingBottom: 5,
-  },
-  welcomeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  logoImage: {
-    width: 80,
-    height: 80,
-    resizeMode: 'contain',
-    marginRight: 8,
-  },
-  welcomeText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000',
-  },
-  usernameText: {
-    fontSize: 12,
-    color: '#333',
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconSmall: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain',
-  },
-  batteryContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  batteryText: {
-    fontSize: 12,
-    marginLeft: 2,
-  },
-  robotIdContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 25,
-    paddingVertical: 20,
-  },
-  robotIdText: {
-    fontSize: 14,
-    fontWeight: '500',
   },
   menuContainer: {
     flex: 1,

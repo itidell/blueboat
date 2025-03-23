@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar, TextInput} from 'react-native';
 import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
-import LanguageSelector from '../../Componets/LanguageSelector';
-import NotificationController from '../../Componets/NotificationController';
-import BottomNavBar from '../../Componets/BottomNavBar';
+import Header from '../../Componets/Header';
 
 
 const SearchScreen = () => {
@@ -26,7 +24,6 @@ const SearchScreen = () => {
   }, []);
 
   const handleSearch = () => {
-    // Implement search functionality here
     console.log('Searching for:', searchQuery);
   };
   const handleHomePress = () =>{
@@ -48,31 +45,12 @@ const SearchScreen = () => {
       <StatusBar backgroundColor="#57C3EA" barStyle="dark-content" />
 
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.welcomeContainer}>
-          <TouchableOpacity onPress={handleHomePress} >
-              <Image
-                  source={require('../../../assets/imges/Logoo.png')} 
-                  style={styles.logoImage}
-              />
-          </TouchableOpacity>
-          <View>
-            <Text style={styles.welcomeText}>Hi, Welcome</Text>
-            <Text style={styles.usernameText}>User Name</Text>
-          </View>
-        </View>
-
-        <View style={styles.headerRight}>
-          <LanguageSelector 
-            onLanguageChange={handleLanguageChange}
-            initialLanguage={selectedLanguage}
-          />
-          <NotificationController
-            onNotificationChange={handleNotificationChange}
-            initialState={notificationsEnabled}
-          />
-        </View>
-      </View>
+      <Header
+        selectedLanguage={selectedLanguage}
+        onLanguageChange={handleLanguageChange}
+        notificationsEnabled={notificationsEnabled}
+        onNotificationChange={handleNotificationChange}
+      />
       {/* Search Title */}
       <View style={styles.searchTitleContainer}>
         <Text style={styles.searchTitle}>Find Robot</Text>
@@ -107,42 +85,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#57C3EA',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingTop: 10,
-    paddingBottom: 5,
-  },
-  welcomeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  logoImage: {
-    width: 80,
-    height: 80,
-    resizeMode: 'contain',
-    marginRight: 8,
-  },
-  welcomeText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000',
-  },
-  usernameText: {
-    fontSize: 12,
-    color: '#333',
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconSmall: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain',
   },
   searchTitleContainer: {
     alignItems: 'center',

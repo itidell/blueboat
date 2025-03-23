@@ -1,18 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { 
-  StyleSheet, 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  Image, 
-  SafeAreaView, 
-  StatusBar,
-  Keyboard
-} from 'react-native';
-import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
 import Svg, {Path, G} from 'react-native-svg';
+import React, { useState, useRef, useEffect } from 'react';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, StatusBar,Keyboard} from 'react-native';
+
+import * as Font from 'expo-font';
 
 const ErrorIcon = () => (
   <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -85,13 +76,11 @@ const VerificationScreen = () => {
       inputRefs.current[index + 1].focus();
     }
   };
-
   const handleKeyPress = (event, index) => {
     if (event.nativeEvent.key === 'Backspace' && !code[index] && index > 0) {
       inputRefs.current[index - 1].focus();
     }
   };
-
   const handleSendAgain = () => {
     console.log('Resending verification code');
   };
@@ -187,7 +176,7 @@ const VerificationScreen = () => {
           onPress={() => navigation.goBack()}
           activeOpacity={0.7}>
             <Image
-              source = {require('../../../assets/imges/left-chevron.png')}
+              source = {require('../../../assets/imges/left-chevron-white.png')}
               style={styles.backButtonIcon}
             />
         </TouchableOpacity>
@@ -218,7 +207,6 @@ const styles = StyleSheet.create({
     height: 80,
     resizeMode: 'contain',
     margin:0,
-    
   },
   messageContainer: {
     alignItems: 'center',
@@ -349,9 +337,8 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   backButtonIcon :{
-    width: 30,
-    height: 30,
-    tintColor:'#FFF'
+    width: 50,
+    height: 50,
   }
 });
 

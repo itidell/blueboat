@@ -1,6 +1,5 @@
 import React from "react";
 import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
-import { useRoute } from "@react-navigation/native";
 
 const BottomNavBar =({activeTab, setActiveTab, navigation}) =>{
 

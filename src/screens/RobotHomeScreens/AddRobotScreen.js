@@ -1,10 +1,21 @@
-import React, { useState, useEffect, act } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar, TextInput } from 'react-native';
-import * as Font from 'expo-font';
+import React, { useState, useEffect} from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, StatusBar, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import LanguageSelector from '../../Componets/LanguageSelector';
-import NotificationController from '../../Componets/NotificationController';
+import Svg, {Path, G} from 'react-native-svg';
+import * as Font from 'expo-font';
+
 import BottomNavBar from '../../Componets/BottomNavBar';
+import Header from '../../Componets/Header';
+
+const ErrorIcon = () => (
+  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <G id="SVGRepo_iconCarrier">
+      <Path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#FF3830" strokeWidth="2" />
+      <Path d="M12 8L12 13" stroke="#FF3830" strokeWidth="2" strokeLinecap="round" />
+      <Path d="M12 16V15.9888" stroke="#FF3830" strokeWidth="2" strokeLinecap="round" />
+    </G>
+  </Svg>
+);
 
 const AddRobotScreen = () => {
   const navigation = useNavigation();
@@ -13,6 +24,7 @@ const AddRobotScreen = () => {
   const [activeTab, setActiveTab] = useState('add');
   const [selectedLanguage, setSelectedLanguage] = useState('EN');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const loadFonts = async () => {
@@ -30,8 +42,8 @@ const AddRobotScreen = () => {
     if (robotId.trim()) {
       navigation.navigate('AddRobotLoading', {robotId});
     } else {
-      // Could add validation here
-      alert("Please enter a robot ID");
+      
+      setErrorMessage("Please enter a robot ID");
     }
   };
   const handleCancel = () => {
@@ -55,31 +67,12 @@ const AddRobotScreen = () => {
       <StatusBar backgroundColor="#57C3EA" barStyle="dark-content" />
       
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.welcomeContainer}>
-          <TouchableOpacity onPress={handleHomePress} >
-            <Image
-              source={require('../../../assets/imges/Logoo.png')} 
-              style={styles.logoImage}
-            />
-          </TouchableOpacity>
-          <View>
-            <Text style={styles.welcomeText}>Hi, Welcome</Text>
-            <Text style={styles.usernameText}>user name</Text>
-          </View>
-        </View>
-        
-        <View style={styles.headerRight}>
-          <LanguageSelector
-            onLanguageChange={handleLanguageChange}
-            initialLanguage={selectedLanguage}
-          />
-          <NotificationController
-            onNotificationChange={handleNotificationChange}
-            initialState={notificationsEnabled}
-          />
-        </View>
-      </View>
+      <Header
+        selectedLanguage={selectedLanguage}
+        onLanguageChange={handleLanguageChange}
+        notificationsEnabled={notificationsEnabled}
+        onNotificationChange={handleNotificationChange}
+      />
 
       {/* Main Content */}
       <View style={styles.contentContainer}>
@@ -94,6 +87,14 @@ const AddRobotScreen = () => {
               value={robotId}
               onChangeText={setRobotId}
             />
+            {errorMessage ?(
+              <View style={styles.errorContainer}>
+                <View style ={styles.errorIconTextContainer}>
+                  <ErrorIcon style={styles.errorIcon}/> 
+                  <Text style={styles.errorText}>{errorMessage}</Text>
+                </View>
+              </View>
+            ) : null}
           </View>
           
           <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
@@ -114,44 +115,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#57C3EA',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingTop: 10,
-    paddingBottom: 5,
-  },
-  welcomeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  logoImage: {
-    width: 80,
-    height: 80,
-    resizeMode: 'contain',
-    marginRight: 8,
-  },
-  welcomeText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000',
-    fontFamily: 'Poppins_semibold',
-  },
-  usernameText: {
-    fontSize: 12,
-    color: '#333',
-    fontFamily: 'Poppins_semibold',
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconSmall: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain',
   },
   contentContainer: {
     flex: 1,
@@ -201,7 +164,7 @@ const styles = StyleSheet.create({
     width:207,
     height:45,
     alignSelf: 'center',
-    marginTop: 20,
+    marginTop: 60,
     marginBottom: 20,
   },
   saveButtonText: {
@@ -222,10 +185,33 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   cancelButtonText: {
-      color: '#0077FF',
-      fontSize: 20,
-      fontWeight: '600',
-      fontFamily:'Poppins_semibold',
+    color: '#0077FF',
+    fontSize: 20,
+    fontWeight: '600',
+    fontFamily:'Poppins_semibold',
+  },
+  errorContainer:{
+    marginTop: 5,
+    paddingLeft: 5,
+    paddingVertical: 12,
+    position:'absolute',
+    top: 40,
+  },
+  errorIconTextContainer:{
+    flexDirection : 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    width:'auto',
+  },
+  errorText:{
+    color:'#FF3830',
+    fontFamily:'Poppins_semibold',
+    fontSize: 14,
+    marginLeft: 8,
+    textAlign:'left', 
+  },
+  errorIcon:{
+    marginTop: 2,
   },
 });
 

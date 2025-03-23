@@ -1,18 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  StyleSheet, 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  Image, 
-  SafeAreaView, 
-  StatusBar,
-  Keyboard
-} from 'react-native';
-import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
 import Svg, {Path, G} from 'react-native-svg';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, StatusBar,Keyboard} from 'react-native';
+import * as Font from 'expo-font';
 
 const ErrorIcon = () => (
   <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -23,6 +13,7 @@ const ErrorIcon = () => (
     </G>
   </Svg>
 )
+
 const VerificationPasswordScreen = () => {
   const navigation = useNavigation();
   const [code, setCode] = useState(['', '', '', '', '']);
@@ -218,7 +209,6 @@ const styles = StyleSheet.create({
     height: 80,
     resizeMode: 'contain',
     margin:0,
-    
   },
   messageContainer: {
     alignItems: 'center',

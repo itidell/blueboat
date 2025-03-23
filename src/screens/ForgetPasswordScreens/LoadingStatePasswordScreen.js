@@ -1,18 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { 
-  StyleSheet, 
-  View, 
-  Text, 
-  Image, 
-  SafeAreaView, 
-  StatusBar,
-  Animated,
-  Dimensions
-} from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView, StatusBar, Animated, Dimensions} from 'react-native';
 import { Easing } from 'react-native';
-import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
 import { Svg, Path, Circle } from 'react-native-svg';
+import * as Font from 'expo-font';
 
 
 const LoadingStatePasswordScreen = () => {
@@ -83,7 +74,6 @@ const LoadingStatePasswordScreen = () => {
   }, []);
   
   useEffect(() => {
-    // Start loading animation immediately
     if (fontsLoaded) {
       startLoadingAnimation();
       
@@ -133,25 +123,22 @@ const LoadingStatePasswordScreen = () => {
       
       // Navigate to next screen after animation completes
       const timer = setTimeout(() => {
-        // Uncomment and replace 'Home' with your actual next screen
         navigation.replace('NewPassword');
       }, 1500);
       
       return () => {
         clearTimeout(timer);
-        pulseAnim.stop(); // Stop the animation loop on cleanup
+        pulseAnim.stop();
       };
     });
   };
   
   const startPulseAnimation = () => {
-    // Create a simplified pulse animation without custom easing
     const pulseAnim = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnimation, {
           toValue: 1.05,
           duration: 800,
-          // Using a basic easing function
           easing: Easing.sin,
           useNativeDriver: true,
         }),
@@ -169,7 +156,6 @@ const LoadingStatePasswordScreen = () => {
   };
   
   const startAnimations = () => {
-    // Reset animation values
     checkmarkScale.setValue(0);
     checkmarkOpacity.setValue(0);
     checkmarkRotation.setValue(-0.5);
@@ -179,14 +165,13 @@ const LoadingStatePasswordScreen = () => {
     textOpacity.setValue(0);
     textPosition.setValue(20);
     
-    // Circle animation - simplified easing
+    // Circle animation
     Animated.sequence([
       Animated.delay(300),
       Animated.parallel([
         Animated.timing(circleScale, {
           toValue: 1,
           duration: 700,
-          // Using a basic easing function
           easing: Easing.elastic(1),
           useNativeDriver: true,
         }),
@@ -198,7 +183,7 @@ const LoadingStatePasswordScreen = () => {
       ]),
     ]).start();
     
-    // Checkmark animation - simplified easing
+    // Checkmark animation
     Animated.sequence([
       Animated.delay(800),
       Animated.parallel([
@@ -222,13 +207,13 @@ const LoadingStatePasswordScreen = () => {
         Animated.timing(circleFill, {
           toValue: 0.2,
           duration: 600,
-          easing: Easing.quad,  // Using a simple easing function
+          easing: Easing.quad,  
           useNativeDriver: true,
         }),
       ]),
     ]).start();
     
-    // Text animation - simplified easing
+    // Text animation 
     Animated.sequence([
       Animated.delay(1300),
       Animated.parallel([
@@ -258,12 +243,7 @@ const LoadingStatePasswordScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-      
-      {/* Header with Logo */}
-      <View style={styles.header}>
-      </View>
 
-      {/* Loading Animation */}
       {isLoading && (
         <View style={styles.animationContainer}>
           <Animated.View
@@ -305,7 +285,6 @@ const LoadingStatePasswordScreen = () => {
       {!isLoading && (
         <>
           <View style={styles.animationContainer}>
-            {/* Animated Circle */}
             <Animated.View 
               style={[
                 styles.circleContainer,
@@ -351,7 +330,6 @@ const LoadingStatePasswordScreen = () => {
             </Animated.View>
           </View>
 
-          {/* Confirmation Text */}
           <Animated.View style={[styles.confirmationContainer, { opacity: textOpacity, transform: [{ translateY: textPosition }] }]}>
             <Text style={styles.confirmationText}>Email Confirmed</Text>
             <Text style={styles.successText}>
@@ -368,14 +346,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-  },
-  header: {
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
   },
   
   animationContainer: {

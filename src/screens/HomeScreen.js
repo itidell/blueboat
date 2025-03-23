@@ -1,10 +1,9 @@
 import React, {useState, useEffect} from "react";
-import { Dimensions, StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar } from "react-native";
-import * as Font from 'expo-font';
 import { useNavigation } from "@react-navigation/native";
-import LanguageSelector from "../Componets/LanguageSelector";
-import NotificationController from "../Componets/NotificationController";
-import BottomNavBar from "../Componets/BottomNavBar";
+import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar } from "react-native";
+import * as Font from 'expo-font';
+
+import Header from "../Componets/Header";
 
 const HomeScreen = () => {
     const navigation = useNavigation();
@@ -47,29 +46,12 @@ const HomeScreen = () => {
         <SafeAreaView style={styles.container}>
             <StatusBar backgroundColor="#57C3EA" barStyle="dark-content" />
 
-            <View style ={styles.header}>
-                <View style={styles.welcomeContainer}>
-                    <Image 
-                        source={require('../../assets/imges/Logoo.png')}
-                        style={styles.logoImage}
-                    />
-                    <View>
-                        <Text style={styles.welcomeText}>Hi, Welcome</Text>
-                        <Text style={styles.userNameText}>user name</Text>
-                    </View>
-                </View>
-
-                <View style={styles.headerRight}>
-                    <LanguageSelector 
-                        onLanguageChange={handleLanguageChange}
-                        initialLanguage={selectedLanguage}
-                    />
-                    <NotificationController
-                        onNotificationChange={handleNotificationChange}
-                        initialState={notificationsEnabled}
-                    />
-                </View>
-            </View>
+            <Header
+                selectedLanguage={selectedLanguage}
+                onLanguageChange={handleLanguageChange}
+                notificationsEnabled={notificationsEnabled}
+                onNotificationChange={handleNotificationChange}
+            />
 
             <View style={styles.robotGridContainer}>
                 <View style={styles.robotGrid}>
@@ -162,42 +144,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#57C3EA',
     },
-    header:{
-        flexDirection: 'row',
-        justifyContent:'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 15,
-        paddingTop: 10,
-        paddingBottom: 5,
-    },
-    welcomeContainer:{
-        flexDirection:'row',
-        alignItems: 'center',
-    },
-    logoImage:{
-        width: 80,
-        height: 80,
-        resizeMode: 'contain',
-        marginRight: 8,
-    },
-    welcomeText:{
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#000',
-    },
-    userNameText:{
-        fontSize: 12,
-        color: '#333',
-    },
-    headerRight:{
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    iconSmall:{
-        width: 30,
-        height: 30,
-        resizeMode: 'contain',
-    },
     robotGridContainer:{
         flex: 1,
         backgroundColor: '#F1FFF3',
@@ -280,8 +226,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 5,
         marginBottom: 30,
-        //borderWidth: 1,
-        //borderColor:'#57C3EA',
     },
     addRobot:{
         width: 40,

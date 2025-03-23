@@ -3,7 +3,9 @@ import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image,
 import * as Font from 'expo-font';
 import { useNavigation } from "@react-navigation/native";
 import Svg, {Path, G} from 'react-native-svg';
+
 const screenWidth = Dimensions.get('window').width;
+
 const ErrorIcon = () => (
   <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
     <G id="SVGRepo_iconCarrier">
@@ -13,6 +15,7 @@ const ErrorIcon = () => (
     </G>
   </Svg>
 )
+
 const ForgetPasswordScreen = () =>{
     const navigation = useNavigation();
     const [email, setEmail] = useState('');
@@ -21,6 +24,7 @@ const ForgetPasswordScreen = () =>{
     const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
     const [errorMessage, setErrorMessage] = useState('');
     const [isKeyboardVisible, setKeyboardVisible] = useState(false)
+
     const handleNextPress = () =>{
         if(!email || !email.includes('@')){
             setErrorMessage('Please enter valid email address');
@@ -35,13 +39,12 @@ const ForgetPasswordScreen = () =>{
         setTimeout(() => {
             navigation.navigate('CreateAccount');
         }, 150)
-    }
-
+    };
     const handleBackHome = () => {
         setTimeout(() => {
             navigation.navigate('Welcome');
         }, 150)
-    }
+    };
     
     useEffect(() => {
         const loadFonts = async () => {
@@ -58,6 +61,7 @@ const ForgetPasswordScreen = () =>{
 
         const updateDimensions = ({window}) =>{setScreenWidth(window.width);};
         const subscription = Dimensions.addEventListener("change", updateDimensions);
+
         const keyboardDidShowListener = Keyboard.addListener(
             'keyboardDidShow',
             () =>{
@@ -70,6 +74,7 @@ const ForgetPasswordScreen = () =>{
                 setKeyboardVisible(false);
             }
         );
+
         return () => {
             keyboardDidShowListener.remove();
             keyboardDidHideListener.remove();
@@ -118,6 +123,7 @@ const ForgetPasswordScreen = () =>{
                         />
                     </View>
                 </View>
+
                 {errorMessage ?(
                     <View style={styles.errorContainer}>
                         <View style= {styles.errorIconTextContainer}>
@@ -126,6 +132,7 @@ const ForgetPasswordScreen = () =>{
                         </View>
                     </View>
                 ) : null}
+
                 <TouchableOpacity
                     style={[
                         styles.nextButton,
@@ -145,6 +152,7 @@ const ForgetPasswordScreen = () =>{
                         Next
                     </Text>
                 </TouchableOpacity>
+
                 <View style={styles.backToSignupContainer}>
                     <TouchableOpacity>
                         <Text style={styles.backToSignupText}>
@@ -153,8 +161,9 @@ const ForgetPasswordScreen = () =>{
                         </Text>
                     </TouchableOpacity>
                 </View>
+        
             </View>
-            {/* Bottom left back button as shown in the reference image */}
+
             {!isKeyboardVisible &&(
                 <TouchableOpacity 
                     style={styles.backButton}

@@ -1,8 +1,9 @@
 import React,{useState, useEffect} from "react";
+import { useNavigation} from "@react-navigation/native";
+import Svg, {Path} from 'react-native-svg';
 import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, Keyboard, StatusBar } from "react-native";
 import * as Font from 'expo-font';
-import { useNavigation} from "@react-navigation/native";
-import Svg, {Path, G} from 'react-native-svg';
+
 const screenWidth = Dimensions.get('window').width;
 const EyeIcon = ({ visible }) => (
   <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#666">
@@ -54,6 +55,7 @@ const NewPasswordScreen = () =>{
             }
         };
         loadFonts();
+
         const updateDimensions = ({window}) => {setScreenWidth(window.width);};
         const subscription = Dimensions.addEventListener("change",updateDimensions);
         const keyboardDidShowListener = Keyboard.addListener(
@@ -68,6 +70,7 @@ const NewPasswordScreen = () =>{
                 setKeyboardVisible(false);
             }
         );
+        
         return() =>{
             keyboardDidHideListener.remove();
             keyboardDidShowListener.remove();

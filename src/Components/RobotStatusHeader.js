@@ -1,30 +1,45 @@
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
 import * as Font from "expo-font";
+import { useNavigation } from "@react-navigation/native";
 
-const RobotStatusHeader = ({robotId, batteryLevel}) => {
+
+const RobotStatusHeader = ({ robotId, batteryLevel, onLogout }) => {
     const [fontsLoaded, setFontsLoaded] = useState(false);
+    const navigation = useNavigation();
+    const handlenavigateTohomePress = () => {
+        navigation.navigate('Home');
+      };
+
     useEffect(() => {
-            const loadFonts = async () => {
-                await Font.loadAsync({
-                    'Poppins_semibold': require('../../assets/fonts/Poppins-SemiBold.ttf'),
-                    'Poppins_bold': require('../../assets/fonts/Poppins-Bold.ttf'),
-                });
-                setFontsLoaded(true);
-            };
-            loadFonts();
-        }, []);
+        const loadFonts = async () => {
+            await Font.loadAsync({
+                'Poppins_semibold': require('../../assets/fonts/Poppins-SemiBold.ttf'),
+                'Poppins_bold': require('../../assets/fonts/Poppins-Bold.ttf'),
+            });
+            setFontsLoaded(true);
+        };
+        loadFonts();
+    }, []);
+
+
     return(
         <View style={styles.container}>
             <View style={styles.robotInfo}>
-            <Text style={styles.robotIdLabel}>ROBOT_ID:</Text>
-            <Text style={styles.robotIdText}>{robotId}</Text>
+                <Text style={styles.robotIdLabel}>ROBOT_ID:</Text>
+                <Text style={styles.robotIdText}>{robotId}</Text>
             </View>
             <View style={styles.batteryContainer}>
+                <TouchableOpacity onPress={handlenavigateTohomePress}>
+                    <Image
+                        style={styles.icon}
+                        source={require("../../assets/images/logout.png")}
+                    />
+                </TouchableOpacity>
                 <Image
                     style={styles.icon}
-                    source={require("../../assets/imges/battery.png")}
+                    source={require("../../assets/images/battery.png")}
                 />
                 <Text style={styles.batteryText}>{batteryLevel}%</Text>
             </View>
@@ -38,7 +53,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         paddingHorizontal: 25,
-        paddingVertical: 20,
+        paddingVertical: 0,
     },
     robotInfo:{
         flex: 1,
@@ -62,11 +77,13 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         resizeMode: "contain",
+        marginRight: 5,
     },
     batteryText: {
         fontSize: 12,
         marginLeft: 2,
         fontFamily: "Poppins_semibold",
     },
-});
+}); 
+
 export default RobotStatusHeader;

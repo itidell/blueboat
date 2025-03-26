@@ -24,7 +24,7 @@ const LanguageSelector = ({ onLanguageChange, initialLanguage = 'EN' }) => {
       {/* Language Button */}
       <TouchableOpacity style={styles.languageButton} onPress={toggleLanguageModal}>
         <Image 
-          source={require('../../assets/imges/language.png')}
+          source={require('../../assets/images/language.png')}
           style={styles.iconSmall}
         />
       </TouchableOpacity>

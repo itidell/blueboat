@@ -76,7 +76,7 @@ const WelcomeScreen = () => {
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
       <SharedElement id="logo" style={styles.logoContainer}>
         <Animated.Image
-          source={require('../../assets/imges/logo.png')}
+          source={require('../../assets/images/logo.png')}
           style={[
             styles.logo
           ]}

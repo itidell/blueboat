@@ -3,9 +3,9 @@ import { Dimensions, StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaVi
 import { useNavigation } from '@react-navigation/native';
 import * as Font from 'expo-font';
 
-import Header from '../../Componets/Header';
-import BottomNavBar from '../../Componets/BottomNavBar';
-import RobotStatusHeader from '../../Componets/RobotStatusHeader';
+import Header from '../../Components/Header';
+import BottomNavBar from '../../Components/BottomNavBar';
+import RobotStatusHeader from '../../Components/RobotStatusHeader';
 
 const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
   const navigation = useNavigation();
@@ -36,6 +36,15 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
 
   const handlenavigateToLiveStreamingPress = () => {
     navigation.navigate('LiveStreaming',{robotId});
+  };
+  const handlenavigateToHistoricPress = () => {
+    navigation.navigate('Historic',{robotId});
+  };
+  const handlenavigateToStorageScreenPress = () => {
+    navigation.navigate('Storage',{robotId});
+  };
+  const handlenavigateToLocationAndControllerPress = () => {
+    navigation.navigate('LocationAndController',{robotId});
   };
   const handleHomePress = () =>{
     navigation.navigate('MainHome', { screen: 'HomeMain' });
@@ -68,14 +77,14 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
       {/* Main Menu Options */}
       <View style={styles.menuContainer}>
         <View style={styles.menuRow}>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity onPress={handlenavigateToLocationAndControllerPress} style={styles.menuItem}>
             <View style={styles.menuIconContainer}>
               <Image 
-                source={require('../../../assets/imges/location.png')}
+                source={require('../../../assets/images/location.png')}
                 style={styles.menuIcon}
               />
             </View>
-            <Text style={styles.menuText}>Location</Text>
+            <Text style={styles.menuText}>Location & Controller</Text>
           </TouchableOpacity>
           
           <TouchableOpacity onPress={handlenavigateToLiveStreamingPress}
@@ -84,7 +93,7 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
           >
             <View style={styles.menuIconContainer}>
               <Image 
-                source={require('../../../assets/imges/liveStreaming.png')}
+                source={require('../../../assets/images/liveStreaming.png')}
                 style={styles.menuIcon}
               />
             </View>
@@ -94,20 +103,20 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
         
         {/* Second Row */}
         <View style={styles.menuRow}>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={handlenavigateToStorageScreenPress}>
             <View style={styles.menuIconContainer}>
               <Image 
-                source={require('../../../assets/imges/storage.png')}
+                source={require('../../../assets/images/storage.png')}
                 style={styles.menuIcon}
               />
             </View>
             <Text style={styles.menuText}>Storage</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={handlenavigateToHistoricPress}>
             <View style={styles.menuIconContainer}>
               <Image 
-                source={require('../../../assets/imges/historic.png')}
+                source={require('../../../assets/images/historic.png')}
                 style={styles.menuIcon}
               />
             </View>

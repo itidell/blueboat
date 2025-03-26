@@ -3,7 +3,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar } from "react-native";
 import * as Font from 'expo-font';
 
-import Header from "../Componets/Header";
+import Header from "../Components/Header";
 
 const HomeScreen = () => {
     const navigation = useNavigation();
@@ -62,7 +62,7 @@ const HomeScreen = () => {
                         >
                             <View style={styles.robotIconContainer}>
                                 <Image 
-                                    source={require('../../assets/imges/yacht.png')}
+                                    source={require('../../assets/images/yacht.png')}
                                     style={styles.robotIcon}
                                 />
                             </View>
@@ -78,7 +78,7 @@ const HomeScreen = () => {
                         >
                             <View style={styles.robotIconContainer}>
                                 <Image 
-                                    source={require('../../assets/imges/yacht.png')}
+                                    source={require('../../assets/images/yacht.png')}
                                     style={styles.robotIcon}
                                 />
                             </View>
@@ -96,7 +96,7 @@ const HomeScreen = () => {
                         >
                             <View style={styles.robotIconContainer}>
                                 <Image 
-                                    source={require('../../assets/imges/yacht.png')}
+                                    source={require('../../assets/images/yacht.png')}
                                     style={styles.robotIcon}
                                 />
                             </View>
@@ -112,7 +112,7 @@ const HomeScreen = () => {
                         >
                             <View style={styles.robotIconContainer}>
                                 <Image 
-                                    source={require('../../assets/imges/yacht.png')}
+                                    source={require('../../assets/images/yacht.png')}
                                     style={styles.robotIcon}
                                 />
                             </View>
@@ -129,7 +129,7 @@ const HomeScreen = () => {
                     onPress={handleAddNewRobotPress}
                 >
                     <Image 
-                        source={require('../../assets/imges/plus.png')}
+                        source={require('../../assets/images/plus.png')}
                         style={styles.addRobot}
                     />
                 </TouchableOpacity>

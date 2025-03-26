@@ -101,7 +101,7 @@ const VerificationScreen = () => {
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image 
-            source={require('../../../assets/imges/logo.png')} 
+            source={require('../../../assets/images/logo.png')} 
             style={styles.logoImage}
           />
         </View>
@@ -176,7 +176,7 @@ const VerificationScreen = () => {
           onPress={() => navigation.goBack()}
           activeOpacity={0.7}>
             <Image
-              source = {require('../../../assets/imges/left-chevron-white.png')}
+              source = {require('../../../assets/images/left-chevron-white.png')}
               style={styles.backButtonIcon}
             />
         </TouchableOpacity>

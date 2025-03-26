@@ -4,8 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import Svg, {Path, G} from 'react-native-svg';
 import * as Font from 'expo-font';
 
-import BottomNavBar from '../../Componets/BottomNavBar';
-import Header from '../../Componets/Header';
+import BottomNavBar from '../../Components/BottomNavBar';
+import Header from '../../Components/Header';
 
 const ErrorIcon = () => (
   <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">

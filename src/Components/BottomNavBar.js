@@ -31,7 +31,7 @@ const BottomNavBar =({activeTab, setActiveTab, navigation}) =>{
             >
                 <View style={styles.navbarCenterButton}>
                     <Image
-                        source={require('../../assets/imges/home.png')}
+                        source={require('../../assets/images/home.png')}
                         style={styles.navbarIcon}
                     />
                 </View>
@@ -41,7 +41,7 @@ const BottomNavBar =({activeTab, setActiveTab, navigation}) =>{
                 onPress={handleSearchPress}
             >
                 <Image 
-                    source={require('../../assets/imges/search.png')}
+                    source={require('../../assets/images/search.png')}
                     style={styles.navbarIcon}
                 />
             </TouchableOpacity>
@@ -51,7 +51,7 @@ const BottomNavBar =({activeTab, setActiveTab, navigation}) =>{
                 onPress={handleAddNewRobotPress}
             >
                 <Image
-                    source={require('../../assets/imges/add.png')}
+                    source={require('../../assets/images/add.png')}
                     style={styles.navbarCenterIcon}
                 />
             </TouchableOpacity>
@@ -61,7 +61,7 @@ const BottomNavBar =({activeTab, setActiveTab, navigation}) =>{
                 onPress={handleProfilePress}
             >
                 <Image
-                    source={require('../../assets/imges/profile.png')}
+                    source={require('../../assets/images/profile.png')}
                     style={styles.navbarIcon}
                 />
             </TouchableOpacity>

@@ -71,7 +71,7 @@ const CreateAccountScreen = () => {
         <View style={styles.logoContainer}>
           <TouchableOpacity onPress={handleBackHome}>
             <Image 
-              source={require('../../../assets/imges/logo.png')} 
+              source={require('../../../assets/images/logo.png')} 
               style={styles.logoImage}
             />
           </TouchableOpacity>

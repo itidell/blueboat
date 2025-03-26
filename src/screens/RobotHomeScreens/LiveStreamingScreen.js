@@ -3,9 +3,9 @@ import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBa
 import { useNavigation } from '@react-navigation/native';
 import * as Font from 'expo-font';
 
-import Header from '../../Componets/Header';
-import BottomNavBar from '../../Componets/BottomNavBar';
-import RobotStatusHeader from '../../Componets/RobotStatusHeader';
+import Header from '../../Components/Header';
+import BottomNavBar from '../../Components/BottomNavBar';
+import RobotStatusHeader from '../../Components/RobotStatusHeader';
 
 
 const LiveStreamingScreen = ({ robotBatteryLevel = 70, route }) => {
@@ -77,7 +77,7 @@ const LiveStreamingScreen = ({ robotBatteryLevel = 70, route }) => {
         <View style={styles.videoContainer}>
           <TouchableOpacity style={styles.playButton}>
             <Image 
-              source={require('../../../assets/imges/play.png')}
+              source={require('../../../assets/images/play.png')}
               style={styles.playIcon}
             />
           </TouchableOpacity>

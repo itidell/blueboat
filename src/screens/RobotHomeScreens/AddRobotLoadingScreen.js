@@ -6,7 +6,7 @@ import { StatusBar } from "expo-status-bar";
 import Svg, {Circle, Path} from "react-native-svg";
 import * as Font from 'expo-font';
 
-import Header from "../../Componets/Header";
+import Header from "../../Components/Header";
 
 const AddRobotLoadingScreen = ({route}) => {
     const navigation = useNavigation();

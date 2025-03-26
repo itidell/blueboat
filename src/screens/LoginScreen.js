@@ -78,7 +78,7 @@ const LoginScreen = () => {
         <View style={styles.logoContainer}>
           <TouchableOpacity onPress={handleBackHome}>
             <Image 
-              source={require('../../assets/imges/logo.png')} 
+              source={require('../../assets/images/logo.png')} 
               style={styles.logoImage}
             />
           </TouchableOpacity>
@@ -163,7 +163,7 @@ const LoginScreen = () => {
         <TouchableOpacity>
         <View style={styles.googleContainer}>
           <Image
-            source={require('../../assets/imges/Google.png')}
+            source={require('../../assets/images/Google.png')}
             style={styles.googleIcon}
           />
           <Text style={styles.googleText}>Google</Text>

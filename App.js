@@ -2,31 +2,29 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
-import SplashScreen from "./src/screens/SplashScreen.js";
 import LoginScreen from './src/screens/LoginScreen.js';
 import WelcomeScreen from './src/screens/WelcomeScreen.js';
-import HomeScreen from './src/screens/HomeScreen.js';
-
 import CreateAccountScreen from './src/screens/SignupScreens/CreateAccountScreen.js';
-import VerificationScreen from './src/screens//SignupScreens/VerficationScreen.js';
-import LoadingStateScreen from './src/screens//SignupScreens/LoadingStateScreen.js';
-
+import VerificationScreen from './src/screens/SignupScreens/VerficationScreen.js';
+import LoadingStateScreen from './src/screens/SignupScreens/LoadingStateScreen.js';
 import ForgetPasswordScreen from './src/screens/ForgetPasswordScreens/ForgetPassworScreeen.js';
 import VerificationPasswordScreen from './src/screens/ForgetPasswordScreens/VerificationPasswordScreen.js';
 import LoadingStatePasswordScreen from './src/screens/ForgetPasswordScreens/LoadingStatePasswordScreen.js';
 import NewPasswordScreen from './src/screens/ForgetPasswordScreens/NewPasswordScreen.js';
 import SuccessOperationScreen from './src/screens/ForgetPasswordScreens/SuccessOperationScreen.js'; 
-
+import StorageScreen from './src/screens/RobotHomeScreens/StorageScreen.js';
 import RobotHomeScreen from './src/screens/RobotHomeScreens/RobotHomeScreen.js';
 import LiveStreamingScreen from './src/screens/RobotHomeScreens/LiveStreamingScreen.js';
 import SearchScreen from './src/screens/RobotHomeScreens/SearchScreen.js';
 import AddRobotScreen from './src/screens/RobotHomeScreens/AddRobotScreen.js';
 import AddRobotLoadingScreen from './src/screens/RobotHomeScreens/AddRobotLoadingScreen.js';
-import MainLayout from './src/Componets/MainLayout.js';
+import MainLayout from './src/Components/MainLayout.js';
 import ProfileScreen from './src/screens/RobotHomeScreens/ProfileScreen.js';
+import LocationAndControllerScreen from './src/screens/RobotHomeScreens/LocationAndControllerScreen.js';
 import PasswordSettingScreen from './src/screens/SignupScreens/PasswordSettingScreen.js';
-
+import SplashScreen from './src/screens/SplashScreen.js';
+import HistoricScreen from './src/screens/RobotHomeScreens/HistoricScreen.js';
+import HomeScreen from './src/screens/HomeScreen.js';
 const Stack = createStackNavigator();
 const customTransition = {
   animation: 'timing',
@@ -56,6 +54,24 @@ export default function App(){
         <Stack.Screen 
           name="Splash" 
           component={SplashScreen} 
+        />
+         <Stack.Screen 
+          name="RobotHome" 
+          component={RobotHomeScreen} 
+        />
+              
+         <Stack.Screen 
+          name="Home" 
+          component={HomeScreen} 
+        />
+      <Stack.Screen name="LocationAndController" component={LocationAndControllerScreen} />
+      <Stack.Screen name="Storage" component={StorageScreen} />
+      <Stack.Screen name="Historic" component={HistoricScreen} />
+
+
+        <Stack.Screen 
+          name="LiveStreaming" 
+          component={LiveStreamingScreen} 
         />
         <Stack.Screen 
           name="Welcome" 
@@ -525,7 +541,6 @@ export default function App(){
               },
             }}
           />
-
       </Stack.Navigator>
       </NavigationContainer>
     </GestureHandlerRootView>

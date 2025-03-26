@@ -98,7 +98,7 @@ const ForgetPasswordScreen = () =>{
                 <View style={styles.logoContainer}>
                     <TouchableOpacity onPress={handleBackHome}>
                         <Image
-                            source={require('../../../assets/imges/logo.png')}
+                            source={require('../../../assets/images/logo.png')}
                             style={styles.logoImage}
                         />
                     </TouchableOpacity>
@@ -171,7 +171,7 @@ const ForgetPasswordScreen = () =>{
                     activeOpacity={0.7}
                 >
                     <Image
-                        source={require('../../../assets/imges/left-chevron.png')} 
+                        source={require('../../../assets/images/left-chevron.png')} 
                         style={styles.backButtonIcon}
                     />
                 </TouchableOpacity>

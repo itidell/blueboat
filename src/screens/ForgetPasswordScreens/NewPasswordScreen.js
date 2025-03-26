@@ -93,7 +93,7 @@ const NewPasswordScreen = () =>{
             <View style={styles.header}>
                 <View style={styles.logocontainer}>
                     <Image
-                        source={require('../../../assets/imges/logo.png')}
+                        source={require('../../../assets/images/logo.png')}
                         style={styles.logoImage}
                     />
                 </View>

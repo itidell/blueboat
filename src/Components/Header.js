@@ -15,7 +15,7 @@ const Header = ({
                 <View style={styles.welcomeContainer}>
                     <Image
                         style={styles.logoImage}
-                        source={require("../../assets/imges/Logoo.png")} 
+                        source={require("../../assets/images/Logoo.png")} 
                     />
                     <View>
                         <Text style={styles.welcomeText}>{welcomeText}</Text>
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         paddingHorizontal: 15,
-        paddingTop: 10,
+        paddingTop: 5,
         paddingBottom: 5,
     },
     welcomeContainer: {

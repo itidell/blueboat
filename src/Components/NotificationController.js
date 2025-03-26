@@ -25,7 +25,7 @@ const NotificationController = ({ onNotificationChange, initialState = true }) =
       {/* Notification Button */}
       <TouchableOpacity style={styles.notificationButton} onPress={toggleNotificationModal}>
         <Image 
-          source={require('../../assets/imges/bell.png')}
+          source={require('../../assets/images/bell.png')}
           style={styles.iconSmall}
         />
       </TouchableOpacity>

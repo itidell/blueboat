@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar, TextInput} from 'react-native';
 import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
-import Header from '../../Componets/Header';
+import Header from '../../Components/Header';
 
 
 const SearchScreen = () => {
@@ -67,7 +67,7 @@ const SearchScreen = () => {
           />
           <TouchableOpacity style={styles.searchIconButton}>
             <Image 
-              source={require('../../../assets/imges/search1.png')}
+              source={require('../../../assets/images/search1.png')}
               style={styles.searchIcon}
             />
           </TouchableOpacity>

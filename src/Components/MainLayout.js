@@ -13,6 +13,9 @@ import ProfileScreen from '../screens/RobotHomeScreens/ProfileScreen';
 import RobotHomeScreen from '../screens/RobotHomeScreens/RobotHomeScreen';
 import LiveStreamingScreen from '../screens/RobotHomeScreens/LiveStreamingScreen';
 import AddRobotLoadingScreen from '../screens/RobotHomeScreens/AddRobotLoadingScreen';
+import LocationAndControllerScreen from '../screens/RobotHomeScreens/LocationAndControllerScreen';
+import HistoricScreen from '../screens/RobotHomeScreens/HistoricScreen';
+import StorageScreen from '../screens/RobotHomeScreens/StorageScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -24,6 +27,9 @@ const HomeStack = () => (
     <Stack.Screen name="RobotHome" component={RobotHomeScreen} />
     <Stack.Screen name="LiveStreaming" component={LiveStreamingScreen} />
     <Stack.Screen name="AddRobot" component={AddRobotScreen} />
+    <Stack.Screen name="LocationAndController" component={LocationAndControllerScreen} />
+    <Stack.Screen name="Historic" component={HistoricScreen} />
+    <Stack.Screen name="Storage" component={StorageScreen} />
   </Stack.Navigator>
 );
 

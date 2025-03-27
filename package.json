@@ -14,7 +14,7 @@
     "@react-navigation/bottom-tabs": "^7.3.1",
     "@react-navigation/native": "^7.0.17",
     "@react-navigation/stack": "^7.1.2",
-    "expo": "^52.0.40",
+    "expo": "52.0.41",
     "expo-auth-session": "~6.0.3",
     "expo-font": "~13.0.4",
     "expo-splash-screen": "^0.29.22",

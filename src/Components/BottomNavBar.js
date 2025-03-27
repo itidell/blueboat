@@ -4,10 +4,48 @@ import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
 const BottomNavBar =({activeTab, setActiveTab, navigation}) =>{
 
     const handleHomePress = () => {
-        setActiveTab('home');
-        navigation.navigate('MainHome', { screen: 'HomeMain' });
-    };
+        // Screens directly related to a specific robot
+        const robotScreens = [
+            'LiveStreaming', 
+            'Historic', 
+            'Storage', 
+            'LocationAndController'
+        ];
     
+        // Get the current route
+        const state = navigation.getState();
+        
+        // Try to find the last route with a robotId
+        const routeWithRobotId = state.routes.findLast(route => 
+            route.params?.robotId || 
+            (route.state?.routes && route.state.routes.some(nestedRoute => nestedRoute.params?.robotId))
+        );
+    
+        let robotId;
+        if (routeWithRobotId) {
+            robotId = routeWithRobotId.params?.robotId || 
+                      routeWithRobotId.state?.routes.find(r => r.params?.robotId)?.params?.robotId;
+        }
+    
+        // Check if the last route is a robot-related screen
+        const lastRobotScreen = state.routes.findLast(route => 
+            robotScreens.includes(route.name) || 
+            (route.state?.routes && route.state.routes.some(nestedRoute => robotScreens.includes(nestedRoute.name)))
+        );
+    
+        // If we have a robotId or were in a robot-related screen
+        if (robotId || (lastRobotScreen && robotId)) {
+            setActiveTab('home');
+            navigation.navigate('MainHome', { 
+                screen: 'RobotHome', 
+                params: { robotId } 
+            });
+        } else {
+            // For other screens, navigate to HomeMain
+            setActiveTab('home');
+            navigation.navigate('MainHome', { screen: 'HomeMain' });
+        }
+    };
     const handleSearchPress = () => {
         setActiveTab('search');
         navigation.navigate('MainSearch', { screen: 'SearchMain' });

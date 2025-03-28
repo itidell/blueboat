@@ -46,6 +46,7 @@ const BottomNavBar =({activeTab, setActiveTab, navigation}) =>{
             navigation.navigate('MainHome', { screen: 'HomeMain' });
         }
     };
+    
     const handleSearchPress = () => {
         setActiveTab('search');
         navigation.navigate('MainSearch', { screen: 'SearchMain' });

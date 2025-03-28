@@ -9,7 +9,10 @@ const RobotStatusHeader = ({ robotId, batteryLevel, onLogout }) => {
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const navigation = useNavigation();
     const handlenavigateTohomePress = () => {
-        navigation.navigate('MainHome', { screen: 'HomeMain' });
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'MainHome', screen: 'HomeMain' }]
+        });
       };
     useEffect(() => {
         const loadFonts = async () => {

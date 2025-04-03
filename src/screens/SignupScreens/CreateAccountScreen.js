@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native'; 
 import { Svg, Path } from 'react-native-svg';
-import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, StatusBar } from 'react-native';
+import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, StatusBar, Alert } from 'react-native';
 import * as Font from 'expo-font';
+import { useAuth } from '../../api/authContext';
 
 const screenWidth = Dimensions.get('window').width;             
 const CreateAccountScreen = () => {
   const navigation = useNavigation(); 
+  const{registrationData,updateRegistrationData} = useAuth();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');;
@@ -14,12 +16,40 @@ const CreateAccountScreen = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
+
+  const validateInputs = () =>{
+    if(!fullName.trim()) {
+      Alert.alert('Error', 'Please enter your full name');
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)){
+      Alert.alert('Error', 'Please enter a valid email address');
+      return false;
+    }
+
+    const phoneRegex = /^\+?[0-9]{10,15}$/;
+    if (!phoneRegex.test(mobileNumber)){
+      Alert.alert('Error', 'Please enter a valid mobile number');
+      return false;
+    }
+    return true;
+  };
+
   const handleSigninPress = () => {
     setTimeout(() => {
         navigation.navigate('Login');
       }, 150);
   };
   const handleSignupPress = () => {
+    if (validateInputs()) {
+      updateRegistrationData({
+        full_name: fullName,
+        email: email,
+        mobile_number: mobileNumber
+      });
+    }
     setTimeout(() => {
         navigation.navigate('PasswordSetting');
       }, 150);
@@ -63,6 +93,7 @@ const CreateAccountScreen = () => {
   }
 
   return (
+    
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#57C3EA" barStyle="light-content" />
       

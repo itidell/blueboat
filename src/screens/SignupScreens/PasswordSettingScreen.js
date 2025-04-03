@@ -1,9 +1,10 @@
 import React,{useState, useEffect} from "react";
 import { useNavigation} from "@react-navigation/native";
 import Svg, {Path} from 'react-native-svg';
-import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, Keyboard, StatusBar } from "react-native";
+import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, Keyboard, StatusBar, Alert } from "react-native";
 import * as Font from 'expo-font';
-
+import { authService } from "../../api/authService";
+import { useAuth } from '../../api/authContext';
 const screenWidth = Dimensions.get('window').width;
 const EyeIcon = ({ visible }) => (
   <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#666">
@@ -26,6 +27,7 @@ const EyeIcon = ({ visible }) => (
 
 const NewPasswordScreen = () =>{
     const navigation = useNavigation();
+    const { registrationData, updateRegistrationData } = useAuth();
     const [password, setPassword] = useState('');
     const [confirmPassword,setConfirmPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
@@ -37,11 +39,58 @@ const NewPasswordScreen = () =>{
     const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
     const toggleConfirmPasswordVisibility = () => setConfirmPasswordVisible(!confirmPasswordVisible);
 
-    const handleSignupPasswordPress = () => {
-        setTimeout(() => {
-            navigation.navigate('Verification');
-        }, 150);
+    const validatePassword = () =>{
+        if(password.length < 8){
+            Alert.alert('Error', 'Password must be at least 8 characters long.');
+            return false;
+        }
+
+        if(password !== confirmPassword){
+            Alert.alert('Error','Passwords do not match');
+            return false;
+        }
+
+        return true;
     };
+
+    const handleSignupPasswordPress = async () => {
+        if (validatePassword()) {
+          try {
+            const userData = {
+                ...registrationData,
+                password: password,
+                confirm_password: confirmPassword
+            };
+              
+            updateRegistrationData({
+              password: password,
+              confirm_password: confirmPassword
+            });
+            
+            console.log("Sending registration data:", JSON.stringify(userData));
+            
+            console.log("Sending request");
+            const response = await authService.register(userData);
+            console.log("Registration response:", response);
+            
+            // Navigate to verification screen on success
+            setTimeout(() => {
+              navigation.navigate('Verification');
+            }, 150);
+          } catch (error) {
+            console.error("Registration error:", error);
+            let errorMessage = 'Registration failed';
+      
+            if (error.detail) {
+                errorMessage = error.detail;
+            } else if (error.message) {
+                errorMessage = error.message
+            }
+      
+                Alert.alert('Error', errorMessage);
+          }
+        }
+      };
     const handleSigninPress = () => {
       setTimeout(() => {
           navigation.navigate('Login');
@@ -149,7 +198,7 @@ const NewPasswordScreen = () =>{
                         styles.signupButton,
                         signupButtonPressed && styles.signupButtonPressed
                     ]}
-                    onPressIn={() => {setConfirmPassword(true), setSignupButtonPressed(true)}}
+                    onPressIn={() => {setSignupButtonPressed(true)}}
                     onPressOut={() => setSignupButtonPressed(false)}
                     onPress={handleSignupPasswordPress}
                 >
@@ -210,7 +259,7 @@ const styles = StyleSheet.create({
         fontSize: 30,
         fontWeight: '700',
         color: '#000000FF',
-        fontfamily:'Poppins_semibold',
+        fontFamily:'Poppins_semibold',
     },
     formContainer:{
         flex: 1,
@@ -227,7 +276,7 @@ const styles = StyleSheet.create({
     inputWrapper:{
         marginBottom: -8,
         marginTop: 40,
-        fontfamily: 'Poppins_semibold',
+        fontFamily: 'Poppins_semibold',
     },
     inputLabel:{
         fontSize: 14,

@@ -25,6 +25,7 @@ import PasswordSettingScreen from './src/screens/SignupScreens/PasswordSettingSc
 import SplashScreen from './src/screens/SplashScreen.js';
 import HistoricScreen from './src/screens/RobotHomeScreens/HistoricScreen.js';
 import HomeScreen from './src/screens/HomeScreen.js';
+import { AuthProvider } from './src/api/authContext.js';
 const Stack = createStackNavigator();
 const customTransition = {
   animation: 'timing',
@@ -35,7 +36,9 @@ const customTransition = {
 
 export default function App(){
   return(
+
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <AuthProvider>
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Splash"
@@ -543,6 +546,7 @@ export default function App(){
           />
       </Stack.Navigator>
       </NavigationContainer>
+      </AuthProvider>
     </GestureHandlerRootView>
   )
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {useNavigation} from '@react-navigation/native';
 import { Svg, Path } from 'react-native-svg';
 import {StyleSheet, View, Text, TextInput,  TouchableOpacity, Image,  SafeAreaView, StatusBar, Dimensions} from 'react-native';
+import { useAuth } from '../api/authContext';
 import * as Font from 'expo-font';
 
 const screenWidth = Dimensions.get('window').width;
@@ -27,12 +28,13 @@ const EyeIcon = ({ visible }) => (
 
 const LoginScreen = () => {
   const navigation = useNavigation();
-  const [username, setUsername] = useState('');
+  const { login } = useAuth();
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loginButtonPressed, setLoginButtonPressed] = useState(false);
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  
+
   const handleBackHome = () => {
     setTimeout(() => {
         navigation.navigate('Welcome');
@@ -43,10 +45,16 @@ const LoginScreen = () => {
         navigation.navigate('CreateAccount');
       }, 150); 
   };
-  const handleLoginPress = () => {
-    setTimeout(() => {
-        navigation.navigate('MainApp');
-      }, 150); 
+  const handleLoginPress = async () => {
+    try{
+      await login({identifier, password});
+      navigation.navigate('MainApp');
+    }catch (error){
+      const errorMessage = error.message || 'Login Failed. Please check your credentials.';
+      Alert.alert('Login Error', errorMessage);
+    }finally{
+      setIsLoading(false);
+    }
   };
   const handleForgetPasswordPress = () => {
     setTimeout(() => {
@@ -98,8 +106,8 @@ const LoginScreen = () => {
           <View style={styles.inputBox}>
             <TextInput
               style={styles.inputField}
-              value={username}
-              onChangeText={setUsername}
+              value={identifier}
+              onChangeText={setIdentifier}
               placeholder="Exemple@gmail.com"
               keyboardType="email-address"
               autoCapitalize="none"

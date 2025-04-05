@@ -4,6 +4,7 @@ import { Svg, Path } from 'react-native-svg';
 import {StyleSheet, View, Text, TextInput,  TouchableOpacity, Image,  SafeAreaView, StatusBar, Dimensions} from 'react-native';
 import { useAuth } from '../api/authContext';
 import * as Font from 'expo-font';
+import { useGoogleAuth } from './GoogleAuth'; // Adjust the import path as necessary
 
 const screenWidth = Dimensions.get('window').width;
 // Eye Icon Component 
@@ -35,6 +36,17 @@ const LoginScreen = () => {
   const [loginButtonPressed, setLoginButtonPressed] = useState(false);
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
+  const handleGoogleAuthSuccess = (userData) =>{
+    console.log('Google auth successful, user data:', userData);
+    navigation.navigate('MainApp');
+  };
+  
+  const handleGoogleAuthError = (error) =>{
+    console.error('Google auth error:', error);
+    Alert.alert('Authentication Error', error.message || 'An error occurred during authentication.');
+  };
+  const { signInWithGoogle } = useGoogleAuth(handleGoogleAuthSuccess, handleGoogleAuthError);
+
   const handleBackHome = () => {
     setTimeout(() => {
         navigation.navigate('Welcome');
@@ -61,6 +73,11 @@ const LoginScreen = () => {
         navigation.navigate('ForgetPassword');
       }, 150); 
   };
+
+  const handleGooglePress = () =>{
+    signInWithGoogle();
+  };
+
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
@@ -168,7 +185,7 @@ const LoginScreen = () => {
         </View>
 
         {/* Google Login - Vertical layout */}
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleGooglePress}>
         <View style={styles.googleContainer}>
           <Image
             source={require('../../assets/images/Google.png')}

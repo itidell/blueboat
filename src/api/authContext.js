@@ -65,6 +65,17 @@ export const AuthProvider = ({children}) =>{
       }
     };
 
+    const googleLogin =  async (tokens) => {
+      try{
+        const userData = await authService.processOAuthLogin(tokens);
+        setUser(userData);
+        return userData;
+      }catch(error){
+        console.error("Error during Google login:", error);
+        throw error;
+      }
+    };
+
     const logout = async () =>{
       try {
         await authService.logout();
@@ -83,6 +94,7 @@ export const AuthProvider = ({children}) =>{
         <AuthContext.Provider value={{ 
             user,
             login,
+            googleLogin,
             logout,
             registrationData, 
             updateRegistrationData

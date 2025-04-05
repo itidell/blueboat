@@ -36,6 +36,23 @@ export const authService = {
         }
     },
 
+    processOAuthLogin: async (tokens) => {
+        try{
+            const { access_token, refresh_token} = tokens;
+
+            await AsyncStorage.setItem('access_token', access_token);
+            await AsyncStorage.setItem('refresh_token', refresh_token);
+
+            const response = await apiClient.get('/users/me');
+            const userData = response.data;
+            await AsyncStorage.setItem('user_data', JSON.stringify(userData));
+            return userData;
+        }catch(error){
+            console.error("OAuth Login Error:", error);
+            throw error.response?.data || error;
+        }
+    },
+    
     verifyAccount: async(verificationData) => {
         try{
             const response = await apiClient.post('/users/verify', verificationData);

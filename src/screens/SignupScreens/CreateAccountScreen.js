@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native'; 
 import { Svg, Path } from 'react-native-svg';
-import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, StatusBar, Alert } from 'react-native';
+import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, StatusBar, Alert, ScrollView } from 'react-native';
 import * as Font from 'expo-font';
 import { useAuth } from '../../api/authContext';
 
@@ -115,7 +115,7 @@ const CreateAccountScreen = () => {
       </View>
 
       {/* Form Container */}
-      <View style={styles.formContainer}>
+      <ScrollView style={styles.formContainer}>
         {/* Full Name Input */}
         <View style={styles.inputWrapper}>
           <Text style={styles.inputLabel}>Full Name</Text>
@@ -188,7 +188,7 @@ const CreateAccountScreen = () => {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

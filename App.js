@@ -26,6 +26,11 @@ import SplashScreen from './src/screens/SplashScreen.js';
 import HistoricScreen from './src/screens/RobotHomeScreens/HistoricScreen.js';
 import HomeScreen from './src/screens/HomeScreen.js';
 import { AuthProvider } from './src/api/authContext.js';
+import { Linking } from 'react-native';
+import { useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 const Stack = createStackNavigator();
 const customTransition = {
   animation: 'timing',
@@ -35,8 +40,48 @@ const customTransition = {
 };
 
 export default function App(){
-  return(
+  // Dans le composant racine
+  useEffect(() => {
+    const handleDeepLink = async ({ url }) => {
+      if (!url) return;
+      console.log('Received deep link URL:', url);
+      
+      try {
+        const parsedUrl = new URL(url);
+        const token = parsedUrl.searchParams.get('token');
+        console.log('Extracted token:', token ? 'Present' : 'Not present');
+        
+        if (token) {
+          try {
+            await AsyncStorage.setItem('userToken', token);
+            console.log('Stored auth token in AsyncStorage');
+            // Navigate to main app or update auth state
+            // You might want to call your auth context update here
+          } catch (storageError) {
+            console.error('Error storing auth token:', storageError);
+          }
+        }
+      } catch (error) {
+        console.error('Error handling deep link:', error);
+      }
+    };
 
+    // Set up deep link handlers
+    Linking.getInitialURL().then(url => {
+      if (url) {
+        handleDeepLink({ url });
+      }
+    });
+
+    // Listen for deep links while app is running
+    const subscription = Linking.addEventListener('url', handleDeepLink);
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  return(
+    
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>
       <NavigationContainer>

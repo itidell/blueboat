@@ -5,6 +5,7 @@ import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image,
 import * as Font from 'expo-font';
 import { authService } from "../../api/authService";
 import { useAuth } from '../../api/authContext';
+import { ScrollView } from "react-native-gesture-handler";
 const screenWidth = Dimensions.get('window').width;
 const EyeIcon = ({ visible }) => (
   <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#666">
@@ -156,7 +157,7 @@ const NewPasswordScreen = () =>{
                 <Text style={styles.newPasswordTitle}>Create Account</Text>
             </View>
 
-            <View style = {[styles.formContainer, {width: screenWidth}]} showsVshowsVerticalScrollIndicator={false}>
+            <ScrollView style = {[styles.formContainer, {width: screenWidth}]} showsVshowsVerticalScrollIndicator={false}>
                 <View style={styles.inputWrapper}>
                     <Text style={styles.inputLabel}>Set Password</Text>
                     <View style={styles.inputBox}>
@@ -219,7 +220,7 @@ const NewPasswordScreen = () =>{
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </ScrollView>
 
         </SafeAreaView>
     )

@@ -1,58 +1,66 @@
-import * as Google from 'expo-auth-session/providers/google';
+import { useState, useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { useEffect } from 'react';
+import { Platform, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../api/authContext';
-import apiClient from '../api/api';
-import * as AuthSession from 'expo-auth-session';
-import { Platform } from 'react-native';
+
+// Register the redirect handler
 WebBrowser.maybeCompleteAuthSession();
 
+// Your backend URL
+const API_URL = "https://e6a8-2c0f-f3a0-97-1c84-3c68-418a-cd98-b3d5.ngrok-free.app";
+
 export const useGoogleAuth = (onSuccess, onError) => {
+  const [loading, setLoading] = useState(false);
   const { googleLogin } = useAuth();
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    clientId: '690944237774-jngbbuihhga681nvtlf2n8993viul2ju.apps.googleusercontent.com',
-    // Important: Force a mobile browser
-    redirectUri: "http://localhost:8000/auth/google/callback",
-    webOptions: { preferEphemeralSession: true },
-    selectAccount: true,
-    useProxy: true,
-  });
-  
-  useEffect(() => {
-    if (response?.type === 'success') {
-      const { id_token } = response.params;
-      handleGoogleToken(id_token);
-    } else if (response?.type === 'error') {
-      console.error('Google auth error:', response.error);
-      if (onError) onError(response.error);
-    }
-  }, [response]);
-  
-  const handleGoogleToken = async (idToken) => {
-    try {
-      // Send the ID token to your backend
-      const response = await apiClient.post('/auth/google/token', {
-        id_token: idToken
-      });
-      
-      // Process the response from your backend
-      const tokens = response.data;
-      const userData = await googleLogin(tokens);
-      if (onSuccess) onSuccess(userData);
-    } catch (error) {
-      console.error('Token exchange error:', error);
-      if (onError) onError(error);
-    }
-  };
-  
+
   const signInWithGoogle = async () => {
     try {
-      await promptAsync();
+      setLoading(true);
+      
+      // Step 1: Open the web browser to your backend's Google login endpoint
+      const authUrl = `${API_URL}/auth/google/login`;
+      
+      // Start the auth flow - this will redirect to Google login page
+      const result = await WebBrowser.openAuthSessionAsync(
+        authUrl,
+        'exp://192.168.173.93:8081/--/oauth-callback'
+      );
+      
+      // Check the result
+      if (result.type === 'success') {
+        // Extract the token from the URL
+        const { url } = result;
+        const tokenParam = url.match(/[?&]token=([^&]+)/);
+        
+        if (tokenParam && tokenParam[1]) {
+          const accessToken = decodeURIComponent(tokenParam[1]);
+          
+          // Store the token
+          await AsyncStorage.setItem('access_token', accessToken);
+          
+          // Process login with your auth context
+          const userData = await googleLogin({ 
+            access_token: accessToken,
+            refresh_token: '' // Your backend likely handles refresh tokens internally
+          });
+          
+          if (onSuccess) onSuccess(userData);
+        } else {
+          throw new Error('No token found in response');
+        }
+      } else if (result.type === 'cancel') {
+        if (onError) onError(new Error('Authentication was canceled'));
+      } else {
+        if (onError) onError(new Error('Authentication failed'));
+      }
     } catch (error) {
-      console.error('Failed to prompt for authentication:', error);
+      console.error("Google sign-in error:", error);
       if (onError) onError(error);
+    } finally {
+      setLoading(false);
     }
   };
-  
-  return { signInWithGoogle };
+
+  return { signInWithGoogle, loading };
 };

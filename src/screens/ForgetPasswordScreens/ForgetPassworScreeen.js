@@ -3,6 +3,7 @@ import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image,
 import * as Font from 'expo-font';
 import { useNavigation } from "@react-navigation/native";
 import Svg, {Path, G} from 'react-native-svg';
+import { ScrollView } from "react-native-gesture-handler";
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -109,7 +110,7 @@ const ForgetPasswordScreen = () =>{
                 <Text style={styles.ForgetPasswordTitle}>Forgot Password</Text>
             </View>
 
-            <View style={[styles.formContainer, {width: screenWidth}]}>
+            <ScrollView style={[styles.formContainer, {width: screenWidth}]}>
                 <View style={styles.inputWrapper}>
                     <Text style={styles.inputLabel}>Email Address</Text>
                     <View style={styles.inputBox}>
@@ -162,7 +163,7 @@ const ForgetPasswordScreen = () =>{
                     </TouchableOpacity>
                 </View>
         
-            </View>
+            </ScrollView>
 
             {!isKeyboardVisible &&(
                 <TouchableOpacity 

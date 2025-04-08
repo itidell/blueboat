@@ -3,6 +3,7 @@ import { useNavigation} from "@react-navigation/native";
 import Svg, {Path} from 'react-native-svg';
 import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, Keyboard, StatusBar } from "react-native";
 import * as Font from 'expo-font';
+import { ScrollView } from "react-native-gesture-handler";
 
 const screenWidth = Dimensions.get('window').width;
 const EyeIcon = ({ visible }) => (
@@ -103,7 +104,7 @@ const NewPasswordScreen = () =>{
                 <Text style={styles.newPasswordTitle}>New Password</Text>
             </View>
 
-            <View style = {[styles.formContainer, {width: screenWidth}]} showsVshowsVerticalScrollIndicator={false}>
+            <ScrollView style = {[styles.formContainer, {width: screenWidth}]} showsVshowsVerticalScrollIndicator={false}>
                 <View style={styles.inputWrapper}>
                     <Text style={styles.inputLabel}>New Password</Text>
                     <View style={styles.inputBox}>
@@ -159,8 +160,7 @@ const NewPasswordScreen = () =>{
                         Change
                     </Text>
                 </TouchableOpacity>
-            </View>
-
+            </ScrollView>
         </SafeAreaView>
     )
 

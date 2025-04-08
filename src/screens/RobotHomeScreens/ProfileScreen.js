@@ -215,6 +215,20 @@ const ProfileScreen = () => {
           </TouchableOpacity>
         </View>
 
+        {/* Email Input */}
+        <View style={styles.inputWrapper}>
+          <Text style={styles.inputLabel}>Email</Text>
+          <View style={styles.inputBox}>
+            <TextInput
+              style={styles.inputField}
+              value={email}
+              editable={false}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </View>
+        </View>
+        
         {/* Phone Number Input */}
         <View style={styles.inputWrapper}>
           <Text style={styles.inputLabel}>Phone Number</Text>
@@ -234,25 +248,6 @@ const ProfileScreen = () => {
           </View>
         </View>
 
-        {/* Email Input */}
-        <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Email</Text>
-          <View style={styles.inputBox}>
-            <TextInput
-              style={styles.inputField}
-              value={email}
-              editable={false}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-            <TouchableOpacity 
-              style={styles.editIconContainer}
-              onPress={() => handleEditProfile('email', email, 'Edit Email')}
-            >
-              <EditIcon />
-            </TouchableOpacity>
-          </View>
-        </View>
 
         {/* Password Input */}
         <View style={styles.inputWrapper}>

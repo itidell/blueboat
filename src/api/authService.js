@@ -21,6 +21,7 @@ export const authService = {
 
     login: async (credentials) => {
         try{
+            console.log("Sending login request with:", JSON.stringify(credentials));
             const response = await apiClient.post('/auth/login', credentials);
             const {access_token, refresh_token, expires_in, id, full_name, email, mobile_number, is_active, loggedin_at} = response.data;
             

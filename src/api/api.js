@@ -47,7 +47,12 @@ apiClient.interceptors.response.use(
 
                 // Change this part - send the token in the request body instead of headers
                 const response = await axios.post(`${API_BASE_URL}/auth/refresh`, 
-                    { refresh_token: refreshToken }
+                    {},
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${refreshToken}`  // Send in header
+                          }
+                    }
                 );
                 
                 const { access_token, refresh_token } = response.data;

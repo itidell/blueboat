@@ -1,6 +1,7 @@
 import apiClient from "./api";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
+import { Profiler } from "react";
 
 export const authService = {
     register: async (userData) => {
@@ -39,15 +40,31 @@ export const authService = {
 
     processOAuthLogin: async (tokens) => {
         try{
-            const { access_token, refresh_token} = tokens;
+            const { access_token, refresh_token, id_token} = tokens;
 
             await AsyncStorage.setItem('access_token', access_token);
             await AsyncStorage.setItem('refresh_token', refresh_token);
 
             const response = await apiClient.get('/users/me');
             const userData = response.data;
+            if(!userData.profile_picture && id_token){
+                try{
+                    const [,payload] = id_token.split('.');
+                    const decodedPayload = JSON.parse(atob(payload));
+
+                    if(decodedPayload.picture){
+                        userData.profile_picture = decodedPayload.picture;
+                        await apiClient.put('/users/profile', {
+                            profile_picture: decodedPayload.picture
+                        });    
+                    }
+                } catch (decodeError){
+                    console.error("Error decoding Google id_token", decodeError)
+                }
+            }
             await AsyncStorage.setItem('user_data', JSON.stringify(userData));
             return userData;
+            
         }catch(error){
             console.error("OAuth Login Error:", error);
             throw error.response?.data || error;
@@ -129,4 +146,33 @@ export const authService = {
           throw error.response?.data || error;
         }
       },
+      verifyPassword: async (passwordData) => {
+        try {
+          // Make sure we're sending the correct format - a string, not an object
+          const response = await apiClient.post('/users/verify-password', 
+            typeof passwordData === 'string' 
+              ? { password: passwordData } 
+              : passwordData
+          );
+          return response.data.verified;
+        } catch (error) {
+          console.error("Password verification error:", error.response?.data || error);
+          throw error.response?.data || error;
+        }
+      },
+        updateProfile: async (profileData) => {
+        try {
+            const response = await apiClient.put('/users/profile', profileData);
+            const userData = await AsyncStorage.getItem('user_data')
+            if (userData) {
+                const parseData = JSON.parse(userData)
+                const updateData = {...parseData, ...response.data}
+                await AsyncStorage.setItem('user_data', JSON.stringify(updateData));
+            }
+            return response.data;
+        } catch (error) {
+            console.error("Profile Update Error:", error.response?.data || error)
+            throw error.response?.data || error;
+        }
+    }
 };

@@ -8,7 +8,7 @@ import { useAuth } from '../api/authContext';
 WebBrowser.maybeCompleteAuthSession();
 
 // Your backend URL
-const API_URL = "https://e6a8-2c0f-f3a0-97-1c84-3c68-418a-cd98-b3d5.ngrok-free.app";
+const API_URL = "https://e281-2c0f-f3a0-125-ed51-10b-bdd7-cc99-d5c.ngrok-free.app";
 
 export const useGoogleAuth = (onSuccess, onError) => {
   const [loading, setLoading] = useState(false);

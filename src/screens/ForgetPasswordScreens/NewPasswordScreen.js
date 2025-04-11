@@ -1,9 +1,10 @@
 import React,{useState, useEffect} from "react";
 import { useNavigation} from "@react-navigation/native";
 import Svg, {Path} from 'react-native-svg';
-import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, Keyboard, StatusBar } from "react-native";
+import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, Keyboard, StatusBar, Alert } from "react-native";
 import * as Font from 'expo-font';
 import { ScrollView } from "react-native-gesture-handler";
+import { authService } from "../../api/authService";
 
 const screenWidth = Dimensions.get('window').width;
 const EyeIcon = ({ visible }) => (
@@ -37,13 +38,58 @@ const NewPasswordScreen = () =>{
     const [isKeyboardVisible, setKeyboardVisible] = useState(false);
     const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
     const toggleConfirmPasswordVisibility = () => setConfirmPasswordVisible(!confirmPasswordVisible);
-
-    const handleChangePasswordPress = () => {
-        setTimeout(() => {
-            navigation.navigate('SuccessOperation');
-        }, 150);
-    };
     
+    const validatePassword = () =>{
+        if(password.length < 8){
+            Alert.alert('Error', 'Password must be at least 8 characters long.');
+            return false;
+        }
+
+        if(password !== confirmPassword){
+            Alert.alert('Error','Passwords do not match');
+            return false;
+        }
+        return true;
+    };
+
+    const handleChangePasswordPress = async () => {
+        if (validatePassword()) {
+          try {
+            const userData = {
+                ...registrationData,
+                password: password,
+                confirm_password: confirmPassword
+            };
+              
+            updateRegistrationData({
+              password: password,
+              confirm_password: confirmPassword
+            });
+            
+            console.log("Sending registration data:", JSON.stringify(userData));
+            
+            console.log("Sending request");
+            const response = await authService.register(userData);
+            console.log("Registration response:", response);
+            
+            // Navigate to verification screen on success
+            setTimeout(() => {
+              navigation.navigate('SuccessOperation');
+            }, 150);
+          } catch (error) {
+            console.error("Registration error:", error);
+            let errorMessage = 'Registration failed';
+      
+            if (error.detail) {
+                errorMessage = error.detail;
+            } else if (error.message) {
+                errorMessage = error.message
+            }
+      
+                Alert.alert('Error', errorMessage);
+          }
+        }
+      };
     useEffect(() => {
         const loadFonts = async() =>{
             try{

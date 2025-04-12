@@ -24,11 +24,11 @@ export const authService = {
         try{
             console.log("Sending login request with:", JSON.stringify(credentials));
             const response = await apiClient.post('/auth/login', credentials);
-            const {access_token, refresh_token, expires_in, id, full_name, email, mobile_number, is_active, loggedin_at} = response.data;
+            const {access_token, refresh_token, expires_in, id, full_name, email, mobile_number, is_active, loggedin_at, profile_picture} = response.data;
             
             await AsyncStorage.setItem('access_token', access_token);
             await AsyncStorage.setItem('refresh_token', refresh_token);
-            const userData = { id, full_name, email, mobile_number, is_active, loggedin_at};
+            const userData = { id, full_name, email, mobile_number, is_active, loggedin_at, profile_picture};
             await AsyncStorage.setItem('user_data', JSON.stringify(userData));
 
             return userData;

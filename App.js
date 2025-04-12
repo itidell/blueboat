@@ -5,7 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import LoginScreen from './src/screens/LoginScreen.js';
 import WelcomeScreen from './src/screens/WelcomeScreen.js';
 import CreateAccountScreen from './src/screens/SignupScreens/CreateAccountScreen.js';
-import VerificationScreen from './src/screens/SignupScreens/VerficationScreen.js';
+import VerificationScreen from './src/screens/SignupScreens/VerificationScreen.js';
 import LoadingStateScreen from './src/screens/SignupScreens/LoadingStateScreen.js';
 import ForgetPasswordScreen from './src/screens/ForgetPasswordScreens/ForgetPassworScreeen.js';
 import VerificationPasswordScreen from './src/screens/ForgetPasswordScreens/VerificationPasswordScreen.js';
@@ -472,7 +472,7 @@ export default function App(){
                         },
                       }} />
       <Stack.Screen 
-            name="VerficationPassword" 
+            name="VerificationPassword" 
             component={VerificationPasswordScreen}
             options={{
               gestureEnabled: true,

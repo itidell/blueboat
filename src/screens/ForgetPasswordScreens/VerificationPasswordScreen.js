@@ -28,11 +28,10 @@ const VerificationPasswordScreen = () => {
   const handleVerificationPress = async () => {
     if (code.every(digit => digit !== '')) {
       try {
-        setErrorMessage('');
         const verificationCode = code.join('');
         
         // Get the email that was stored during registration
-        const email = await AsyncStorage.getItem('temp_user_email');
+        const email = await AsyncStorage.getItem('temp_reset_email');
         
         if (!email) {
           setErrorMessage('Session expired. Please register again.');
@@ -40,16 +39,10 @@ const VerificationPasswordScreen = () => {
         }
         
         // Call the verification API
-        await authService.verifyAccount({
-          code: verificationCode,
-          email: email
-        });
-
-        // On successful verification
-        setTimeout(() => {
-          
-          navigation.navigate('LoadingState');
-        }, 150);
+        navigation.navigate('NewPassword', { 
+          code: verificationCode, 
+          email: email 
+      });
       } catch (error) {
         console.error('Verification error:', error);
         setErrorMessage(error.message || 'Invalid verification code. Please try again.');

@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import Svg, {Path, G} from 'react-native-svg';
 import { ScrollView } from "react-native-gesture-handler";
 import { authService } from "../../api/authService";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const screenWidth = Dimensions.get('window').width;
 
 const ErrorIcon = () => (
@@ -36,8 +36,9 @@ const ForgetPasswordScreen = () =>{
         try {
             setIsLoading(true)
             await authService.forgetPassword(email);
+            await AsyncStorage.setItem('temp_reset_email', email);
             setTimeout(() => {
-                navigation.navigate('VerficationPassword')
+                navigation.navigate('VerificationPassword')
             },150);
         }catch(error){
             setErrorMessage(error?.message || 'Failed to process request. Please try again');

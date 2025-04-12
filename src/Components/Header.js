@@ -1,15 +1,20 @@
 import { View, Text, Image, StyleSheet } from "react-native";
 import LanguageSelector from "./LanguageSelector";
 import NotificationController from "./NotificationController";
+import { useAuth } from "../api/authContext";
+
 
 const Header = ({
     welcomeText = "Hi, Welcome",
-    userName = "User Name",
+    userName ,
     selectedLanguage,
     onLanguageChange,
     notificationsEnabled,
     onNotificationChange,
     }) => {
+        const { user } = useAuth();
+        const displayName = userName || user?.full_name || 'Guest';
+        
         return (
             <View style={styles.header}>
                 <View style={styles.welcomeContainer}>
@@ -19,7 +24,7 @@ const Header = ({
                     />
                     <View>
                         <Text style={styles.welcomeText}>{welcomeText}</Text>
-                        <Text style={styles.userNameText}>{userName}</Text>
+                        <Text style={styles.userNameText}>{displayName}</Text>
                     </View>
                 </View>
 

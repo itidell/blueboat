@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from "react";
-import { useNavigation} from "@react-navigation/native";
+import { useNavigation, useRoute} from "@react-navigation/native";
 import Svg, {Path} from 'react-native-svg';
 import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, Keyboard, StatusBar, Alert } from "react-native";
 import * as Font from 'expo-font';
@@ -28,6 +28,9 @@ const EyeIcon = ({ visible }) => (
 
 const NewPasswordScreen = () =>{
     const navigation = useNavigation();
+    const route = useRoute();
+    const {code, email} = route.params
+    ;
     const [password, setPassword] = useState('');
     const [confirmPassword,setConfirmPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
@@ -40,6 +43,8 @@ const NewPasswordScreen = () =>{
     const toggleConfirmPasswordVisibility = () => setConfirmPasswordVisible(!confirmPasswordVisible);
     
     const validatePassword = () =>{
+        console.log(password)
+        console.log(confirmPassword)
         if(password.length < 8){
             Alert.alert('Error', 'Password must be at least 8 characters long.');
             return false;
@@ -54,28 +59,17 @@ const NewPasswordScreen = () =>{
 
     const handleChangePasswordPress = async () => {
         if (validatePassword()) {
-          try {
-            const userData = {
-                ...registrationData,
-                password: password,
-                confirm_password: confirmPassword
-            };
-              
-            updateRegistrationData({
-              password: password,
-              confirm_password: confirmPassword
-            });
-            
-            console.log("Sending registration data:", JSON.stringify(userData));
-            
-            console.log("Sending request");
-            const response = await authService.register(userData);
-            console.log("Registration response:", response);
-            
+            try {
+                // Send ALL required fields in the correct structure
+                await authService.resetPassword({
+                  code: route.params.code,    // From navigation params
+                  email: route.params.email,  // From navigation params
+                  password: password,
+                  confirm_password: confirmPassword // Match backend field name
+                });
             // Navigate to verification screen on success
-            setTimeout(() => {
-              navigation.navigate('SuccessOperation');
-            }, 150);
+            navigation.navigate('SuccessOperation');
+            
           } catch (error) {
             console.error("Registration error:", error);
             let errorMessage = 'Registration failed';
@@ -192,7 +186,6 @@ const NewPasswordScreen = () =>{
                         styles.changePasswordButton,
                         changePaswwordButtonPressed && styles.changePasswordButtonPressed
                     ]}
-                    onPressIn={() => setConfirmPassword(true)}
                     onPressOut={() => setChangePasswordButtonPressed(false)}
                     onPress={handleChangePasswordPress}
                     activeOpacity={0.8}

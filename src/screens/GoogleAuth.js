@@ -8,7 +8,7 @@ import { useAuth } from '../api/authContext';
 WebBrowser.maybeCompleteAuthSession();
 
 // Your backend URL
-const API_URL = "https://8f2b-2c0f-f3a0-122-3b9-4db2-61dc-831a-cb37.ngrok-free.app";
+const API_URL = "https://c03a-2c0f-f3a0-122-3b9-649e-ebbd-7ce6-48c9.ngrok-free.app";
 
 
 export const useGoogleAuth = (onSuccess, onError) => {
@@ -43,7 +43,7 @@ export const useGoogleAuth = (onSuccess, onError) => {
           // Process login with your auth context
           const userData = await googleLogin({ 
             access_token: accessToken,
-            refresh_token: '' // Your backend likely handles refresh tokens internally
+            refresh_token: accessToken, // Your backend likely handles refresh tokens internally
           });
           
           if (onSuccess) onSuccess(userData);

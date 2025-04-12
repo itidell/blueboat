@@ -1,7 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import Svg, {Path, G} from 'react-native-svg';
+import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, StatusBar,Keyboard} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { authService } from '../../api/authService';
 import * as Font from 'expo-font';
 
 const ErrorIcon = () => (
@@ -13,7 +15,6 @@ const ErrorIcon = () => (
     </G>
   </Svg>
 )
-
 const VerificationPasswordScreen = () => {
   const navigation = useNavigation();
   const [code, setCode] = useState(['', '', '', '', '']);
@@ -24,15 +25,37 @@ const VerificationPasswordScreen = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isKeyboardVisible, setKeyboardVisible] = useState(false)
 
-  const handleVerificationPress = () => {
+  const handleVerificationPress = async () => {
     if (code.every(digit => digit !== '')) {
-      console.log('Verifying code:', code.join(''));
-      setErrorMessage('');
-      setTimeout(() => {
-        navigation.navigate('LoadingStatePassword');
-      }, 150);
+      try {
+        setErrorMessage('');
+        const verificationCode = code.join('');
+        
+        // Get the email that was stored during registration
+        const email = await AsyncStorage.getItem('temp_user_email');
+        
+        if (!email) {
+          setErrorMessage('Session expired. Please register again.');
+          return;
+        }
+        
+        // Call the verification API
+        await authService.verifyAccount({
+          code: verificationCode,
+          email: email
+        });
+
+        // On successful verification
+        setTimeout(() => {
+          
+          navigation.navigate('LoadingState');
+        }, 150);
+      } catch (error) {
+        console.error('Verification error:', error);
+        setErrorMessage(error.message || 'Invalid verification code. Please try again.');
+      }
     } else {
-      setErrorMessage('Please enter all digits of the verification code')
+      setErrorMessage('Please enter all digits of the verification code');
     }
   };
 
@@ -76,15 +99,30 @@ const VerificationPasswordScreen = () => {
       inputRefs.current[index + 1].focus();
     }
   };
-
   const handleKeyPress = (event, index) => {
     if (event.nativeEvent.key === 'Backspace' && !code[index] && index > 0) {
       inputRefs.current[index - 1].focus();
     }
   };
-
-  const handleSendAgain = () => {
-    console.log('Resending verification code');
+  const handleSendAgain = async () => {
+    try {
+      const email = await AsyncStorage.getItem('temp_user_email');
+      
+      if (!email) {
+        setErrorMessage('Session expired. Please register again.');
+        return;
+      }
+      
+      // Call an API endpoint to resend the verification code
+      await authService.resendVerification({ email });
+      
+      // Show success message
+      setErrorMessage(''); // Clear any existing error
+      alert('A new verification code has been sent to your email.');
+    } catch (error) {
+      console.error('Resend error:', error);
+      setErrorMessage('Failed to resend code. Please try again.');
+    }
   };
 
   if (!fontsLoaded) {
@@ -334,7 +372,7 @@ const styles = StyleSheet.create({
   backButton:{
     position: 'absolute',
     bottom:20,
-    left: 0, 
+    left: 15, 
     padding: 10,
     zIndex: 10,
   },

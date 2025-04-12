@@ -1,7 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
+<<<<<<< HEAD
 const API_BASE_URL = "https://70d0-2c0f-f3a0-92-4f95-ac20-cf6d-47d0-a55d.ngrok-free.app";
+=======
+const API_BASE_URL = "https://e7c4-2c0f-f3a0-125-ed51-5834-af70-1416-c3b3.ngrok-free.app";
+>>>>>>> 068b110c8848323146ad5f8296c45ffc2fd2f9cb
 
 const apiClient = axios.create({
     baseURL: API_BASE_URL,

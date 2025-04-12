@@ -4,6 +4,7 @@ import * as Font from 'expo-font';
 import { useNavigation } from "@react-navigation/native";
 import Svg, {Path, G} from 'react-native-svg';
 import { ScrollView } from "react-native-gesture-handler";
+import { authService } from "../../api/authService";
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -25,16 +26,24 @@ const ForgetPasswordScreen = () =>{
     const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
     const [errorMessage, setErrorMessage] = useState('');
     const [isKeyboardVisible, setKeyboardVisible] = useState(false)
-
-    const handleNextPress = () =>{
+    const [isLoading, setIsLoading]= useState(false)
+    const handleNextPress = async () =>{
+        setErrorMessage('');
         if(!email || !email.includes('@')){
             setErrorMessage('Please enter valid email address');
             return;
         }
-
-        setTimeout(() => {
-            navigation.navigate('VerficationPassword')
-        },150);
+        try {
+            setIsLoading(true)
+            await authService.forgetPassword(email);
+            setTimeout(() => {
+                navigation.navigate('VerficationPassword')
+            },150);
+        }catch(error){
+            setErrorMessage(error?.message || 'Failed to process request. Please try again');
+        }finally{
+            setIsLoading(false);
+        }
     };
     const handleBackToSignup = () => {
         setTimeout(() => {
@@ -121,6 +130,7 @@ const ForgetPasswordScreen = () =>{
                             placeholder="example@example.com"
                             keyboardType="email-address"
                             autoCapitalize="none"
+                            editable={!isLoading}
                         />
                     </View>
                 </View>

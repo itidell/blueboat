@@ -8,11 +8,8 @@ import { useAuth } from '../api/authContext';
 WebBrowser.maybeCompleteAuthSession();
 
 // Your backend URL
-<<<<<<< HEAD
-const API_URL = "https://70d0-2c0f-f3a0-92-4f95-ac20-cf6d-47d0-a55d.ngrok-free.app";
-=======
-const API_URL = "https://e7c4-2c0f-f3a0-125-ed51-5834-af70-1416-c3b3.ngrok-free.app";
->>>>>>> 068b110c8848323146ad5f8296c45ffc2fd2f9cb
+const API_URL = "https://8f2b-2c0f-f3a0-122-3b9-4db2-61dc-831a-cb37.ngrok-free.app";
+
 
 export const useGoogleAuth = (onSuccess, onError) => {
   const [loading, setLoading] = useState(false);
@@ -28,7 +25,7 @@ export const useGoogleAuth = (onSuccess, onError) => {
       // Start the auth flow - this will redirect to Google login page
       const result = await WebBrowser.openAuthSessionAsync(
         authUrl,
-        'exp://192.168.173.93:8081/--/oauth-callback'
+        'exp://192.168.37.93:8081/--/oauth-callback'
       );
       
       // Check the result

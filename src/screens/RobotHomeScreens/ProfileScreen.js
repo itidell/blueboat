@@ -20,6 +20,8 @@ import {
 import { Svg, Path } from 'react-native-svg';
 import LanguageSelector from '../../Components/LanguageSelector';
 import NotificationController from '../../Components/NotificationController';
+import { useAuth } from '../../api/authContext';
+import { authService } from '../../api/authService';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -41,8 +43,9 @@ const CloseIcon = () => (
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  const [phoneNumber, setPhoneNumber] = useState('24324252');
-  const [email, setEmail] = useState('bensalahshaima@gmail.com');
+  const { user, logout, updateProfile, loading } = useAuth();
+  const [phoneNumber, setPhoneNumber] = useState(user?.mobile_number || '');
+  const [email, setEmail] = useState(user?.email || '');
   const [password, setPassword] = useState('************');
   const [editButtonPressed, setEditButtonPressed] = useState(false);
   const [logoutButtonPressed, setLogoutButtonPressed] = useState(false);
@@ -51,8 +54,8 @@ const ProfileScreen = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('EN');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   
-  // New state for username
-  const [username, setUsername] = useState('Shaima Ben salah');
+  // State for username
+  const [username, setUsername] = useState(user?.full_name || '');
   
   // Modal state and temp values for editing
   const [modalVisible, setModalVisible] = useState(false);
@@ -65,17 +68,56 @@ const ProfileScreen = () => {
   // Password verification state
   const [currentPasswordInput, setCurrentPasswordInput] = useState('');
   const [passwordVerificationError, setPasswordVerificationError] = useState('');
+  const [updateSuccess, setUpdateSuccess] = useState(false)
 
-  // Actual current password (in a real app, this would come from secure storage or backend)
-  const ACTUAL_CURRENT_PASSWORD = 'hello';
-
+  useEffect(() =>{
+    if (user){
+      setUsername(user.full_name || '');
+      setEmail(user.email || '');
+      setPhoneNumber(user.mobile_number || '');
+    }
+  }, [user]);
   const handleHomePress = () => {
     navigation.navigate('Home');
   };
+  const saveChanges = async () => {
+    try {
+        setUpdateSuccess(false);
 
+        let updateData = {};
+        if (editingField === 'phoneNumber') {
+            updateData = {mobile_number: editingValue};
+        } else if (editingField === 'username') {
+            updateData = {full_name: editingValue};
+        }
+
+        if (Object.keys(updateData).length > 0) {
+            const result = await updateProfile(updateData);
+
+            if (editingField === 'phoneNumber') {
+                setPhoneNumber(editingValue);
+            } else if (editingField === 'username') {
+                setUsername(editingValue);
+            }
+
+            setUpdateSuccess(true);
+            // Fix the missing callback and add timeout duration
+            setTimeout(() => setUpdateSuccess(false), 3000);
+        }
+
+        setModalVisible(false);
+        setUsernameEditModalVisible(false);
+    } catch (error) {
+        Alert.alert(
+            'Update Failed',
+            error.message || 'Failed to update profile. Please try again',
+            [{ text: 'OK' }]  // Fixed missing closing parenthesis here
+        );
+    }
+};
   const handleChangePasswordPress = () => {
     setTimeout(() => {
-        navigation.navigate('NewPassword');
+        navigation.navigate('ForgetPassword');
     }, 150);
   };
 
@@ -96,48 +138,36 @@ const ProfileScreen = () => {
     setUsernameEditModalVisible(true);
   };
 
-  const verifyPassword = () => {
-    // Check if entered password matches actual current password
-    if (currentPasswordInput === ACTUAL_CURRENT_PASSWORD) {
-      // Close password verification modal
-      setPasswordVerificationModalVisible(false);
-      
-      // Open edit modal
-      setModalVisible(true);
-    } else {
-      // Show error message
-      setPasswordVerificationError('Incorrect password. Please try again.');
+  const verifyPassword = async() => {
+    try{
+      const verified = await authService.verifyPassword(currentPasswordInput);
+
+      if(verified){
+        setPasswordVerificationModalVisible(false);
+        setModalVisible(true);
+      }else{
+        setPasswordVerificationError('Incorrect password. Please try again');
+      }
+    } catch (error){
+      setPasswordVerificationError('Verification failed. Please try again')
+      console.error("Password verification error:", error);
     }
   };
 
-  const saveChanges = () => {
-    // Update the state based on which field was being edited
-    switch (editingField) {
-      case 'phoneNumber':
-        setPhoneNumber(editingValue);
-        break;
-      case 'email':
-        setEmail(editingValue);
-        break;
-      case 'password':
-        setPassword(editingValue);
-        break;
-      case 'username':
-        setUsername(editingValue);
-        setUsernameEditModalVisible(false);
-        break;
-      default:
-        break;
+  // Removed duplicate saveChanges function
+  const handleLogout = async() => {
+    try{
+      setLogoutButtonPressed(true);
+      await logout();
+      setTimeout(() =>{
+        navigation.navigate('Login');
+        setLogoutButtonPressed(false);
+      }, 150);
+    } catch (error){
+      setLogoutButtonPressed(false)
+      Alert.alert('Logout Failed', 'Unable to logout. Please try again');
+      console.error("Logout error:", error)
     }
-    
-    // Close the modal
-    setModalVisible(false);
-  };
-
-  const handleLogout = () => {
-    setTimeout(() => {
-      navigation.navigate('Login');
-    }, 150);
   };
 
   const handleLanguageChange = (language) => {
@@ -166,6 +196,11 @@ const ProfileScreen = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#57C3EA" barStyle="light-content" />
       
+      {updateSuccess && (
+        <View style={styles.successNotification}>
+          <Text style = {styles.successText}>Profile updated successfully</Text>
+        </View>
+      )}
       {/* Header with Logo, Notifications and Language */}
       <View style={styles.header}>
         <View style={styles.welcomeContainer}>
@@ -198,7 +233,7 @@ const ProfileScreen = () => {
         <View style={styles.profileImageSection}>
           <View style={styles.profileImageContainer}>
             <Image 
-              source={require('../../../assets/images/profiles.jpg')}
+              source={user?.profile_picture ? { uri: user.profile_picture } : require('../../../assets/images/profiles.jpg')}
               style={styles.profileImage}
             />
           </View>
@@ -277,6 +312,7 @@ const ProfileScreen = () => {
           onPressIn={() => setLogoutButtonPressed(true)}
           onPressOut={() => setLogoutButtonPressed(false)}
           onPress={handleLogout}
+          disabled={loading}
         >
           <Text 
             style={[
@@ -298,10 +334,7 @@ const ProfileScreen = () => {
           <TouchableWithoutFeedback onPress={() => setPasswordVerificationModalVisible(false)}>
             <View style={styles.modalOverlay}>
               <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <KeyboardAvoidingView
-                  behavior={Platform.OS === "ios" ? "padding" : "height"}
-                  style={styles.centeredView}
-                >
+           
                   <View style={styles.modalView}>
                     <View style={styles.modalHeader}>
                       <Text style={styles.modalTitle}>Verify Password</Text>
@@ -338,7 +371,7 @@ const ProfileScreen = () => {
                       </TouchableOpacity>
                     </View>
                   </View>
-                </KeyboardAvoidingView>
+                
               </TouchableWithoutFeedback>
             </View>
           </TouchableWithoutFeedback>

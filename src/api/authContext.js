@@ -76,7 +76,8 @@ export const AuthProvider = ({children}) =>{
           userData ? JSON.stringify({
             id: userData.id,
             email: userData.email,
-            name: userData.full_name
+            name: userData.full_name,
+            has_picture: !!userData.profile_picture,
           }) : "No user data returned");
         setUser(userData);
         setLoading(false);
@@ -102,6 +103,20 @@ export const AuthProvider = ({children}) =>{
 
     };
 
+    const updateProfile = async (profileData) => {
+      try{
+        setLoading(true);
+        const updatedUserData = await authService.updateProfile(profileData)
+        setUser(prev =>({...prev, ...updatedUserData}))
+        setLoading(false);
+        return updatedUserData
+      }catch(error){
+        setLoading(false);
+        console.error("Error updating profile:",error )
+        throw error;
+      }
+    };
+
     return(
         <AuthContext.Provider value={{ 
             user,
@@ -111,7 +126,8 @@ export const AuthProvider = ({children}) =>{
             googleLogin,
             loading,
             registrationData, 
-            updateRegistrationData
+            updateRegistrationData,
+            updateProfile
           }}>
             {children}
           </AuthContext.Provider>

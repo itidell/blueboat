@@ -107,7 +107,7 @@ const ForgetPasswordScreen = () =>{
             </View>
 
             <View style={styles.titleContainer}>
-                <Text style={styles.ForgetPasswordTitle}>Forgot Password</Text>
+                <Text style={styles.ForgetPasswordTitle}>Set Password</Text>
             </View>
 
             <ScrollView style={[styles.formContainer, {width: screenWidth}]}>

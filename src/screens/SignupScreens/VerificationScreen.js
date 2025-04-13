@@ -114,7 +114,7 @@ const VerificationScreen = () => {
       }
       
       // Call an API endpoint to resend the verification code
-      await authService.resendVerification({ email });
+      await authService.resendVerification(email);
       
       // Show success message
       setErrorMessage(''); // Clear any existing error

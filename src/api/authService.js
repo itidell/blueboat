@@ -194,13 +194,17 @@ export const authService = {
     },
     resendVerification: async (emailData) => {
         try {
-          const response = await apiClient.post('/users/resend-verification', emailData);
+          const response = await apiClient.post('/users/resend-verification',
+            typeof emailData === 'string' 
+            ? { email: emailData } 
+            : emailData
+        );
           return response.data;
         } catch (error) {
           throw error.response?.data || error;
         }
-      },
-      verifyPassword: async (passwordData) => {
+    },
+    verifyPassword: async (passwordData) => {
         try {
           // Make sure we're sending the correct format - a string, not an object
           const response = await apiClient.post('/users/verify-password', 
@@ -213,8 +217,8 @@ export const authService = {
           console.error("Password verification error:", error.response?.data || error);
           throw error.response?.data || error;
         }
-      },
-        updateProfile: async (profileData) => {
+    },
+    updateProfile: async (profileData) => {
         try {
             const response = await apiClient.put('/users/profile', profileData);
             const userData = await AsyncStorage.getItem('user_data')
@@ -234,5 +238,15 @@ export const authService = {
             console.error("Profile Update Error:", error.response?.data || error)
             throw error.response?.data || error;
         }
-    }
+    },
+    resendResetPasswordCode: async (email) =>{
+        try{
+            const response = await apiClient.post('/auth/resend-reset-code', {email});
+            return response.data;
+        }
+        catch (error){
+            console.error("Resend password reset code error", error.response?.data || error);
+            throw error.response?.data || error;
+        }
+    },
 };

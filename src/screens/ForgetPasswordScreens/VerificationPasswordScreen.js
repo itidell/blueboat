@@ -107,7 +107,7 @@ const VerificationPasswordScreen = () => {
       }
       
       // Call an API endpoint to resend the verification code
-      await authService.resendVerification({ email });
+      await authService.resendResetPasswordCode(email);
       
       // Show success message
       setErrorMessage(''); // Clear any existing error

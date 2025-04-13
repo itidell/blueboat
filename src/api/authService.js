@@ -2,7 +2,12 @@ import apiClient from "./api";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
 import { Profiler } from "react";
+import md5 from 'crypto-js/md5';
 
+const getGravatarUrl = (email) => {
+    const hash = md5(email.trim().toLowerCase()).toString();
+    return `https://www.gravatar.com/avatar/${hash}?d=identicon&s=200`;
+};
 export const authService = {
     register: async (userData) => {
         try {
@@ -10,6 +15,11 @@ export const authService = {
             console.log("Headers:", apiClient.defaults.headers);
             const response = await apiClient.post('/users', userData);
             console.log("Registration Success:", response.data);
+            if (response.data && response.data.email) {
+                const gravatarUrl = getGravatarUrl(response.data.email);
+                // Store this URL for later use after verification
+                await AsyncStorage.setItem('pending_profile_picture', gravatarUrl);
+            }
             return response.data;
         } catch (error) {
             console.error("Registration Error Full:", error);
@@ -29,8 +39,23 @@ export const authService = {
             await AsyncStorage.setItem('access_token', access_token);
             await AsyncStorage.setItem('refresh_token', refresh_token);
             const userData = { id, full_name, email, mobile_number, is_active, loggedin_at, profile_picture};
+            // If no profile picture, set Gravatar
+            if (!profile_picture) {
+                const gravatarUrl = getGravatarUrl(email);
+                userData.profile_picture = gravatarUrl;
+            
+                // Update the profile with the Gravatar
+                try {
+                    await apiClient.put('/users/profile', {
+                        profile_picture: gravatarUrl
+                    });
+                } catch (profileError) {
+                    console.error("Failed to update profile with Gravatar:", profileError);
+                }
+            }
+            
+            
             await AsyncStorage.setItem('user_data', JSON.stringify(userData));
-
             return userData;
         } catch(error) {
             console.error("Login Error:", error.response?.data || error);
@@ -74,6 +99,18 @@ export const authService = {
     verifyAccount: async(verificationData) => {
         try{
             const response = await apiClient.post('/users/verify', verificationData);
+            const pendingPicture = await AsyncStorage.getItem('pending_profile_picture');
+            if (pendingPicture) {
+                try {
+                    await apiClient.put('/users/profile', {
+                        profile_picture: pendingPicture
+                    });
+                    // Clean up storage
+                    await AsyncStorage.removeItem('pending_profile_picture');
+                } catch (profileError) {
+                    console.error("Failed to update profile with Gravatar after verification:", profileError);
+                }
+            }
             return response.data;
         } catch (error){
             throw error.response?.data || error;
@@ -113,6 +150,23 @@ export const authService = {
     getCurrentUser: async() =>{
         try{
             const response = await apiClient.get('/users/me');
+            // If we have user data but no profile picture, set Gravatar
+            if (userData && userData.email && !userData.profile_picture) {
+                const gravatarUrl = getGravatarUrl(userData.email);
+                userData.profile_picture = gravatarUrl;
+            
+                // Also update the backend
+                try {
+                    await apiClient.put('/users/profile', {
+                        profile_picture: gravatarUrl
+                    });
+                } catch (profileError) {
+                    console.error("Failed to update profile with Gravatar:", profileError);
+                }
+            }
+        
+            // Update local storage
+            await AsyncStorage.setItem('user_data', JSON.stringify(userData));
             return response.data;
         } catch(error){
             throw error.response?.data || error;
@@ -166,8 +220,14 @@ export const authService = {
             const userData = await AsyncStorage.getItem('user_data')
             if (userData) {
                 const parseData = JSON.parse(userData)
-                const updateData = {...parseData, ...response.data}
+                const updateData = {...parseData}
+                for (const key in response.data){
+                    if (response.data[key] !== null && response.data[key] !== undefined){
+                        updateData[key] = response.data[key]
+                    }
+                }
                 await AsyncStorage.setItem('user_data', JSON.stringify(updateData));
+                return updateData;
             }
             return response.data;
         } catch (error) {

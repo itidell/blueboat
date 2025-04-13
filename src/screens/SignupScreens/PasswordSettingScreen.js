@@ -6,6 +6,8 @@ import * as Font from 'expo-font';
 import { authService } from "../../api/authService";
 import { useAuth } from '../../api/authContext';
 import { ScrollView } from "react-native-gesture-handler";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const screenWidth = Dimensions.get('window').width;
 const EyeIcon = ({ visible }) => (
   <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#666">
@@ -69,7 +71,8 @@ const NewPasswordScreen = () =>{
             });
             
             console.log("Sending registration data:", JSON.stringify(userData));
-            
+            // Store email temporarily for verification
+            await AsyncStorage.setItem('temp_user_email', registrationData.email);
             console.log("Sending request");
             const response = await authService.register(userData);
             console.log("Registration response:", response);

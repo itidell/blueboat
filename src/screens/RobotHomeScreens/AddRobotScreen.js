@@ -6,6 +6,7 @@ import * as Font from 'expo-font';
 
 import BottomNavBar from '../../Components/BottomNavBar';
 import Header from '../../Components/Header';
+import { useRobot } from '../../api/robotContext';
 
 const ErrorIcon = () => (
   <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -19,6 +20,7 @@ const ErrorIcon = () => (
 
 const AddRobotScreen = () => {
   const navigation = useNavigation();
+  const { addRobot, loading} = useRobot();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [robotId, setRobotId] = useState('');
   const [activeTab, setActiveTab] = useState('add');
@@ -38,11 +40,20 @@ const AddRobotScreen = () => {
   }, []);
 
 
-  const handleSave = () => {
+  const handleSave =async () => {
     if (robotId.trim()) {
-      navigation.navigate('AddRobotLoading', {robotId});
-    } else {
-      
+      setErrorMessage('');
+      try{
+        const newRobot = await addRobot({
+          robotId: robotId,
+          status: 'inactive',
+        })
+        navigation.navigate('AddRobotLoading', {newRobot});
+      }catch(error){
+        console.error('Error saving robot:', error);
+        setErrorMessage(error.message || 'Failed to add')
+      }
+    } else { 
       setErrorMessage("Please enter a robot ID");
     }
   };

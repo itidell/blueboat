@@ -1,21 +1,17 @@
 import React, {useState, useEffect} from "react";
 import { useNavigation } from "@react-navigation/native";
-import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar, ActivityIndicator } from "react-native";
 import * as Font from 'expo-font';
 
 import Header from "../Components/Header";
+import { useRobot } from "../api/robotContext";
 
 const HomeScreen = () => {
     const navigation = useNavigation();
+    const {robots, loading, loadRobots} = useRobot();
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState('EN');
     const [notificationsEnabled, setNotificationsEnabled] = useState(true)
-    const [robots, setRobots] = useState([
-        { id: 'ROBOT_1', status: 'OFF' },
-        { id: 'ROBOT_2', status: 'ON' },
-        { id: 'ROBOT_3', status: 'ON' },
-        { id: 'ROBOT_5', status: 'OFF' },
-    ])
     
     const navigateToRobotHome = (robotId) =>{
         navigation.navigate('RobotHome', {robotId});
@@ -41,7 +37,65 @@ const HomeScreen = () => {
         loadFonts();
     }, []);
     if (!fontsLoaded) return <View style={styles.container}><Text>Loading...</Text></View>;
-    
+    const renderRobotGrid = () => {
+        if (loading) {
+            return (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#57C3EA" />
+                    <Text style={styles.loadingText}>Loading robots...</Text>
+                </View>
+            );
+        }
+        
+        if (robots.length === 0) {
+            return (
+                <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyText}>No robots added yet</Text>
+                    <Text style={styles.emptySubText}>Tap the + button below to add your first robot</Text>
+                </View>
+            );
+        }
+        
+        // Create rows of robots (2 per row)
+        const rows = [];
+        for (let i = 0; i < Math.ceil(robots.length / 2); i++) {
+            const rowRobots = robots.slice(i * 2, i * 2 + 2);
+            rows.push(
+                <View key={`row-${i}`} style={styles.robotRow}>
+                    {rowRobots.map((robot, index) => (
+                        <TouchableOpacity 
+                            key={robot.robot_id}
+                            style={styles.robotItem}
+                            onPress={() => navigateToRobotHome(robot.robot_id)}
+                        >
+                            <View style={styles.robotIconContainer}>
+                                <Image 
+                                    source={require('../../assets/images/yacht.png')}
+                                    style={styles.robotIcon}
+                                />
+                            </View>
+                            <Text style={styles.robotIdText}>{robot.robot_id}</Text>
+                            <View style={styles.statusContainer}>
+                                <View style={[
+                                    styles.statusIndicator, 
+                                    (robot.status === 'ON' || robot.status === 'active') ? styles.statusOn : styles.statusOff
+                                ]} />
+                                <Text style={styles.statusText}>
+                                    {(robot.status === 'ON' || robot.status === 'active') ? 'ON' : 'OFF'}
+                                </Text>   
+                            </View>                           
+                        </TouchableOpacity>
+                    ))}
+                    
+                    {/* If we have an odd number of robots, add an empty placeholder */}
+                    {rowRobots.length === 1 && <View style={styles.robotItem} />}
+                </View>
+            );
+        }
+        
+        return rows;
+    };
+
     return(
         <SafeAreaView style={styles.container}>
             <StatusBar backgroundColor="#57C3EA" barStyle="dark-content" />
@@ -55,74 +109,7 @@ const HomeScreen = () => {
 
             <View style={styles.robotGridContainer}>
                 <View style={styles.robotGrid}>
-                    <View style={styles.robotRow}>
-                        <TouchableOpacity 
-                            style = {styles.robotItem}
-                            onPress={() => navigateToRobotHome('ROBOT_1')}
-                        >
-                            <View style={styles.robotIconContainer}>
-                                <Image 
-                                    source={require('../../assets/images/yacht.png')}
-                                    style={styles.robotIcon}
-                                />
-                            </View>
-                            <Text style={styles.robotIdText}>ROBOT_1</Text>
-                            <View style={styles.statusContainer}>
-                                <View style={[styles.statusIndicator, robots[0].status === 'ON' ? styles.statusOn : styles.statusOff]} />
-                                <Text style={styles.statusText}>{robots[0].status}</Text>   
-                            </View>                           
-                        </TouchableOpacity>
-                        <TouchableOpacity 
-                            style = {styles.robotItem}
-                            onPress={() => navigateToRobotHome('ROBOT_3')}
-                        >
-                            <View style={styles.robotIconContainer}>
-                                <Image 
-                                    source={require('../../assets/images/yacht.png')}
-                                    style={styles.robotIcon}
-                                />
-                            </View>
-                            <Text style={styles.robotIdText}>ROBOT_3</Text>
-                            <View style={styles.statusContainer}>
-                                <View style={[styles.statusIndicator, robots[2].status === 'ON' ? styles.statusOn : styles.statusOff]} />
-                                <Text style={styles.statusText}>{robots[2].status}</Text>    
-                            </View>                       
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.robotRow}>
-                        <TouchableOpacity 
-                            style = {styles.robotItem}
-                            onPress={() => navigateToRobotHome('ROBOT_2')}
-                        >
-                            <View style={styles.robotIconContainer}>
-                                <Image 
-                                    source={require('../../assets/images/yacht.png')}
-                                    style={styles.robotIcon}
-                                />
-                            </View>
-                            <Text style={styles.robotIdText}>ROBOT_2</Text>
-                            <View style={styles.statusContainer}>
-                                <View style={[styles.statusIndicator, robots[1].status === 'ON' ? styles.statusOn : styles.statusOff]} />
-                                <Text style={styles.statusText}>{robots[1].status}</Text>    
-                            </View>                        
-                        </TouchableOpacity>
-                        <TouchableOpacity 
-                            style = {styles.robotItem}
-                            onPress={() => navigateToRobotHome('ROBOT_5')}
-                        >
-                            <View style={styles.robotIconContainer}>
-                                <Image 
-                                    source={require('../../assets/images/yacht.png')}
-                                    style={styles.robotIcon}
-                                />
-                            </View>
-                            <Text style={styles.robotIdText}>ROBOT_5</Text>
-                            <View style={styles.statusContainer}>
-                                <View style={[styles.statusIndicator, robots[3].status === 'ON' ? styles.statusOn : styles.statusOff]} />
-                                <Text style={styles.statusText}>{robots[3].status}</Text>    
-                            </View>                       
-                        </TouchableOpacity>
-                    </View>
+                    {renderRobotGrid()}
                 </View>
                 <TouchableOpacity 
                     style = {styles.addRobotButton}
@@ -230,6 +217,36 @@ const styles = StyleSheet.create({
     addRobot:{
         width: 40,
         height: 40,
+    },
+    loadingContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 50,
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#333',
+        fontFamily: 'Poppins_semibold',
+    },
+    emptyContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 50,
+    },
+    emptyText: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#333',
+        marginBottom: 10,
+        fontFamily: 'Poppins_semibold',
+    },
+    emptySubText: {
+        fontSize: 14,
+        color: '#666',
+        textAlign: 'center',
+        paddingHorizontal: 20,
+        fontFamily: 'Poppins_semibold',
     },
 });
 

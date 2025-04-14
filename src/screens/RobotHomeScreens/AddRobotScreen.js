@@ -48,7 +48,7 @@ const AddRobotScreen = () => {
           robot_id: robotId,
           status: 'inactive',
         })
-        navigation.navigate('AddRobotLoading', {robot_id : robotId});
+        navigation.navigate('AddRobotLoading', {robotId : robotId});
       }catch(error){
         console.error('Error saving robot:', error);
         setErrorMessage(error.message || 'Failed to add')

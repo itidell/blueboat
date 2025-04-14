@@ -29,7 +29,7 @@ import { AuthProvider } from './src/api/authContext.js';
 import { Linking } from 'react-native';
 import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { RobotProvider } from './src/api/robotContext.js';
 
 const Stack = createStackNavigator();
 const customTransition = {
@@ -84,6 +84,7 @@ export default function App(){
     
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>
+      <RobotProvider>
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Splash"
@@ -591,6 +592,7 @@ export default function App(){
           />
       </Stack.Navigator>
       </NavigationContainer>
+      </RobotProvider>
       </AuthProvider>
     </GestureHandlerRootView>
   )

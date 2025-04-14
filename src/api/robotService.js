@@ -2,13 +2,15 @@ import apiClient from "./api";
 
 export const robotService = {
     createRobot: async (robotData) => {
-        try{
-            const response = await apiClient.post('/robots/create', robotData);
-            return response.data;
-        }catch (error){
-            console.error("Robot creation error:", error.response?.data || error);
-            throw error.response?.data || error;
-        }
+      try{
+        console.log("Attempting to create robot with data:", JSON.stringify(robotData));
+        const response = await apiClient.post('/robots/create', robotData);
+        return response.data;
+      }catch (error){
+        console.error("Robot creation error:", error.response?.status);
+        console.error("Error details:", error.response?.data);
+        throw error.response?.data || error;
+      }
     },
 
     getUserRobots: async () => {

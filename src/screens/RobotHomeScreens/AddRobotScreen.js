@@ -45,10 +45,10 @@ const AddRobotScreen = () => {
       setErrorMessage('');
       try{
         const newRobot = await addRobot({
-          robotId: robotId,
+          robot_id: robotId,
           status: 'inactive',
         })
-        navigation.navigate('AddRobotLoading', {newRobot});
+        navigation.navigate('AddRobotLoading', {robot_id : robotId});
       }catch(error){
         console.error('Error saving robot:', error);
         setErrorMessage(error.message || 'Failed to add')

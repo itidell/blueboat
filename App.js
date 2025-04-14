@@ -30,6 +30,7 @@ import { Linking } from 'react-native';
 import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RobotProvider } from './src/api/robotContext.js';
+import { NotificationProvider } from './src/api/notificationContext.js';
 
 const Stack = createStackNavigator();
 const customTransition = {
@@ -85,6 +86,7 @@ export default function App(){
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>
       <RobotProvider>
+      <NotificationProvider>
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Splash"
@@ -592,6 +594,7 @@ export default function App(){
           />
       </Stack.Navigator>
       </NavigationContainer>
+      </NotificationProvider>
       </RobotProvider>
       </AuthProvider>
     </GestureHandlerRootView>

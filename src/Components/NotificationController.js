@@ -522,4 +522,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NotificationController;
+export default NotificationController

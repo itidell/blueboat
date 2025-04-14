@@ -69,7 +69,7 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
       icon: require('../../../assets/images/location.png'),
       onPress: () => navigation.navigate('LocationAndController', {robotId}),
       color: '#E8F4EA',
-      angle: 45, // Position at 45 degrees on the circle
+      angle: 135, // Position at 45 degrees on the circle
     },
     {
       id: 'emergency',
@@ -77,7 +77,7 @@ const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
       icon: require('../../../assets/images/emergency-stop.png'), // You'll need this image
       onPress: handleEmergencyStop,
       color: '#FF3B30',
-      angle: 135, // Position at 135 degrees
+      angle: 45, // Position at 135 degrees
     },
     {
       id: 'storage',
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10, // Increased from 8 to 10
     paddingVertical: 3, // Increased from 2 to 3
     borderRadius: 12, // Increased from 10 to 12
-    maxWidth: 140, // Added maxWidth to control text wrapping
+    maxWidth: 160, // Added maxWidth to control text wrapping
   },
 });
 

@@ -2,7 +2,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiClient from './api';
-
+import { useAuth } from './authContext';
 // Notification types
 export const NOTIFICATION_TYPES = {
   BATTERY_LOW: 'battery_low',
@@ -17,26 +17,29 @@ const NotificationContext = createContext();
 export const useNotifications = () => useContext(NotificationContext);
 
 export const NotificationProvider = ({ children }) => {
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [notificationSettings, setNotificationSettings] = useState({
-    [NOTIFICATION_TYPES.BATTERY_LOW]: true,
-    [NOTIFICATION_TYPES.NEW_ROBOT]: true,
-    [NOTIFICATION_TYPES.STORAGE_FULL]: true,
-    [NOTIFICATION_TYPES.ROBOT_STUCK]: true
-  });
+    const {user, isAuthenticated} = useAuth();
+    const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+    const [notificationSettings, setNotificationSettings] = useState({
+        [NOTIFICATION_TYPES.BATTERY_LOW]: true,
+        [NOTIFICATION_TYPES.NEW_ROBOT]: true,
+        [NOTIFICATION_TYPES.STORAGE_FULL]: true,
+        [NOTIFICATION_TYPES.ROBOT_STUCK]: true
+    });
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
   // Load saved notification state and settings on mount
   useEffect(() => {
-    loadNotificationState();
-    loadNotifications();
+    if (isAuthenticated){
+        loadNotificationState();
+        loadNotifications();
     
-    // Set up polling for real-time notifications
-    const interval = setInterval(checkForNewNotifications, 30000); // Check every 30 seconds
+        // Set up polling for real-time notifications
+        const interval = setInterval(checkForNewNotifications, 30000); // Check every 30 seconds
     
-    return () => clearInterval(interval);
-  }, []);
+        return () => clearInterval(interval);
+    }
+  }, [isAuthenticated]);
 
   // Load notification state from storage
   const loadNotificationState = async () => {

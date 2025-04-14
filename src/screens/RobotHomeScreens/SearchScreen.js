@@ -58,7 +58,7 @@ const SearchScreen = () => {
             screen: 'RobotHome',
             params: { robotId } 
           });
-        setActiveTab('home');
+          setActiveTab('home');
       }
     }catch(err){
       setSearchError(err.message || 'Robot not found. Please check the ID and try again');
@@ -66,9 +66,6 @@ const SearchScreen = () => {
       setIsSearching(false)
     }
     console.log('Searching for:', searchQuery);
-  };
-  const handleHomePress = () =>{
-    navigation.navigate('MainHome');
   };
   const handleLanguageChange = (language) => {
     setSelectedLanguage(language);

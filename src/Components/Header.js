@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         paddingHorizontal: 15,
-        paddingTop: 5,
+        paddingTop:15,
         paddingBottom: 5,
     },
     welcomeContainer: {

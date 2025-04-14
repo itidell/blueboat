@@ -228,13 +228,13 @@ const styles = StyleSheet.create({
   logoContainer: {
     flexDirection: 'row', 
     alignItems: 'center',
+    paddingTop: 15,
   },
   logoImage: {
     width: 80,
     height: 80,
     resizeMode: 'contain',
     margin:0,
-    
   },
   titleContainer: {
     alignItems: 'center',

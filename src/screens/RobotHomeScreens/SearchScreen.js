@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar, TextInput} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar, TextInput, Keyboard} from 'react-native';
 import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
 import Header from '../../Components/Header';
+import { useRobot } from '../../api/robotContext';
 
 
 const SearchScreen = () => {
@@ -11,8 +12,10 @@ const SearchScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('EN');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [activeTab, setActiveTab] = useState('search');
-
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState(null);
+  const [validationError, setValidationError] = useState('');
+  const { getRobot, currentRobot, loading, error, setCurrentRobot} = useRobot();
   useEffect(() => {
     const loadFonts = async () => {
       await Font.loadAsync({
@@ -22,8 +25,46 @@ const SearchScreen = () => {
     };
     loadFonts();
   }, []);
+  useEffect(() => {
+    if(searchQuery){
+      setValidationError('');
+      setSearchError(null);
+    }
+  }, [searchQuery]);
 
-  const handleSearch = () => {
+  const validateRobotId = (id) =>{
+    if (!id || id.trim() === ''){
+      return 'Robot ID cannot be empty';
+    }
+    return ''
+  }
+  const handleSearch = async() => {
+    Keyboard.dismiss();
+    
+    const validationMessage = validateRobotId(searchQuery);
+    if (validationMessage){
+      setValidationError(validationMessage);
+      return;
+    }
+
+    setIsSearching(true);
+    setSearchError(null);
+
+    try{
+      const robotId = searchQuery.trim();
+      const robot = await getRobot(robotId);
+      if (robot){
+        navigation.navigate('MainHome', { 
+            screen: 'RobotHome',
+            params: { robotId } 
+          });
+        setActiveTab('home');
+      }
+    }catch(err){
+      setSearchError(err.message || 'Robot not found. Please check the ID and try again');
+    }finally{
+      setIsSearching(false)
+    }
     console.log('Searching for:', searchQuery);
   };
   const handleHomePress = () =>{
@@ -37,7 +78,11 @@ const SearchScreen = () => {
   const handleNotificationChange = (isEnabled) => {
     setNotificationsEnabled(isEnabled);
   }
-
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setSearchError(null);
+    setValidationError('');
+  };
   if (!fontsLoaded) return <View style={styles.container}><Text>Loading...</Text></View>;
 
   return (
@@ -58,14 +103,17 @@ const SearchScreen = () => {
 
       {/* Search Input Container */}
       <View style={styles.searchContainer}>
-        <View style={styles.inputContainer}>
+        <View style={[styles.inputContainer,
+              validationError ? styles.inputContainerError: null]}>
           <TextInput
             style={styles.searchInput}
             placeholder="ROBOT ID..."
             value={searchQuery}
             onChangeText={setSearchQuery}
+            autoCapitalize='none'
+            autoCorrect={false}
           />
-          <TouchableOpacity style={styles.searchIconButton}>
+          <TouchableOpacity style={styles.searchIconButton} onPress={handleSearch}>
             <Image 
               source={require('../../../assets/images/search1.png')}
               style={styles.searchIcon}
@@ -135,6 +183,9 @@ const styles = StyleSheet.create({
     color: '#098BEA',
     fontSize: 16,
     fontWeight: '500',
+  },
+  inputContainerError: {
+    borderColor: '#FF4C4C',
   },
 });
 

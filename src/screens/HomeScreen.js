@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from "react";
-import { useNavigation } from "@react-navigation/native";
+import React, {useState, useEffect, useCallback} from "react";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar, ActivityIndicator } from "react-native";
 import * as Font from 'expo-font';
 
@@ -27,6 +27,7 @@ const HomeScreen = () => {
         setNotificationsEnabled(isEnabled);
     }
 
+    // Load fonts when component mounts
     useEffect(() => {
         const loadFonts = async () => {
             await Font.loadAsync({
@@ -36,7 +37,23 @@ const HomeScreen = () => {
         };
         loadFonts();
     }, []);
+
+    // Load robots when component mounts
+    useEffect(() => {
+        loadRobots();
+    }, []);
+
+    // Refresh robots when screen comes into focus
+    useFocusEffect(
+        useCallback(() => {
+            console.log("HomeScreen in focus - refreshing robots");
+            loadRobots();
+            return () => {};
+        }, [])
+    );
+
     if (!fontsLoaded) return <View style={styles.container}><Text>Loading...</Text></View>;
+    
     const renderRobotGrid = () => {
         if (loading) {
             return (
@@ -250,4 +267,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default HomeScreen
+export default HomeScreen;

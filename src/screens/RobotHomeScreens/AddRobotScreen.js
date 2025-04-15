@@ -25,7 +25,7 @@ const ErrorIcon = () => (
 
 const AddRobotScreen = () => {
   const navigation = useNavigation();
-  const { addRobot, loading: apiLoading } = useRobot();
+  const { addRobot, loading: apiLoading, requestRobotAccess } = useRobot();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [mode, setMode] = useState('create'); // 'create' or 'join'
 
@@ -37,6 +37,8 @@ const AddRobotScreen = () => {
   const [joinRobotId, setJoinRobotId] = useState('');
   const [ownerEmail, setOwnerEmail] = useState('');
   const [joinErrorMessage, setJoinErrorMessage] = useState('');
+  const [joiLoading, setJoinLoading] = useState(false)
+
 
   // Shared State (original Header component state if needed)
   const [activeTab, setActiveTab] = useState('add'); // For BottomNavBar
@@ -90,13 +92,37 @@ const AddRobotScreen = () => {
       setJoinErrorMessage(errors.join(' '));
       return;
     }
+    
     try {
+      setJoinLoading(true);
       console.log('Attempting to join robot:', joinRobotId, 'owned by:', ownerEmail);
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
-      navigation.navigate('AddRobotLoading', { robotId: joinRobotId, ownerEmail: ownerEmail, action: 'join' });
+      
+      // Use the actual API function from context instead of the timeout
+      const result = await requestRobotAccess(joinRobotId, ownerEmail);
+      
+      setJoinLoading(false);
+      
+      // Show success alert
+      Alert.alert(
+        "Request Sent",
+        "Your access request has been sent to the robot owner. You'll be notified when they respond.",
+        [{ 
+          text: "OK", 
+          onPress: () => navigation.navigate('AddRobotLoading', { 
+            robotId: joinRobotId, 
+            ownerEmail: ownerEmail, 
+            action: 'join' 
+          })
+        }]
+      );
     } catch (error) {
+      setJoinLoading(false);
       console.error('Error joining robot:', error);
-      setJoinErrorMessage(error.message || 'Failed to join robot. Check details.');
+      setJoinErrorMessage(
+        error.response?.data?.detail || 
+        error.message || 
+        'Failed to join robot. Check details and try again.'
+      );
     }
   };
 

@@ -55,7 +55,7 @@ export const robotService = {
     },
     recordRobotAccess: async (robotId) =>{
       try{
-        const response = await apiClient.apiClient.post(`/robots/${robotId}/access-notification`);
+        const response = await apiClient.post(`/robots/${robotId}/access-notification`);
         return response.data;
       }catch(error){
         console.error("Record robot access error:", error.response?.data || error)
@@ -72,7 +72,7 @@ export const robotService = {
           return response.data;
       } catch (error) {
           console.error("Request robot access error:", error.response?.data || error);
-          throw error.response?.data || error;
+          throw error.response?.data?.detail || error;
       }
     },
 
@@ -82,7 +82,7 @@ export const robotService = {
         return response.data;
       } catch (error) {
         console.error("Approve robot access error:", error.response?.data || error);
-        throw error.response?.data || error;
+        throw error.response?.data?.detail || error;
       }
     }
 

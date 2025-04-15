@@ -14,8 +14,9 @@ const NotificationController = () => {
     deleteNotification,
     clearAllNotifications,
     toggleNotifications,
-    toggleNotificationType
+    toggleNotificationType,
   } = useNotifications();
+  
 
   // Local UI state
   const [notificationModalVisible, setNotificationModalVisible] = useState(false);

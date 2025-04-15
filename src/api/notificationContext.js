@@ -8,7 +8,8 @@ export const NOTIFICATION_TYPES = {
   BATTERY_LOW: 'battery_low',
   NEW_ROBOT: 'new_robot',
   STORAGE_FULL: 'storage_full',
-  ROBOT_STUCK: 'robot_stuck'
+  ROBOT_STUCK: 'robot_stuck',
+  ACCESS_REQUEST: 'access_request'
 };
 
 // Create context
@@ -274,6 +275,15 @@ export const NotificationProvider = ({ children }) => {
       robotId
     );
   };
+  const notifyAccessRequest = (robotId, requesterName) =>{
+    return addNotification(
+      NOTIFICATION_TYPES.ACCESS_REQUEST,
+      'Robot Access Request',
+      `${requesterName} has requested access to robot ${robotId}`,
+      robotId,
+      {requesterId}
+    )
+  }
 
   return (
     <NotificationContext.Provider
@@ -290,6 +300,7 @@ export const NotificationProvider = ({ children }) => {
         markAllAsRead,
         deleteNotification,
         clearAllNotifications,
+
         
         // Settings management
         toggleNotifications,
@@ -301,7 +312,8 @@ export const NotificationProvider = ({ children }) => {
         notifyBatteryLow,
         notifyNewRobot,
         notifyStorageFull,
-        notifyRobotStuck
+        notifyRobotStuck,
+        notifyAccessRequest,
       }}
     >
       {children}

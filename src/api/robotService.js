@@ -76,6 +76,15 @@ export const robotService = {
       }
     },
 
+    getPendingAccessRequest: async () =>{
+      try{
+        const response = await apiClient.get('/robots/pending-access-requests');
+        return response.data;
+      }catch (error){
+        console.error("Get pending requests error:", error.response?.data || error);
+        throw error.response?.data || error;
+      }
+    },
     approveRobotAccess: async (robotId, requesterId) => {
       try {
         const response = await apiClient.post(`/robots/approve-access/${robotId}/${requesterId}`);

@@ -52,6 +52,38 @@ export const robotService = {
           console.error("Delete robot error:", error.response?.data || error);
           throw error.response?.data || error;
         }
+    },
+    recordRobotAccess: async (robotId) =>{
+      try{
+        const response = await apiClient.apiClient.post(`/robots/${robotId}/access-notification`);
+        return response.data;
+      }catch(error){
+        console.error("Record robot access error:", error.response?.data || error)
+        throw error.response?.data || error;
+      }
+    },
+
+    requestRobotAccess: async (robotId, ownerEmail) => {
+      try {
+          const response = await apiClient.post('/robots/request-access', {
+            robot_id: robotId,
+            owner_email: ownerEmail
+          });
+          return response.data;
+      } catch (error) {
+          console.error("Request robot access error:", error.response?.data || error);
+          throw error.response?.data || error;
+      }
+    },
+
+    approveRobotAccess: async (robotId, requesterId) => {
+      try {
+        const response = await apiClient.post(`/robots/approve-access/${robotId}/${requesterId}`);
+        return response.data;
+      } catch (error) {
+        console.error("Approve robot access error:", error.response?.data || error);
+        throw error.response?.data || error;
+      }
     }
 
 };

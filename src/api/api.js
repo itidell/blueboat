@@ -52,7 +52,7 @@ apiClient.interceptors.response.use(
                     {},
                     {
                         headers: {
-                            'Authorization': `Bearer ${refreshToken}`  // Send in header
+                            'refresh_token': refreshToken  // Send in header
                           }
                     }
                 );

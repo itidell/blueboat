@@ -105,6 +105,51 @@ export const RobotProvider = ({ children }) => {
     }
   };
 
+  const recordRobotAccess = async (robotId) =>{
+    try{
+      setLoading(true);
+      setError(null);
+      const result = await robotService.recordRobotAccess(robotId);
+      return result;
+    } catch (error){
+      console.error("Error recording robot access", error);
+      setError(error.message || "Failed to record robot access");
+      throw error;
+    } finally{
+      setLoading(false);
+    }
+  };
+
+  const requestRobotAccess = async (robotId, ownerEmail) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await robotService.requestRobotAccess(robotId, ownerEmail);
+      return result;
+    } catch (error) {
+      console.error("Error requesting robot access:", error); 
+      setError(error.response?.data?.detail || error.message || "Failed to request robot access");
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const approveRobotAccess = async (robotId, requesterId) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await robotService.approveRobotAccess(robotId, requesterId);
+      return result;
+    } catch (error) {
+      console.error("Error approving robot access:", error);
+      setError(error.response?.data?.detail || error.message || "Failed to approve robot access");
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Load robots on mount
   useEffect(() => {
     loadRobots();
@@ -122,7 +167,10 @@ export const RobotProvider = ({ children }) => {
         updateRobot,
         deleteRobot,
         getRobot,
-        setCurrentRobot
+        setCurrentRobot,
+        recordRobotAccess,
+        requestRobotAccess,
+        approveRobotAccess
       }}
     >
       {children}

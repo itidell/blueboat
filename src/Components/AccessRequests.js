@@ -1,6 +1,6 @@
 // src/components/AccessRequests.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, ActivityIndicator, Alert } from 'react-native';
 import { useNotifications, NOTIFICATION_TYPES } from '../api/notificationContext';
 import { useRobot } from '../api/robotContext';
 import { formatDistanceToNow } from 'date-fns';
@@ -74,20 +74,21 @@ const AccessRequests = () => {
       await loadPendingAccessRequests();
     } catch (error) {
       console.error('Failed to approve request:', error);
+      Alert.alert("Error", error.message || "Failed to approve access request");
     } finally {
-      setProcessingIds(prev => prev.filter(id => id !== request.notification_id || request.id));
+      setProcessingIds(prev => prev.filter(id => id !== request.notification_id));
     }
   };
 
   const handleDeny = async (request) => {
     if (!request.notification_id) {
       console.error("Missing notification ID for denial", request);
+      Alert.alert("Error", "Missing notification ID for denial");
       return;
     }
     
     try {
       setProcessingIds(prev => [...prev, request.notification_id]);
-      
       
       if (request.notification_id) {
         await markAsRead(request.notification_id);
@@ -95,9 +96,10 @@ const AccessRequests = () => {
       
       Alert.alert("Success", "Access request denied");
       await loadPendingAccessRequests();
-      await loadPendingAccessRequests();
+      // Removed duplicate call to loadPendingAccessRequests
     } catch (error) {
       console.error('Failed to deny request:', error);
+      Alert.alert("Error", error.message || "Failed to deny access request");
     } finally {
       setProcessingIds(prev => prev.filter(id => id !== request.notification_id));
     }

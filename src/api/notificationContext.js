@@ -117,14 +117,14 @@ export const NotificationProvider = ({ children }) => {
     
     if (filteredNotifications.length === 0) return;
     
-    const processNewNotifications = filteredNotifications.map(notification => ({
+    const processedNewNotifications = filteredNotifications.map(notification => ({
       ...notification,
       data: notification.actor_id ? { requesterId: notification.actor_id} : null
     }));
 
     // Add to existing notifications
     const updatedNotifications = [
-      ...filteredNotifications,
+      ...processedNewNotifications,
       ...notifications
     ];
     
@@ -135,8 +135,8 @@ export const NotificationProvider = ({ children }) => {
 
   // Add a new notification locally
   const addNotification = (type, title, message, robotId = null, data = null) => {
-    if (!notificationsEnabled || !notificationSettings[type]) {
-      return; // Skip if notifications are disabled globally or for this type
+    if (!notificationsEnabled || notificationSettings[type] === false) {
+      return null; // Skip if notifications are disabled globally or for this type
     }
     
     const newNotification = {
@@ -160,32 +160,36 @@ export const NotificationProvider = ({ children }) => {
 
   // Mark a notification as read
   const markAsRead = async (notificationId) => {
-    try{
+    try {
       await apiClient.put(`/notifications/${notificationId}/read`);
 
       const updatedNotifications = notifications.map(notification => 
-        notification.id === notificationId ? {...notification, read : true} : notification
+        notification.id === notificationId ? {...notification, read: true} : notification
       );
       setNotifications(updatedNotifications);
       setUnreadCount(updatedNotifications.filter(n => !n.read).length);
       saveNotifications(updatedNotifications);
-    }catch(error){
+      return true;
+    } catch (error) {
       console.error('Error marking notification as read:', error);
+      return false;
     }
   };
 
   // Mark all notifications as read
   const markAllAsRead = async () => {
-    try{
+    try {
       await apiClient.put('/notifications/mark-all-read');
 
-      const updatedNotifications = notifications.map(notification =>({ ...notification, read: true}));
+      const updatedNotifications = notifications.map(notification => ({ ...notification, read: true }));
     
       setNotifications(updatedNotifications);
       setUnreadCount(0);
       saveNotifications(updatedNotifications);
-    } catch(error){
+      return true;
+    } catch (error) {
       console.error('Error marking all notifications as read:', error);
+      return false;
     }
   };
 
@@ -194,6 +198,7 @@ export const NotificationProvider = ({ children }) => {
     setNotifications([]);
     setUnreadCount(0);
     saveNotifications([]);
+    return true;
   };
 
   // Delete a specific notification
@@ -205,6 +210,7 @@ export const NotificationProvider = ({ children }) => {
     setNotifications(updatedNotifications);
     setUnreadCount(updatedNotifications.filter(n => !n.read).length);
     saveNotifications(updatedNotifications);
+    return true;
   };
 
   // Toggle notifications enabled/disabled
@@ -248,6 +254,8 @@ export const NotificationProvider = ({ children }) => {
     } catch (error) {
       console.error('Error saving notification settings:', error);
     }
+    
+    return settings;
   };
 
   // Helper function to determine if notification type is enabled
@@ -294,16 +302,20 @@ export const NotificationProvider = ({ children }) => {
       robotId
     );
   };
-  const notifyAccessRequest = (robotId, requesterName, requesterId) =>{
-    if (!notificationsEnabled || notificationSettings[NOTIFICATION_TYPES.ACCESS_REQUEST] === false){
+  
+  const notifyAccessRequest = (robotId, requesterName, requesterId) => {
+    if (!notificationsEnabled || notificationSettings[NOTIFICATION_TYPES.ACCESS_REQUEST] === false) {
       return null;
     }
 
     const existingNotification = notifications.find(
-      n => n.type === NOTIFICATION_TYPES.ACCESS_REQUEST && n.robotId === robotId && n.data?.requesterId === requesterId && !n.read
+      n => n.type === NOTIFICATION_TYPES.ACCESS_REQUEST && 
+           n.robotId === robotId && 
+           n.data?.requesterId === requesterId && 
+           !n.read
     );
 
-    if (existingNotification){
+    if (existingNotification) {
       return existingNotification;
     }
 
@@ -313,7 +325,7 @@ export const NotificationProvider = ({ children }) => {
       `${requesterName} has requested access to robot ${robotId}`,
       robotId,
       { requesterId }
-    )
+    );
   };
   
 
@@ -332,7 +344,7 @@ export const NotificationProvider = ({ children }) => {
         markAllAsRead,
         deleteNotification,
         clearAllNotifications,
-
+        setNotificationsEnabled,
         
         // Settings management
         toggleNotifications,

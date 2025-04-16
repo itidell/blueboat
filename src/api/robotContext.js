@@ -127,6 +127,7 @@ export const RobotProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       const result = await robotService.approveRobotAccess(robotId, requesterId);
+      await loadRobots();
       await loadPendingAccessRequests();
       return result;
     } catch (error) {

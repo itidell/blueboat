@@ -2,6 +2,7 @@ import { View, Text, Image, StyleSheet } from "react-native";
 import LanguageSelector from "./LanguageSelector";
 import NotificationController from "./NotificationController";
 import { useAuth } from "../api/authContext";
+import NotificationCenter from "./NotificationCenter";
 
 
 const Header = ({
@@ -36,7 +37,8 @@ const Header = ({
                     <NotificationController
                         onNotificationChange={onNotificationChange}
                         initialState={notificationsEnabled}
-                    />                      
+                    />  
+                    <NotificationCenter/>                    
                 </View>
             </View>
         );

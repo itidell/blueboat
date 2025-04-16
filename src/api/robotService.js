@@ -98,7 +98,9 @@ export const robotService = {
     
     approveRobotAccess: async (robotId, requesterId) => {
         try {
-            const response = await apiClient.post(`/robots/approve-access/${robotId}/${requesterId}`);
+          const response = await apiClient.post(
+            `/robots/approve-access/${robotId}/${Number(requesterId)}`
+          );
             return response.data;
         } catch (error) {
             console.error("Approve robot access error:", error.response?.data || error);

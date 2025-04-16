@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Modal, Image, FlatList, Alert } from 'react-native';
 import { useNotifications, NOTIFICATION_TYPES } from '../api/notificationContext';
 
+
 const NotificationController = ({ onNotificationChange, initialState}) => {
   // Use the notification context
   const {
@@ -52,7 +53,7 @@ const NotificationController = ({ onNotificationChange, initialState}) => {
       case NOTIFICATION_TYPES.BATTERY_LOW:
         return require('../../assets/images/battery.png');
       case NOTIFICATION_TYPES.NEW_ROBOT:
-        return require('../../assets/images/robot.png'); // Or a more appropriate image
+        return require('../../assets/images/adding.png'); // Or a more appropriate image
       case NOTIFICATION_TYPES.STORAGE_FULL:
         return require('../../assets/images/storage.png');
       case NOTIFICATION_TYPES.ROBOT_STUCK:

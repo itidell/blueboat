@@ -34,6 +34,8 @@ const AccessRequests = () => {
   }, [visible]);
   
   useEffect(() => {
+    console.log('Pending Requests:', pendingRequests);
+    console.log('Notifications:', notifications);
     // Map pending requests to include notification details
     const requests = pendingRequests.map(request => {
       // Find matching notification
@@ -49,7 +51,7 @@ const AccessRequests = () => {
         timestamp: notification?.timestamp || request.timestamp
       };
     });
-    
+    console.log('Mapped Access Requests:', requests);
     setAccessRequests(requests);
   }, [pendingRequests, notifications]);
 

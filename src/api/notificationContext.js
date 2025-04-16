@@ -363,7 +363,9 @@ export const NotificationProvider = ({ children }) => {
       'Robot Access Request',
       `${requesterName} has requested access to robot ${robotId}`,
       robotId,
-      { requesterId }
+      { requesterId: requesterId,
+        robotId: robotId 
+      }
     );
   };
   

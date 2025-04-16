@@ -46,6 +46,8 @@ const NotificationController = () => {
         return require('../../assets/images/storage.png');
       case NOTIFICATION_TYPES.ROBOT_STUCK:
         return require('../../assets/images/stuck.png');
+      case NOTIFICATION_TYPES.ACCESS_REQUEST:
+        return require('../../assets/images/access.png');
       default:
         return require('../../assets/images/bell.png');
     }

@@ -9,7 +9,7 @@ export const NOTIFICATION_TYPES = {
   NEW_ROBOT: 'new_robot',
   STORAGE_FULL: 'storage_full',
   ROBOT_STUCK: 'robot_stuck',
-  ACCESS_REQUEST: 'access_request'
+  ACCESS_REQUEST: 'ROBOT_ACCESS_REQUESTED'
 };
 
 // Create context
@@ -275,13 +275,12 @@ export const NotificationProvider = ({ children }) => {
       robotId
     );
   };
-  const notifyAccessRequest = (robotId, requesterName) =>{
+  const notifyAccessRequest = (robotId, requesterName, requesterId) =>{
     return addNotification(
       NOTIFICATION_TYPES.ACCESS_REQUEST,
       'Robot Access Request',
       `${requesterName} has requested access to robot ${robotId}`,
       robotId,
-      {requesterId}
     )
   }
 

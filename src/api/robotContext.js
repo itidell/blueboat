@@ -189,7 +189,7 @@ export const RobotProvider = ({ children }) => {
         requestRobotAccess,
         approveRobotAccess,
         pendingRequests,
-        loadPendingAccessRequests
+        loadPendingAccessRequests,
       }}
     >
       {children}

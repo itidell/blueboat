@@ -314,7 +314,8 @@ export const NotificationProvider = ({ children }) => {
       robotId,
       { requesterId }
     )
-  }
+  };
+  
 
   return (
     <NotificationContext.Provider

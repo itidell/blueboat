@@ -5,8 +5,10 @@ import { useNotifications, NOTIFICATION_TYPES } from '../api/notificationContext
 import { useRobot } from '../api/robotContext';
 import { formatDistanceToNow } from 'date-fns';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useNavigation } from '@react-navigation/native';
 
 const AccessRequests = () => {
+  const navigation = useNavigation();
   const { 
     notifications, 
     markAsRead, 
@@ -54,23 +56,26 @@ const AccessRequests = () => {
   const handleApprove = async (request) => {
     if (!request.robot_id || !request.requester_id) {
       console.error("Missing required data for approval", request);
+      Alert.alert("Error", "Missing required data for approval");
       return;
     }
     
     try {
       setProcessingIds(prev => [...prev, request.notification_id]);
-      await approveRobotAccess(request.robot_id, request.requester_id);
+      console.log("Approving access for robot:", request.robot_id, "requester:", request.requester_id);
+      const result = await approveRobotAccess(request.robot_id, request.requester_id);
+      console.log("Approval result:", result);
       
       // Mark the notification as read if it exists
       if (request.notification_id) {
         await markAsRead(request.notification_id);
       }
-      
+      Alert.alert("Success", "Access request approved successfully");
       await loadPendingAccessRequests();
     } catch (error) {
       console.error('Failed to approve request:', error);
     } finally {
-      setProcessingIds(prev => prev.filter(id => id !== request.notification_id));
+      setProcessingIds(prev => prev.filter(id => id !== request.notification_id || request.id));
     }
   };
 
@@ -83,8 +88,13 @@ const AccessRequests = () => {
     try {
       setProcessingIds(prev => [...prev, request.notification_id]);
       
-      // Just mark the notification as read
-      await markAsRead(request.notification_id);
+      
+      if (request.notification_id) {
+        await markAsRead(request.notification_id);
+      }
+      
+      Alert.alert("Success", "Access request denied");
+      await loadPendingAccessRequests();
       await loadPendingAccessRequests();
     } catch (error) {
       console.error('Failed to deny request:', error);
@@ -97,18 +107,26 @@ const AccessRequests = () => {
     // Mark as read
     markAsRead(notification.id);
     
-    // If it's an access request notification, switch to the access requests tab
     if (notification.type === NOTIFICATION_TYPES.ACCESS_REQUEST) {
-      navigation.navigate('ApproveAccess', {
-        robotId: notification.robotId,
-        requesterId: notification.data.requesterId,
-        notificationId: notification.id
-      });
+      // First set the active tab to 'requests' to show access requests
+      setActiveTab('requests');
+      
+      // If we have the requesterId in the notification data, we can pre-select it
+      if (notification.data && notification.data.requesterId) {
+        // Look for the matching request in our access requests
+        const matchingRequest = accessRequests.find(
+          req => req.requester_id === notification.data.requesterId && 
+                 req.robot_id === notification.robotId
+        );
+        
+        if (matchingRequest) {
+          // If found, we could highlight it or scroll to it
+          // This would require additional implementation
+          console.log('Found matching request:', matchingRequest);
+        }
+      }
       return;
     }
-    
-    // Handle other notification types if needed
-    // ...
   };
 
   const renderNotificationItem = ({ item }) => {

@@ -85,8 +85,8 @@ export default function App(){
     
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>
-      <RobotProvider>
       <NotificationProvider>
+      <RobotProvider>
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Splash"
@@ -594,8 +594,8 @@ export default function App(){
           />
       </Stack.Navigator>
       </NavigationContainer>
-      </NotificationProvider>
       </RobotProvider>
+      </NotificationProvider>
       </AuthProvider>
     </GestureHandlerRootView>
   )

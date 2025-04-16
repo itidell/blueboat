@@ -5,11 +5,15 @@ import apiClient from './api';
 import { useAuth } from './authContext';
 // Notification types
 export const NOTIFICATION_TYPES = {
-  BATTERY_LOW: 'battery_low',
-  NEW_ROBOT: 'new_robot',
-  STORAGE_FULL: 'storage_full',
-  ROBOT_STUCK: 'robot_stuck',
-  ACCESS_REQUEST: 'ROBOT_ACCESS_REQUESTED'
+  BATTERY_LOW: 'BATTERY_LOW',
+  NEW_ROBOT: 'ROBOT_CREATED',
+  STORAGE_FULL: 'STORAGE_FULL',
+  ROBOT_STUCK: 'ROBOT_STUCK',
+  ACCESS_REQUEST: 'ROBOT_ACCESS_REQUESTED',
+  ROBOT_STATUS_CHANGED: 'ROBOT_STATUS_CHANGED',
+  ROBOT_ACCESS_GRANTED: 'ROBOT_ACCESS_GRANTED',
+  ROBOT_ACCESS_SHARED: 'ROBOT_ACCESS_SHARED',
+  ROBOT_ACCESSED: 'ROBOT_ACCESSED'
 };
 
 // Create context
@@ -103,16 +107,19 @@ export const NotificationProvider = ({ children }) => {
 
   // Process new notifications from the server
   const processNewNotifications = (newNotifications) => {
-    // Filter notifications based on user settings
+    // Filter notifications based on user settings and that don't already exist
+    const existingIds = new Set(notifications.map(n => n.id));
+    
     const filteredNotifications = newNotifications.filter(notification => 
-      notificationSettings[notification.type]
+      (notificationSettings[notification.type] !== false) && 
+      !existingIds.has(notification.id)
     );
     
     if (filteredNotifications.length === 0) return;
     
     // Add to existing notifications
     const updatedNotifications = [
-      ...filteredNotifications.map(n => ({ ...n, read: false })),
+      ...filteredNotifications,
       ...notifications
     ];
     
@@ -146,28 +153,34 @@ export const NotificationProvider = ({ children }) => {
   };
 
   // Mark a notification as read
-  const markAsRead = (notificationId) => {
-    const updatedNotifications = notifications.map(notification => 
-      notification.id === notificationId 
-        ? { ...notification, read: true } 
-        : notification
-    );
-    
-    setNotifications(updatedNotifications);
-    setUnreadCount(updatedNotifications.filter(n => !n.read).length);
-    saveNotifications(updatedNotifications);
+  const markAsRead = async (notificationId) => {
+    try{
+      await apiClient.put(`/notifications/${notificationId}/read`);
+
+      const updateNotifications = notifications.map(notification => 
+        notification.id === notificationId ? {...notification, read : true} : notification
+      );
+      setNotifications(updatedNotifications);
+      setUnreadCount(updatedNotifications.filter(n => !n.read).length);
+      saveNotifications(updateNotifications);
+    }catch(error){
+      console.error('Error marking notification as read:', error);
+    }
   };
 
   // Mark all notifications as read
-  const markAllAsRead = () => {
-    const updatedNotifications = notifications.map(notification => ({ 
-      ...notification, 
-      read: true 
-    }));
+  const markAllAsRead = async () => {
+    try{
+      await apiClient.put('/notifications/mark-all-read');
+
+      const updatedNotifications = notifications.map(notification =>({ ...notification, read: true}));
     
-    setNotifications(updatedNotifications);
-    setUnreadCount(0);
-    saveNotifications(updatedNotifications);
+      setNotifications(updatedNotifications);
+      setUnreadCount(0);
+      saveNotifications(updatedNotifications);
+    } catch(error){
+      console.error('Error marking all notifications as read:', error);
+    }
   };
 
   // Clear all notifications

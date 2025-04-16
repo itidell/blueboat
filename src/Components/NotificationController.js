@@ -41,13 +41,21 @@ const NotificationController = () => {
       case NOTIFICATION_TYPES.BATTERY_LOW:
         return require('../../assets/images/battery.png');
       case NOTIFICATION_TYPES.NEW_ROBOT:
-        return require('../../assets/images/robot.png');
+        return require('../../assets/images/robot.png'); // Or a more appropriate image
       case NOTIFICATION_TYPES.STORAGE_FULL:
         return require('../../assets/images/storage.png');
       case NOTIFICATION_TYPES.ROBOT_STUCK:
         return require('../../assets/images/stuck.png');
       case NOTIFICATION_TYPES.ACCESS_REQUEST:
         return require('../../assets/images/access.png');
+      case NOTIFICATION_TYPES.ROBOT_STATUS_CHANGED:
+        return require('../../assets/images/yacht-black.png'); // Add appropriate image
+      case NOTIFICATION_TYPES.ROBOT_ACCESS_GRANTED:
+        return require('../../assets/images/granted.png'); // Add appropriate image
+      case NOTIFICATION_TYPES.ROBOT_ACCESS_SHARED:
+        return require('../../assets/images/yacht-black.png'); // Add appropriate image
+      case NOTIFICATION_TYPES.ROBOT_ACCESSED:
+        return require('../../assets/images/accessed.png'); // Add appropriate image
       default:
         return require('../../assets/images/bell.png');
     }

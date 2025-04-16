@@ -135,7 +135,7 @@ export const NotificationProvider = ({ children }) => {
     }
     
     const newNotification = {
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       type,
       title,
       message,
@@ -157,12 +157,12 @@ export const NotificationProvider = ({ children }) => {
     try{
       await apiClient.put(`/notifications/${notificationId}/read`);
 
-      const updateNotifications = notifications.map(notification => 
+      const updatedNotifications = notifications.map(notification => 
         notification.id === notificationId ? {...notification, read : true} : notification
       );
       setNotifications(updatedNotifications);
       setUnreadCount(updatedNotifications.filter(n => !n.read).length);
-      saveNotifications(updateNotifications);
+      saveNotifications(updatedNotifications);
     }catch(error){
       console.error('Error marking notification as read:', error);
     }

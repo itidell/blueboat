@@ -12,8 +12,14 @@ export const RobotProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentRobot, setCurrentRobot] = useState(null);
-  const [ pendingRequests, setPendingRequests ] = useState([]);
-  const { notifyAccessRequest } = useNotifications();
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const { 
+    notifyAccessRequest, 
+    notifyAccessGranted, 
+    notifyAccessRequestSent,
+    notifyRobotAccessed,
+    refreshNotifications
+  } = useNotifications();
 
   // Load user's robots
   const loadRobots = async () => {
@@ -42,8 +48,9 @@ export const RobotProvider = ({ children }) => {
       return newRobot;
     } catch (error) {
       console.error("Error adding robot:", error);
-      setError(error.message || "Failed to add robot");
-      throw error;
+      const errorMessage = error.response?.data?.detail || error.message || "Failed to add robot";
+      setError(errorMessage);
+      throw new Error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -54,6 +61,10 @@ export const RobotProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
+      
+      // Store the old robot data for comparison (for notifications)
+      const oldRobot = robots.find(r => r.id === robotId);
+      
       const updatedRobot = await robotService.updateRobot(robotId, robotData);
       setRobots(prev => 
         prev.map(robot => robot.id === robotId ? updatedRobot : robot)
@@ -64,8 +75,9 @@ export const RobotProvider = ({ children }) => {
       return updatedRobot;
     } catch (error) {
       console.error("Error updating robot:", error);
-      setError(error.message || "Failed to update robot");
-      throw error;
+      const errorMessage = error.response?.data?.detail || error.message || "Failed to update robot";
+      setError(errorMessage);
+      throw new Error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -84,8 +96,9 @@ export const RobotProvider = ({ children }) => {
       return true;
     } catch (error) {
       console.error("Error deleting robot:", error);
-      setError(error.message || "Failed to delete robot");
-      throw error;
+      const errorMessage = error.response?.data?.detail || error.message || "Failed to delete robot";
+      setError(errorMessage);
+      throw new Error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -101,75 +114,105 @@ export const RobotProvider = ({ children }) => {
       return robot;
     } catch (error) {
       console.error("Error getting robot:", error);
-      setError(error.message || "Failed to get robot");
-      throw error;
+      const errorMessage = error.response?.data?.detail || error.message || "Failed to get robot";
+      setError(errorMessage);
+      throw new Error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  const recordRobotAccess = async (robotId) =>{
-    try{
+  const recordRobotAccess = async (robotId) => {
+    try {
       setLoading(true);
       setError(null);
       const result = await robotService.recordRobotAccess(robotId);
+      
+      // After successfully recording access, refresh notifications
+      // to ensure any new ROBOT_ACCESSED notifications are loaded
+      await refreshNotifications();
+      
       return result;
-    } catch (error){
+    } catch (error) {
       console.error("Error recording robot access", error);
-      setError(error.message || "Failed to record robot access");
-      throw error;
-    } finally{
+      const errorMessage = error.response?.data?.detail || error.message || "Failed to record robot access";
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
       setLoading(false);
     }
   };
+  
   const approveRobotAccess = async (robotId, requesterId) => {
     try {
       setLoading(true);
       setError(null);
       const result = await robotService.approveRobotAccess(robotId, requesterId);
+      
+      // Refresh data after successful approval
       await loadRobots();
       await loadPendingAccessRequests();
+      
+      // Make sure to refresh notifications to update the UI
+      await refreshNotifications();
+      
       return result;
     } catch (error) {
       console.error("Error approving robot access:", error);
-      setError(error.response?.data?.detail || error.message || "Failed to approve robot access");
-      throw error;
+      const errorMessage = error.response?.data?.detail || error.message || "Failed to approve robot access";
+      setError(errorMessage);
+      throw new Error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  const loadPendingAccessRequests = async () =>{
-    try{
+  const loadPendingAccessRequests = async () => {
+    try {
       setLoading(true);
       setError(null);
       const requests = await robotService.getPendingAccessRequest();
       setPendingRequests(requests);
       return requests;
-    } catch (error){
+    } catch (error) {
       console.error("Error loading access requests:", error);
-      setError(error.message || "Failed to load access requests");
+      const errorMessage = error.response?.data?.detail || error.message || "Failed to load access requests";
+      setError(errorMessage);
       return [];
-    } finally{
+    } finally {
       setLoading(false);
     }
   };
+  
   const requestRobotAccess = async (robotId, ownerEmail) => {
     try {
       setLoading(true);
       setError(null);
       const result = await robotService.requestRobotAccess(robotId, ownerEmail);
+      
+      // After successfully requesting access, refresh notifications
+      // to ensure any new ACCESS_REQUEST_SENT notifications are loaded
+      await refreshNotifications();
+      
       return result;
     } catch (error) {
       console.error("Error requesting robot access:", error); 
-      setError(error.response?.data?.detail || error.message || "Failed to request robot access");
-      throw error;
+      const errorMessage = error.response?.data?.detail || error.message || "Failed to request robot access";
+      setError(errorMessage);
+      throw new Error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  // Load robots on mount
+  // Refresh all data
+  const refreshAllData = async () => {
+    await loadRobots();
+    await loadPendingAccessRequests();
+    await refreshNotifications();
+  };
+
+  // Load robots and pending requests on mount
   useEffect(() => {
     const loadInitialData = async () => {
       await loadRobots();
@@ -196,6 +239,7 @@ export const RobotProvider = ({ children }) => {
         approveRobotAccess,
         pendingRequests,
         loadPendingAccessRequests,
+        refreshAllData,
       }}
     >
       {children}

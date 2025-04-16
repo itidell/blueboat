@@ -13,7 +13,8 @@ export const NOTIFICATION_TYPES = {
   ROBOT_STATUS_CHANGED: 'ROBOT_STATUS_CHANGED',
   ROBOT_ACCESS_GRANTED: 'ROBOT_ACCESS_GRANTED',
   ROBOT_ACCESS_SHARED: 'ROBOT_ACCESS_SHARED',
-  ROBOT_ACCESSED: 'ROBOT_ACCESSED'
+  ROBOT_ACCESSED: 'ROBOT_ACCESSED',
+  ROBOT_ACCESS_REQUEST_SENT: 'ROBOT_ACCESS_REQUEST_SENT'
 };
 
 // Create context
@@ -28,10 +29,17 @@ export const NotificationProvider = ({ children }) => {
         [NOTIFICATION_TYPES.BATTERY_LOW]: true,
         [NOTIFICATION_TYPES.NEW_ROBOT]: true,
         [NOTIFICATION_TYPES.STORAGE_FULL]: true,
-        [NOTIFICATION_TYPES.ROBOT_STUCK]: true
+        [NOTIFICATION_TYPES.ROBOT_STUCK]: true,
+        [NOTIFICATION_TYPES.ACCESS_REQUEST]: true,
+        [NOTIFICATION_TYPES.ROBOT_STATUS_CHANGED]: true,
+        [NOTIFICATION_TYPES.ROBOT_ACCESS_GRANTED]: true,
+        [NOTIFICATION_TYPES.ROBOT_ACCESS_SHARED]: true,
+        [NOTIFICATION_TYPES.ROBOT_ACCESSED]: true,
+        [NOTIFICATION_TYPES.ROBOT_ACCESS_REQUEST_SENT]: true
     });
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [lastFetchTime, setLastFetchTime] = useState(null);
  
   // Load saved notification state and settings on mount
   useEffect(() => {
@@ -44,7 +52,7 @@ export const NotificationProvider = ({ children }) => {
     
         return () => clearInterval(interval);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
 
   // Load notification state from storage
   const loadNotificationState = async () => {
@@ -73,6 +81,9 @@ export const NotificationProvider = ({ children }) => {
         const unread = parsedNotifications.filter(n => !n.read).length;
         setUnreadCount(unread);
       }
+      
+      // Now fetch from server to get the latest
+      await checkForNewNotifications(true);
     } catch (error) {
       console.error('Error loading notifications:', error);
     }
@@ -88,49 +99,69 @@ export const NotificationProvider = ({ children }) => {
   };
 
   // Poll for new notifications from the server
-  const checkForNewNotifications = async () => {
-    if (!notificationsEnabled) return;
+  const checkForNewNotifications = async (forceRefresh = false) => {
+    if (!notificationsEnabled && !forceRefresh) return;
+    if (!isAuthenticated) return;
     
     try {
       // Fetch new notifications from API
       const response = await apiClient.get('/notifications');
-      const newNotifications = response.data;
       
-      if (newNotifications && newNotifications.length > 0) {
+      if (response && response.data) {
         // Process new notifications
-        processNewNotifications(newNotifications);
+        processServerNotifications(response.data);
+        setLastFetchTime(new Date());
       }
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
     }
   };
 
-  // Process new notifications from the server
-  const processNewNotifications = (newNotifications) => {
-    // Filter notifications based on user settings and that don't already exist
-    const existingIds = new Set(notifications.map(n => n.id));
+  // Process notifications from the server
+  const processServerNotifications = (serverNotifications) => {
+    if (!serverNotifications || serverNotifications.length === 0) return;
     
-    const filteredNotifications = newNotifications.filter(notification => 
-      (notificationSettings[notification.type] !== false) && 
-      !existingIds.has(notification.id)
-    );
+    // Create a map of existing notifications for quick lookup
+    const existingNotificationMap = new Map();
+    notifications.forEach(notification => {
+      existingNotificationMap.set(notification.id, notification);
+    });
     
-    if (filteredNotifications.length === 0) return;
+    // Identify new notifications and update existing ones
+    const updatedNotifications = [...notifications];
+    let hasChanges = false;
     
-    const processedNewNotifications = filteredNotifications.map(notification => ({
-      ...notification,
-      data: notification.actor_id ? { requesterId: notification.actor_id} : null
-    }));
-
-    // Add to existing notifications
-    const updatedNotifications = [
-      ...processedNewNotifications,
-      ...notifications
-    ];
+    serverNotifications.forEach(serverNotification => {
+      // Check if this notification already exists locally
+      const existingNotification = existingNotificationMap.get(serverNotification.id);
+      
+      if (!existingNotification) {
+        // This is a new notification
+        const newNotification = {
+          ...serverNotification,
+          data: serverNotification.actor_id ? { requesterId: serverNotification.actor_id } : null
+        };
+        
+        // Only add if enabled for this type
+        if (notificationSettings[serverNotification.type] !== false) {
+          updatedNotifications.unshift(newNotification);
+          hasChanges = true;
+        }
+      } else if (existingNotification.read !== serverNotification.read) {
+        // Update read status if changed on server
+        const index = updatedNotifications.findIndex(n => n.id === serverNotification.id);
+        if (index !== -1) {
+          updatedNotifications[index].read = serverNotification.read;
+          hasChanges = true;
+        }
+      }
+    });
     
-    setNotifications(updatedNotifications);
-    setUnreadCount(updatedNotifications.filter(n => !n.read).length);
-    saveNotifications(updatedNotifications);
+    if (hasChanges) {
+      setNotifications(updatedNotifications);
+      setUnreadCount(updatedNotifications.filter(n => !n.read).length);
+      saveNotifications(updatedNotifications);
+    }
   };
 
   // Add a new notification locally
@@ -161,17 +192,20 @@ export const NotificationProvider = ({ children }) => {
   // Mark a notification as read
   const markAsRead = async (notificationId) => {
     try {
-      await apiClient.put(`/notifications/${notificationId}/read`);
-
+      // First update locally
       const updatedNotifications = notifications.map(notification => 
         notification.id === notificationId ? {...notification, read: true} : notification
       );
       setNotifications(updatedNotifications);
       setUnreadCount(updatedNotifications.filter(n => !n.read).length);
       saveNotifications(updatedNotifications);
+      
+      // Then sync with server
+      await apiClient.put(`/notifications/${notificationId}/read`);
       return true;
     } catch (error) {
       console.error('Error marking notification as read:', error);
+      // If server update fails, we keep the local update
       return false;
     }
   };
@@ -179,16 +213,18 @@ export const NotificationProvider = ({ children }) => {
   // Mark all notifications as read
   const markAllAsRead = async () => {
     try {
-      await apiClient.put('/notifications/mark-all-read');
-
+      // First update locally
       const updatedNotifications = notifications.map(notification => ({ ...notification, read: true }));
-    
       setNotifications(updatedNotifications);
       setUnreadCount(0);
       saveNotifications(updatedNotifications);
+      
+      // Then sync with server
+      await apiClient.put('/notifications/mark-all-read');
       return true;
     } catch (error) {
       console.error('Error marking all notifications as read:', error);
+      // If server update fails, we keep the local update
       return false;
     }
   };
@@ -263,6 +299,8 @@ export const NotificationProvider = ({ children }) => {
     return notificationsEnabled && notificationSettings[type];
   };
 
+  // NOTIFICATION HELPER FUNCTIONS
+
   // Battery low notification helper
   const notifyBatteryLow = (robotId, batteryLevel) => {
     return addNotification(
@@ -303,6 +341,7 @@ export const NotificationProvider = ({ children }) => {
     );
   };
   
+  // Access request notification helper
   const notifyAccessRequest = (robotId, requesterName, requesterId) => {
     if (!notificationsEnabled || notificationSettings[NOTIFICATION_TYPES.ACCESS_REQUEST] === false) {
       return null;
@@ -328,6 +367,51 @@ export const NotificationProvider = ({ children }) => {
     );
   };
   
+  // Robot status changed notification helper
+  const notifyRobotStatusChanged = (robotId, oldStatus, newStatus) => {
+    return addNotification(
+      NOTIFICATION_TYPES.ROBOT_STATUS_CHANGED,
+      'Robot Status Changed',
+      `Robot ${robotId} status changed from ${oldStatus} to ${newStatus}`,
+      robotId
+    );
+  };
+  
+  // Access granted notification helper
+  const notifyAccessGranted = (robotId, ownerName) => {
+    return addNotification(
+      NOTIFICATION_TYPES.ROBOT_ACCESS_GRANTED,
+      'Robot Access Granted',
+      `${ownerName} has granted you access to robot ${robotId}`,
+      robotId
+    );
+  };
+  
+  // Robot accessed notification helper
+  const notifyRobotAccessed = (robotId, accessorName, accessorId) => {
+    return addNotification(
+      NOTIFICATION_TYPES.ROBOT_ACCESSED,
+      'Robot Accessed',
+      `${accessorName} has accessed your robot ${robotId}`,
+      robotId,
+      { accessorId }
+    );
+  };
+  
+  // Access request sent notification helper
+  const notifyAccessRequestSent = (robotId, ownerName) => {
+    return addNotification(
+      NOTIFICATION_TYPES.ROBOT_ACCESS_REQUEST_SENT,
+      'Access Request Sent',
+      `You have requested access to robot ${robotId} owned by ${ownerName}`,
+      robotId
+    );
+  };
+
+  // Force refresh notifications
+  const refreshNotifications = () => {
+    return checkForNewNotifications(true);
+  };
 
   return (
     <NotificationContext.Provider
@@ -345,6 +429,7 @@ export const NotificationProvider = ({ children }) => {
         deleteNotification,
         clearAllNotifications,
         setNotificationsEnabled,
+        refreshNotifications,
         
         // Settings management
         toggleNotifications,
@@ -358,6 +443,10 @@ export const NotificationProvider = ({ children }) => {
         notifyStorageFull,
         notifyRobotStuck,
         notifyAccessRequest,
+        notifyRobotStatusChanged,
+        notifyAccessGranted,
+        notifyRobotAccessed,
+        notifyAccessRequestSent,
       }}
     >
       {children}

@@ -93,10 +93,8 @@ const AccessRequests = () => {
       if (request.notification_id) {
         await markAsRead(request.notification_id);
       }
-      
       Alert.alert("Success", "Access request denied");
       await loadPendingAccessRequests();
-      // Removed duplicate call to loadPendingAccessRequests
     } catch (error) {
       console.error('Failed to deny request:', error);
       Alert.alert("Error", error.message || "Failed to deny access request");
@@ -111,10 +109,12 @@ const AccessRequests = () => {
     
     if (notification.type === NOTIFICATION_TYPES.ACCESS_REQUEST) {
       // First set the active tab to 'requests' to show access requests
+      setVisible(true)
       setActiveTab('requests');
-      
+      loadPendingAccessRequests();
       // If we have the requesterId in the notification data, we can pre-select it
       if (notification.data && notification.data.requesterId) {
+        console.log('Access request notification clicked:', notification);
         // Look for the matching request in our access requests
         const matchingRequest = accessRequests.find(
           req => req.requester_id === notification.data.requesterId && 
@@ -122,6 +122,7 @@ const AccessRequests = () => {
         );
         
         if (matchingRequest) {
+          handleApprove(matchingRequest)
           // If found, we could highlight it or scroll to it
           // This would require additional implementation
           console.log('Found matching request:', matchingRequest);

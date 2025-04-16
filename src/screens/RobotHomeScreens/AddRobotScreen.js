@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import Svg, { Path, G, Circle, Line, Rect } from 'react-native-svg';
 import * as Font from 'expo-font';
 import Header from "../../Components/Header";
-
+import { Alert } from 'react-native';
 // Assuming these components exist and match the initial style
 import BottomNavBar from '../../Components/BottomNavBar';
 import { useRobot } from '../../api/robotContext';

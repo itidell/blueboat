@@ -127,6 +127,7 @@ export const RobotProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       const result = await robotService.approveRobotAccess(robotId, requesterId);
+      await loadPendingAccessRequests();
       return result;
     } catch (error) {
       console.error("Error approving robot access:", error);
@@ -169,7 +170,11 @@ export const RobotProvider = ({ children }) => {
 
   // Load robots on mount
   useEffect(() => {
-    loadRobots();
+    const loadInitialData = async () => {
+      await loadRobots();
+      await loadPendingAccessRequests();
+    };
+    loadInitialData();
   }, []);
 
   return (

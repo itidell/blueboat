@@ -32,7 +32,7 @@ export const NotificationProvider = ({ children }) => {
     });
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-
+ 
   // Load saved notification state and settings on mount
   useEffect(() => {
     if (isAuthenticated){
@@ -117,6 +117,11 @@ export const NotificationProvider = ({ children }) => {
     
     if (filteredNotifications.length === 0) return;
     
+    const processNewNotifications = filteredNotifications.map(notification => ({
+      ...notification,
+      data: notification.actor_id ? { requesterId: notification.actor_id} : null
+    }));
+
     // Add to existing notifications
     const updatedNotifications = [
       ...filteredNotifications,
@@ -129,7 +134,7 @@ export const NotificationProvider = ({ children }) => {
   };
 
   // Add a new notification locally
-  const addNotification = (type, title, message, robotId = null) => {
+  const addNotification = (type, title, message, robotId = null, data = null) => {
     if (!notificationsEnabled || !notificationSettings[type]) {
       return; // Skip if notifications are disabled globally or for this type
     }
@@ -141,7 +146,8 @@ export const NotificationProvider = ({ children }) => {
       message,
       robotId,
       timestamp: new Date().toISOString(),
-      read: false
+      read: false,
+      data: data
     };
     
     const updatedNotifications = [newNotification, ...notifications];

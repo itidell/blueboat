@@ -99,7 +99,11 @@ const AccessRequests = () => {
     
     // If it's an access request notification, switch to the access requests tab
     if (notification.type === NOTIFICATION_TYPES.ACCESS_REQUEST) {
-      setActiveTab('requests');
+      navigation.navigate('ApproveAccess', {
+        robotId: notification.robotId,
+        requesterId: notification.data.requesterId,
+        notificationId: notification.id
+      });
       return;
     }
     

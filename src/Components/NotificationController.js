@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Modal, Image, FlatList, Alert } from 'react-native';
 import { useNotifications, NOTIFICATION_TYPES } from '../api/notificationContext';
 
-const NotificationController = () => {
+const NotificationController = ({ onNotificationChange, initialState}) => {
   // Use the notification context
   const {
     notifications,
@@ -15,13 +15,24 @@ const NotificationController = () => {
     clearAllNotifications,
     toggleNotifications,
     toggleNotificationType,
+    setNotificationsEnabled
   } = useNotifications();
   
-
   // Local UI state
   const [notificationModalVisible, setNotificationModalVisible] = useState(false);
   const [settingsModalVisible, setSettingsModalVisible] = useState(false);
 
+  useEffect(() => {
+    if (initialState !== undefined && initialState !== notificationsEnabled){
+      setNotificationsEnabled(initialState)
+    }
+  }, [initialState]);
+
+  useEffect(() => {
+    if(onNotificationChange && typeof onNotificationChange === 'function'){
+      onNotificationChange(notificationsEnabled);
+    }
+  }, [notificationsEnabled, onNotificationChange])
   // Toggle notification list modal
   const toggleNotificationModal = () => {
     setNotificationModalVisible(!notificationModalVisible);

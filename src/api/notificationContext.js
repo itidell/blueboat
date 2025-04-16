@@ -6,15 +6,16 @@ import { useAuth } from './authContext';
 // Notification types
 export const NOTIFICATION_TYPES = {
   BATTERY_LOW: 'BATTERY_LOW',
-  NEW_ROBOT: 'ROBOT_CREATED',
+  NEW_ROBOT: 'NEW_ROBOT',
   STORAGE_FULL: 'STORAGE_FULL',
+  ACCESS_REQUEST: 'ACCESS_REQUEST',
   ROBOT_STUCK: 'ROBOT_STUCK',
-  ACCESS_REQUEST: 'ROBOT_ACCESS_REQUESTED',
   ROBOT_STATUS_CHANGED: 'ROBOT_STATUS_CHANGED',
   ROBOT_ACCESS_GRANTED: 'ROBOT_ACCESS_GRANTED',
   ROBOT_ACCESS_SHARED: 'ROBOT_ACCESS_SHARED',
   ROBOT_ACCESSED: 'ROBOT_ACCESSED',
-  ROBOT_ACCESS_REQUEST_SENT: 'ROBOT_ACCESS_REQUEST_SENT'
+  ROBOT_ACCESS_REQUEST_SENT: 'ROBOT_ACCESS_REQUEST_SENT',
+  ACCESS_DENIED: 'ACCESS_DENIED'
 };
 
 // Create context
@@ -26,16 +27,17 @@ export const NotificationProvider = ({ children }) => {
     const {user, isAuthenticated} = useAuth();
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
     const [notificationSettings, setNotificationSettings] = useState({
-        [NOTIFICATION_TYPES.BATTERY_LOW]: true,
-        [NOTIFICATION_TYPES.NEW_ROBOT]: true,
-        [NOTIFICATION_TYPES.STORAGE_FULL]: true,
-        [NOTIFICATION_TYPES.ROBOT_STUCK]: true,
-        [NOTIFICATION_TYPES.ACCESS_REQUEST]: true,
-        [NOTIFICATION_TYPES.ROBOT_STATUS_CHANGED]: true,
-        [NOTIFICATION_TYPES.ROBOT_ACCESS_GRANTED]: true,
-        [NOTIFICATION_TYPES.ROBOT_ACCESS_SHARED]: true,
-        [NOTIFICATION_TYPES.ROBOT_ACCESSED]: true,
-        [NOTIFICATION_TYPES.ROBOT_ACCESS_REQUEST_SENT]: true
+      [NOTIFICATION_TYPES.BATTERY_LOW]: true,
+      [NOTIFICATION_TYPES.NEW_ROBOT]: true,
+      [NOTIFICATION_TYPES.STORAGE_FULL]: true,
+      [NOTIFICATION_TYPES.ROBOT_STUCK]: true,
+      [NOTIFICATION_TYPES.ACCESS_REQUEST]: true,
+      [NOTIFICATION_TYPES.ROBOT_STATUS_CHANGED]: true,
+      [NOTIFICATION_TYPES.ROBOT_ACCESS_GRANTED]: true,
+      [NOTIFICATION_TYPES.ROBOT_ACCESS_SHARED]: true,
+      [NOTIFICATION_TYPES.ROBOT_ACCESSED]: true,
+      [NOTIFICATION_TYPES.ROBOT_ACCESS_REQUEST_SENT]: true,
+      [NOTIFICATION_TYPES.ACCESS_DENIED]: true
     });
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -64,7 +66,10 @@ export const NotificationProvider = ({ children }) => {
       
       const settings = await AsyncStorage.getItem('notification_settings');
       if (settings !== null) {
-        setNotificationSettings(JSON.parse(settings));
+        setNotificationSettings(prevSettings => ({
+          ...prevSettings,
+          ...JSON.parse(settings)
+        }));
       }
     } catch (error) {
       console.error('Error loading notification state:', error);
@@ -200,8 +205,9 @@ export const NotificationProvider = ({ children }) => {
       setUnreadCount(updatedNotifications.filter(n => !n.read).length);
       saveNotifications(updatedNotifications);
       
-      // Then sync with server
-      await apiClient.put(`/notifications/${notificationId}/read`);
+      if (Number.isInteger(parseInt(notificationId))) {
+        await apiClient.put(`/notifications/${notificationId}/read`);
+      }
       return true;
     } catch (error) {
       console.error('Error marking notification as read:', error);
@@ -230,23 +236,51 @@ export const NotificationProvider = ({ children }) => {
   };
 
   // Clear all notifications
-  const clearAllNotifications = () => {
-    setNotifications([]);
-    setUnreadCount(0);
-    saveNotifications([]);
-    return true;
+  const clearAllNotifications =async () => {
+    try{
+      setNotifications([]);
+      setUnreadCount(0);
+      await saveNotifications([]);
+      
+      const serverNotifications = notifications.filter(n => Number.isInteger(parseInt(n.id)));
+
+      for (const notification of serverNotifications){
+        try{
+          await apiClient.delete(`/notifications/${notification.id}`)
+        }catch (error) {
+          console.error(`Failed to delete notification ${notification.id}:`, error);
+        }
+      }
+      return true;
+    } catch (error){
+      console.error('Error clearing notifications:', error);
+      return false;
+    }
   };
 
   // Delete a specific notification
-  const deleteNotification = (notificationId) => {
-    const updatedNotifications = notifications.filter(
-      notification => notification.id !== notificationId
-    );
-    
-    setNotifications(updatedNotifications);
-    setUnreadCount(updatedNotifications.filter(n => !n.read).length);
-    saveNotifications(updatedNotifications);
-    return true;
+  const deleteNotification = async (notificationId) => {
+    try {
+      // Update locally first
+      const updatedNotifications = notifications.filter(
+        notification => notification.id !== notificationId
+      );
+      
+      setNotifications(updatedNotifications);
+      setUnreadCount(updatedNotifications.filter(n => !n.read).length);
+      saveNotifications(updatedNotifications);
+      
+      // Delete from server if it's a server notification
+      if (Number.isInteger(parseInt(notificationId))) {
+        await apiClient.delete(`/notifications/${notificationId}`);
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      // Keep local deletion even if server deletion fails
+      return false;
+    }
   };
 
   // Toggle notifications enabled/disabled

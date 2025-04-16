@@ -289,11 +289,24 @@ export const NotificationProvider = ({ children }) => {
     );
   };
   const notifyAccessRequest = (robotId, requesterName, requesterId) =>{
+    if (!notificationsEnabled || notificationSettings[NOTIFICATION_TYPES.ACCESS_REQUEST] === false){
+      return null;
+    }
+
+    const existingNotification = notifications.find(
+      n => n.type === NOTIFICATION_TYPES.ACCESS_REQUEST && n.robotId === robotId && n.data?.requesterId === requesterId && !n.read
+    );
+
+    if (existingNotification){
+      return existingNotification;
+    }
+
     return addNotification(
       NOTIFICATION_TYPES.ACCESS_REQUEST,
       'Robot Access Request',
       `${requesterName} has requested access to robot ${robotId}`,
       robotId,
+      { requesterId }
     )
   }
 

@@ -1,13 +1,12 @@
-// src/components/NotificationCenter.js
+// src/components/AccessRequests.js
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
 import { useNotifications, NOTIFICATION_TYPES } from '../api/notificationContext';
 import { useRobot } from '../api/robotContext';
 import { formatDistanceToNow } from 'date-fns';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { id } from 'date-fns/locale';
 
-const NotificationCenter = () => {
+const AccessRequests = () => {
   const { 
     notifications, 
     markAsRead, 
@@ -53,6 +52,11 @@ const NotificationCenter = () => {
   }, [pendingRequests, notifications]);
 
   const handleApprove = async (request) => {
+    if (!request.robot_id || !request.requester_id) {
+      console.error("Missing required data for approval", request);
+      return;
+    }
+    
     try {
       setProcessingIds(prev => [...prev, request.notification_id]);
       await approveRobotAccess(request.robot_id, request.requester_id);
@@ -63,26 +67,28 @@ const NotificationCenter = () => {
       }
       
       await loadPendingAccessRequests();
-      setProcessingIds(prev => prev.filter(id => id !== request.notification_id))
     } catch (error) {
       console.error('Failed to approve request:', error);
+    } finally {
       setProcessingIds(prev => prev.filter(id => id !== request.notification_id));
     }
   };
 
   const handleDeny = async (request) => {
+    if (!request.notification_id) {
+      console.error("Missing notification ID for denial", request);
+      return;
+    }
+    
     try {
       setProcessingIds(prev => [...prev, request.notification_id]);
       
       // Just mark the notification as read
-      if (request.notification_id) {
-        await markAsRead(request.notification_id);
-      }
-      
+      await markAsRead(request.notification_id);
       await loadPendingAccessRequests();
-      setProcessingIds(prev => prev.filter(id => id !== request.notification_id))
     } catch (error) {
       console.error('Failed to deny request:', error);
+    } finally {
       setProcessingIds(prev => prev.filter(id => id !== request.notification_id));
     }
   };
@@ -91,9 +97,9 @@ const NotificationCenter = () => {
     // Mark as read
     markAsRead(notification.id);
     
-    // If it's an access request notification, don't do anything else
-    // since we'll handle it in the access requests tab
+    // If it's an access request notification, switch to the access requests tab
     if (notification.type === NOTIFICATION_TYPES.ACCESS_REQUEST) {
+      setActiveTab('requests');
       return;
     }
     
@@ -135,7 +141,7 @@ const NotificationCenter = () => {
     return (
       <View style={[styles.item, styles.requestItem]}>
         <View style={styles.itemContent}>
-          <Text style={styles.title}>{item.requester_name}</Text>
+          <Text style={styles.title}>{item.requester_name || 'Unknown User'}</Text>
           <Text style={styles.message}>Requested access to Robot: {item.robot_id}</Text>
           {item.timestamp && (
             <Text style={styles.time}>
@@ -152,6 +158,7 @@ const NotificationCenter = () => {
               <TouchableOpacity 
                 style={[styles.button, styles.approveButton]} 
                 onPress={() => handleApprove(item)}
+                disabled={isProcessing}
               >
                 <Text style={styles.buttonText}>Approve</Text>
               </TouchableOpacity>
@@ -159,6 +166,7 @@ const NotificationCenter = () => {
               <TouchableOpacity 
                 style={[styles.button, styles.denyButton]} 
                 onPress={() => handleDeny(item)}
+                disabled={isProcessing}
               >
                 <Text style={styles.buttonText}>Deny</Text>
               </TouchableOpacity>
@@ -246,13 +254,13 @@ const NotificationCenter = () => {
 
             <FlatList
               data={getFilteredNotifications()}
-              keyExtractor={(item) => (item.notification_id || item.id).toString()}
+              keyExtractor={(item) => (item.notification_id || item.id || Math.random().toString()).toString()}
               renderItem={activeTab === 'requests' ? renderAccessRequestItem : renderNotificationItem}
               contentContainerStyle={styles.listContent}
               ListEmptyComponent={renderEmptyList}
             />
 
-            {getFilteredNotifications().length > 0 && (
+            {getFilteredNotifications().length > 0 && activeTab === 'all' && (
               <TouchableOpacity
                 style={styles.clearButton}
                 onPress={clearAllNotifications}
@@ -362,6 +370,7 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: 16,
     paddingVertical: 8,
+    flexGrow: 1,
   },
   item: {
     flexDirection: 'row',
@@ -457,4 +466,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NotificationCenter;
+export default AccessRequests;

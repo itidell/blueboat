@@ -18,6 +18,7 @@ export const RobotProvider = ({ children }) => {
     notifyAccessGranted, 
     notifyAccessRequestSent,
     notifyRobotAccessed,
+    notifyAccessDenied,
     refreshNotifications
   } = useNotifications();
 
@@ -205,6 +206,29 @@ export const RobotProvider = ({ children }) => {
     }
   };
 
+  const denyRobotAccess = async (robotId, requesterId) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await robotService.denyRobotAccess(robotId, requesterId);
+      
+      // Refresh data after successful denial
+      await loadPendingAccessRequests();
+      
+      // Make sure to refresh notifications to update the UI
+      await refreshNotifications();
+      
+      return result;
+    } catch (error) {
+      console.error("Error denying robot access:", error);
+      const errorMessage = error.response?.data?.detail || error.message || "Failed to deny robot access";
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Refresh all data
   const refreshAllData = async () => {
     await loadRobots();
@@ -237,6 +261,7 @@ export const RobotProvider = ({ children }) => {
         recordRobotAccess,
         requestRobotAccess,
         approveRobotAccess,
+        denyRobotAccess,
         pendingRequests,
         loadPendingAccessRequests,
         refreshAllData,

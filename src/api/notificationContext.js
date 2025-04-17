@@ -444,6 +444,16 @@ export const NotificationProvider = ({ children }) => {
     );
   };
 
+  // Access denied notification helper
+  const notifyAccessDenied = (robotId, ownerName) => {
+    return addNotification(
+      NOTIFICATION_TYPES.ACCESS_DENIED,
+      'Access Denied',
+      `${ownerName} has denied your request to access robot ${robotId}`,
+      robotId
+    );
+  };
+
   // Force refresh notifications
   const refreshNotifications = () => {
     return checkForNewNotifications(true);
@@ -483,6 +493,7 @@ export const NotificationProvider = ({ children }) => {
         notifyAccessGranted,
         notifyRobotAccessed,
         notifyAccessRequestSent,
+        notifyAccessDenied,
       }}
     >
       {children}

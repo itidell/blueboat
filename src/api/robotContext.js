@@ -150,6 +150,7 @@ export const RobotProvider = ({ children }) => {
       setError(null);
       const result = await robotService.approveRobotAccess(robotId, requesterId);
       
+      notifyAccessGranted(robotId, "You")
       // Refresh data after successful approval
       await loadRobots();
       await loadPendingAccessRequests();
@@ -191,6 +192,7 @@ export const RobotProvider = ({ children }) => {
       setError(null);
       const result = await robotService.requestRobotAccess(robotId, ownerEmail);
       
+      notifyAccessRequestSent(robotId, ownerEmail.split('@')[0] || "the owner");
       // After successfully requesting access, refresh notifications
       // to ensure any new ACCESS_REQUEST_SENT notifications are loaded
       await refreshNotifications();
@@ -212,6 +214,7 @@ export const RobotProvider = ({ children }) => {
       setError(null);
       const result = await robotService.denyRobotAccess(robotId, requesterId);
       
+      notifyAccessDenied(robotId, "You")
       // Refresh data after successful denial
       await loadPendingAccessRequests();
       

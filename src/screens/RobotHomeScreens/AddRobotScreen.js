@@ -11,7 +11,7 @@ import { Alert } from 'react-native';
 // Assuming these components exist and match the initial style
 import BottomNavBar from '../../Components/BottomNavBar';
 import { useRobot } from '../../api/robotContext';
-
+import { useNotifications } from '../../api/notificationContext';
 // --- Icons ---
 const ErrorIcon = () => (
     <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginRight: 5, marginTop: 1 }}>
@@ -26,6 +26,7 @@ const ErrorIcon = () => (
 const AddRobotScreen = () => {
   const navigation = useNavigation();
   const { addRobot, loading: apiLoading, requestRobotAccess } = useRobot();
+  const { notifyAccessRequestSent } = useNotifications();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [mode, setMode] = useState('create'); // 'create' or 'join'
 
@@ -249,13 +250,13 @@ const AddRobotScreen = () => {
 
 
                     {/* Loading Indicator (like image) */}
-                    {apiLoading && <LoadingDots />}
+                    { (apiLoading || joiLoading) && <LoadingDots />}
 
                     {/* Action Button (like image, but using original blue) */}
                     <TouchableOpacity
                         style={[styles.actionButton, apiLoading ? styles.buttonDisabled : {}]}
                         onPress={mode === 'create' ? handleCreateRobot : handleJoinRobot}
-                        disabled={apiLoading}
+                        disabled={apiLoading || joiLoading}
                         activeOpacity={0.8}
                     >
                         <Text style={styles.actionButtonText}>

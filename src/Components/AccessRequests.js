@@ -18,6 +18,7 @@ const AccessRequests = () => {
   
   const { 
     approveRobotAccess, 
+    denyRobotAccess, // Make sure this is properly imported from context
     pendingRequests, 
     loadPendingAccessRequests 
   } = useRobot();
@@ -64,8 +65,7 @@ const AccessRequests = () => {
     }
     
     try {
-
-      const processingId  = request.notification_id || `req-${request.robot_id}-${request.requester_id}`;
+      const processingId = request.notification_id || `req-${request.robot_id}-${request.requester_id}`;
       setProcessingIds(prev => [...prev, processingId]);
       console.log("Approving access for robot:", request.robot_id, "requester:", request.requester_id);
       
@@ -82,22 +82,26 @@ const AccessRequests = () => {
       console.error('Failed to approve request:', error);
       Alert.alert("Error", error.message || "Failed to approve access request");
     } finally {
-      setProcessingIds(prev => prev.filter(id => id !== request.notification_id));
+      const processingId = request.notification_id || `req-${request.robot_id}-${request.requester_id}`;
+      setProcessingIds(prev => prev.filter(id => id !== processingId));
     }
   };
   
   const handleDeny = async (request) => {
-    if (!request.notification_id) {
-      console.error("Missing notification ID for denial", request);
-      Alert.alert("Error", "Missing notification ID for denial");
+    if (!request.robot_id || !request.requester_id) {
+      console.error("Missing required data for denial", request);
+      Alert.alert("Error", "Missing required data for denial");
       return;
     }
     
     try {
-      
-      const processingId  = request.notification_id || `req-${request.robot_id}-${request.requester_id}`;
+      const processingId = request.notification_id || `req-${request.robot_id}-${request.requester_id}`;
       setProcessingIds(prev => [...prev, processingId]);
       
+      // Properly call the denyRobotAccess function with required parameters
+      await denyRobotAccess(request.robot_id, request.requester_id);
+      
+      // Mark the notification as read if it exists
       if (request.notification_id) {
         await markAsRead(request.notification_id);
       }
@@ -107,7 +111,8 @@ const AccessRequests = () => {
       console.error('Failed to deny request:', error);
       Alert.alert("Error", error.message || "Failed to deny access request");
     } finally {
-      setProcessingIds(prev => prev.filter(id => id !== request.notification_id));
+      const processingId = request.notification_id || `req-${request.robot_id}-${request.requester_id}`;
+      setProcessingIds(prev => prev.filter(id => id !== processingId));
     }
   };
 
@@ -227,6 +232,8 @@ const AccessRequests = () => {
     </View>
   );
 
+  const unreadNotificationCount = notifications.filter(n => !n.read).length;
+
   return (
     <>
       <TouchableOpacity 
@@ -234,10 +241,11 @@ const AccessRequests = () => {
         onPress={() => setVisible(true)}
       >
         <Icon name="notifications" size={24} color="#098BEA" />
-        {(notifications.filter(n => !n.read).length > 0) && (
+        {/* Fixed conditional rendering to check for count > 0 */}
+        {unreadNotificationCount > 0 && (
           <View style={styles.badge}>
             <Text style={styles.badgeText}>
-              {notifications.filter(n => !n.read).length}
+              {unreadNotificationCount}
             </Text>
           </View>
         )}

@@ -113,5 +113,20 @@ export const robotService = {
                 throw error;
             }
         }
+    },
+    denyRobotAccess: async (robotId, requesterId) =>{
+        try{
+            const response = await apiClient.post(`/robots/deny-access/${robotId}/${Number(requesterId)}`);
+            return response.data
+        }catch (error){
+            console.error("Deny robot access error:", error.response?.data || error);
+            if (error.response?.data?.detail){
+                throw {message: error.response.data.detail};
+            }else if (error.response?.data){
+                throw error.response.data;
+            }else{
+                throw error;
+            }
+        }
     }
 };

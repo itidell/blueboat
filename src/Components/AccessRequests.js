@@ -42,6 +42,7 @@ const AccessRequests = () => {
       const notification = notifications.find(
         n => n.type === NOTIFICATION_TYPES.ACCESS_REQUEST && 
              n.robotId === request.robot_id &&
+             n.data?.requesterId === request.requester_id &&
              !n.read
       );
       
@@ -63,8 +64,11 @@ const AccessRequests = () => {
     }
     
     try {
-      setProcessingIds(prev => [...prev, request.notification_id]);
+
+      const processingId  = request.notification_id || `req-${request.robot_id}-${request.requester_id}`;
+      setProcessingIds(prev => [...prev, processingId]);
       console.log("Approving access for robot:", request.robot_id, "requester:", request.requester_id);
+      
       const result = await approveRobotAccess(request.robot_id, request.requester_id);
       console.log("Approval result:", result);
       
@@ -81,7 +85,7 @@ const AccessRequests = () => {
       setProcessingIds(prev => prev.filter(id => id !== request.notification_id));
     }
   };
-
+  
   const handleDeny = async (request) => {
     if (!request.notification_id) {
       console.error("Missing notification ID for denial", request);
@@ -90,7 +94,9 @@ const AccessRequests = () => {
     }
     
     try {
-      setProcessingIds(prev => [...prev, request.notification_id]);
+      
+      const processingId  = request.notification_id || `req-${request.robot_id}-${request.requester_id}`;
+      setProcessingIds(prev => [...prev, processingId]);
       
       if (request.notification_id) {
         await markAsRead(request.notification_id);
@@ -111,26 +117,24 @@ const AccessRequests = () => {
     
     if (notification.type === NOTIFICATION_TYPES.ACCESS_REQUEST) {
       // First set the active tab to 'requests' to show access requests
-      setVisible(true)
+      setVisible(true);
       setActiveTab('requests');
-      loadPendingAccessRequests();
-      // If we have the requesterId in the notification data, we can pre-select it
-      if (notification.data && notification.data.requesterId) {
-        console.log('Access request notification clicked:', notification);
-        // Look for the matching request in our access requests
-        const matchingRequest = accessRequests.find(
-          req => req.requester_id === notification.data.requesterId && 
-                 req.robot_id === notification.robotId
-        );
-        
-        if (matchingRequest) {
-          handleApprove(matchingRequest)
-          // If found, we could highlight it or scroll to it
-          // This would require additional implementation
-          console.log('Found matching request:', matchingRequest);
+      
+      // Load the latest pending requests
+      loadPendingAccessRequests().then(() => {
+        // If we have the requesterId in the notification data, find the matching request
+        if (notification.data && notification.data.requesterId && notification.robotId) {
+          const matchingRequest = accessRequests.find(
+            req => req.requester_id === notification.data.requesterId && 
+                  req.robot_id === notification.robotId
+          );
+          
+          if (matchingRequest) {
+            // Don't auto-approve, just let the user see the request
+            console.log('Found matching request:', matchingRequest);
+          }
         }
-      }
-      return;
+      });
     }
   };
 
@@ -163,7 +167,8 @@ const AccessRequests = () => {
   };
 
   const renderAccessRequestItem = ({ item }) => {
-    const isProcessing = processingIds.includes(item.notification_id);
+    const processingId = item.notification_id || `req-${item.robot_id}-${item.requester_id}`;
+    const isProcessing = processingIds.includes(processingId);
     
     return (
       <View style={[styles.item, styles.requestItem]}>

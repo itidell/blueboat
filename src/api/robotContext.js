@@ -4,6 +4,7 @@ import { robotService } from "./robotService";
 import { useNotifications } from "./notificationContext";
 
 const RobotContext = createContext();
+const BATTERY_LOW_THRESHOLD = 20;
 
 export const useRobot = () => useContext(RobotContext);
 
@@ -22,6 +23,13 @@ export const RobotProvider = ({ children }) => {
     refreshNotifications
   } = useNotifications();
 
+
+  const checkAndNotifyBatteryLow = (robot) => {
+      if (robot && typeof robot.battery_level === 'number' && robot.battery_level <= BATTERY_LOW_THRESHOLD){
+        console.log(`Battery low detected for ${robot.id}: ${robot.battery_level}%`)
+        checkAndNotifyBatteryLow(robot.id, robot.battery_level);
+      }
+  }
   // Load user's robots
   const loadRobots = async () => {
     try {
@@ -29,6 +37,7 @@ export const RobotProvider = ({ children }) => {
       setError(null);
       const robotData = await robotService.getUserRobots();
       setRobots(robotData);
+      robotData.forEach(robot => checkAndNotifyBatteryLow(robot));
       return robotData;
     } catch (error) {
       console.error("Error loading robots:", error);
@@ -63,9 +72,6 @@ export const RobotProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       
-      // Store the old robot data for comparison (for notifications)
-      const oldRobot = robots.find(r => r.id === robotId);
-      
       const updatedRobot = await robotService.updateRobot(robotId, robotData);
       setRobots(prev => 
         prev.map(robot => robot.id === robotId ? updatedRobot : robot)
@@ -73,6 +79,7 @@ export const RobotProvider = ({ children }) => {
       if (currentRobot && currentRobot.id === robotId) {
         setCurrentRobot(updatedRobot);
       }
+      checkAndNotifyBatteryLow(updateRobot)
       return updatedRobot;
     } catch (error) {
       console.error("Error updating robot:", error);
@@ -112,6 +119,7 @@ export const RobotProvider = ({ children }) => {
       setError(null);
       const robot = await robotService.getRobot(robotId);
       setCurrentRobot(robot);
+      checkAndNotifyBatteryLow(robot);
       return robot;
     } catch (error) {
       console.error("Error getting robot:", error);

@@ -8,7 +8,7 @@ import BottomNavBar from '../../Components/BottomNavBar';
 import RobotStatusHeader from '../../Components/RobotStatusHeader';
 
 
-const LiveStreamingScreen = ({ robotBatteryLevel = 70, route }) => {
+const LiveStreamingScreen = ({ robotBatteryLevel, route }) => {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [batteryLevel, setBatteryLevel] = useState(robotBatteryLevel);

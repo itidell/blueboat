@@ -9,7 +9,7 @@ import RobotStatusHeader from '../../Components/RobotStatusHeader';
 
 const StorageScreen = ({ route }) => {
   const navigation = useNavigation();
-  const { robotId = 'robotId', robotBatteryLevel = 70 } = route?.params || {};
+  const { robotId = 'robotId', robotBatteryLevel } = route?.params || {};
   const [activeTab, setActiveTab] = useState('home');
   const [selectedLanguage, setSelectedLanguage] = useState('EN');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);

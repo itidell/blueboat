@@ -337,11 +337,31 @@ export const NotificationProvider = ({ children }) => {
 
   // Battery low notification helper
   const notifyBatteryLow = (robotId, batteryLevel) => {
+    // Check if globally enabled AND this type is enabled
+    if (!notificationsEnabled || notificationSettings[NOTIFICATION_TYPES.BATTERY_LOW] === false) {
+      console.log(`Skipping battery low notification for ${robotId} - notifications disabled or type disabled.`);
+      return null;
+    }
+
+    // Check for existing *unread* battery low notification for THIS robot
+    const existingUnread = notifications.find(
+      n => n.type === NOTIFICATION_TYPES.BATTERY_LOW &&
+           n.robotId === robotId && // Check specifically for the same robot ID
+           !n.read // Only consider unread notifications
+    );
+
+    if (existingUnread) {
+       console.log(`Skipping battery low notification for ${robotId} - existing unread notification found (ID: ${existingUnread.id}).`);
+       return existingUnread; // Don't add a duplicate if one is already unread
+    }
+
+    console.log(`Creating new battery low notification for ${robotId} at ${batteryLevel}%`);
+    // If no existing unread notification, proceed to add a new one
     return addNotification(
       NOTIFICATION_TYPES.BATTERY_LOW,
-      'Battery Low',
-      `Robot ${robotId} battery level is at ${batteryLevel}%`,
-      robotId
+      'Battery Low', // Title
+      `Robot ${robotId} battery level is critically low at ${batteryLevel}%`, // Message
+      robotId 
     );
   };
 

@@ -10,7 +10,7 @@ import RobotStatusHeader from '../../Components/RobotStatusHeader';
 const { width, height } = Dimensions.get('window');
 const CIRCLE_RADIUS = width * 0.38; // Increased from 0.28 to 0.38
 
-const RobotHomeScreen = ({ robotBatteryLevel = 70, route }) => {
+const RobotHomeScreen = ({ robotBatteryLevel , route }) => {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [batteryLevel, setBatteryLevel] = useState(robotBatteryLevel);

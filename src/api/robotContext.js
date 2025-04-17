@@ -116,7 +116,13 @@ export const RobotProvider = ({ children }) => {
     } catch (error) {
       console.error("Error getting robot:", error);
       const errorMessage = error.response?.data?.detail || error.message || "Failed to get robot";
-      setError(errorMessage);
+      
+      // Check if this is a pending access request error
+      if (errorMessage.includes("pending approval")) {
+        setError("Your access request is pending approval from the robot owner. Please wait for them to accept your request.");
+      } else {
+        setError(errorMessage);
+      }
       throw new Error(errorMessage);
     } finally {
       setLoading(false);

@@ -109,11 +109,7 @@ const AddRobotScreen = () => {
         "Your access request has been sent to the robot owner. You'll be notified when they respond.",
         [{ 
           text: "OK", 
-          onPress: () => navigation.navigate('AddRobotLoading', { 
-            robotId: joinRobotId, 
-            ownerEmail: ownerEmail, 
-            action: 'join' 
-          })
+          onPress: () => navigation.navigate('MainHome', { screen: 'HomeMain' })
         }]
       );
     } catch (error) {

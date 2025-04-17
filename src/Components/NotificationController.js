@@ -59,7 +59,7 @@ const NotificationController = ({ onNotificationChange, initialState }) => {
 
   const handleApprove = async (notification) => {
     const robotId = notification.robot_id;
-    const requesterId = notification.data?.actor_id; // Use optional chaining
+    const requesterId = notification.actor_id; // Use optional chaining
 
     if (!robotId || !requesterId) {
       Alert.alert("Error", "Missing data to approve this request.");
@@ -86,8 +86,8 @@ const NotificationController = ({ onNotificationChange, initialState }) => {
   };
 
   const handleDeny = async (notification) => {
-    const robotId = notification.robotId;
-    const requesterId = notification.data?.requesterId; // Use optional chaining
+    const robotId = notification.robot_id;
+    const requesterId = notification.actor_id // Use optional chaining
 
     if (!robotId || !requesterId) {
       Alert.alert("Error", "Missing data to deny this request.");

@@ -3,11 +3,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
 import { Profiler } from "react";
 import md5 from 'crypto-js/md5';
-
+import { getAuth, signInWithCustomToken, signOut} from "firebase/auth";
+import { app } from "../utils/firebaseConfig"; // Adjust the import based on your project structure
 const getGravatarUrl = (email) => {
     const hash = md5(email.trim().toLowerCase()).toString();
     return `https://www.gravatar.com/avatar/${hash}?d=identicon&s=200`;
 };
+const auth = getAuth(app);
+
 export const authService = {
     register: async (userData) => {
         try {
@@ -34,12 +37,28 @@ export const authService = {
         try{
             console.log("Sending login request with:", JSON.stringify(credentials));
             const response = await apiClient.post('/auth/login', credentials);
-            const {access_token, refresh_token, expires_in, id, full_name, email, mobile_number, is_active, loggedin_at, profile_picture} = response.data;
+            const {access_token, refresh_token, firebase_token, expires_in, id, full_name, email, mobile_number, is_active, loggedin_at, profile_picture} = response.data;
             
+            if (!firebase_token) {
+                console.error("CRITICAL: Firebase token missing from backend login response!");
+                throw new Error("Authentication failed: Missing required token.");
+            }
+
             await AsyncStorage.setItem('access_token', access_token);
             await AsyncStorage.setItem('refresh_token', refresh_token);
             const userData = { id, full_name, email, mobile_number, is_active, loggedin_at, profile_picture};
             // If no profile picture, set Gravatar
+            try{
+                console.log("Attempting Firebase sign-in with custom token...");
+                const userCredential = await signInWithCustomToken(auth, firebase_token);
+                const firebaseUser = userCredential.user;
+                console.log("Firebase sign-in successful. User UID:", firebaseUser.uid);
+            }catch (firebaseError) {
+                console.error("Firebase sign-in failed:", firebaseError);
+                await AsyncStorage.removeItem('access_token'); 
+                await AsyncStorage.removeItem('refresh_token');
+                throw new Error(`Firebase authentication failed: ${firebaseError.message}`);
+            }
             if (!profile_picture) {
                 const gravatarUrl = getGravatarUrl(email);
                 userData.profile_picture = gravatarUrl;
@@ -66,12 +85,34 @@ export const authService = {
     processOAuthLogin: async (tokens) => {
         try{
             const { access_token, refresh_token, id_token} = tokens;
+            const firebaseTokenFromRedirect = tokens.firebase_token;
+            if (!access_token) {
+                throw new Error("Authentication failed: Backend access token is missing.");
+            }
 
             await AsyncStorage.setItem('access_token', access_token);
-            await AsyncStorage.setItem('refresh_token', refresh_token);
-
+            if (refresh_token !== undefined && refresh_token !== null) {
+                console.log("Storing refresh token received via OAuth:", refresh_token); // Log if you get one
+                await AsyncStorage.setItem('refresh_token', refresh_token);
+            } else {
+                console.log("No refresh token received via OAuth, skipping storage.");
+            }
             const response = await apiClient.get('/users/me');
             const userData = response.data;
+                // --- SIGN IN TO FIREBASE ---
+            try {
+                console.log("Attempting Firebase sign-in with custom token after OAuth...");
+                const userCredential = await signInWithCustomToken(auth, firebaseTokenFromRedirect);
+                console.log("Firebase sign-in successful after OAuth. User UID:", userCredential.user.uid);
+            } catch (firebaseError) {
+                console.error("Firebase sign-in failed after OAuth:", firebaseError);
+                // Clean up partial login
+                await AsyncStorage.removeItem('access_token');
+                await AsyncStorage.removeItem('refresh_token');
+                throw new Error(`Firebase authentication failed after OAuth: ${firebaseError.message}`);
+            }
+                // --- END SIGN IN TO FIREBASE ---
+            
             if(!userData.profile_picture && id_token){
                 try{
                     const [,payload] = id_token.split('.');
@@ -120,6 +161,13 @@ export const authService = {
      // Logout user
     logout: async () => {
         try {
+            try {
+                await signOut(auth);
+                console.log("Firebase sign-out successful.");
+           } catch (firebaseError) {
+                console.error("Firebase sign-out failed:", firebaseError);
+                // Log error but proceed with clearing local data anyway
+           }
             // Clear stored tokens and user data
             await AsyncStorage.removeItem('access_token');
             await AsyncStorage.removeItem('refresh_token');

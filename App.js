@@ -2,6 +2,7 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import app from './src/utils/firebaseConfig.js';
 import LoginScreen from './src/screens/LoginScreen.js';
 import WelcomeScreen from './src/screens/WelcomeScreen.js';
 import CreateAccountScreen from './src/screens/SignupScreens/CreateAccountScreen.js';

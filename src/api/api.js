@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const API_BASE_URL = "https://7cb2-2c0f-f3a0-12a-75fe-4c14-568a-da64-fcf2.ngrok-free.app";
+const API_BASE_URL = "https://a949-2c0f-f3a0-9d-378e-35cd-758e-9e01-8c3b.ngrok-free.app";
 
 const apiClient = axios.create({
     baseURL: API_BASE_URL,
@@ -52,7 +52,7 @@ apiClient.interceptors.response.use(
                     {},
                     {
                         headers: {
-                            'refresh_token': refreshToken  // Send in header
+                            'refresh-token': refreshToken  // Send in header
                           }
                     }
                 );

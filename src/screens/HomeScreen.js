@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from "react";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar, ActivityIndicator } from "react-native";
+import { Alert, StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar, ActivityIndicator } from "react-native";
 import * as Font from 'expo-font';
 
 import Header from "../Components/Header";
@@ -8,7 +8,7 @@ import { useRobot } from "../api/robotContext";
 
 const HomeScreen = () => {
     const navigation = useNavigation();
-    const {robots, loading, loadRobots} = useRobot();
+    const {robots, loading, error: robotError, loadRobots, clearError} = useRobot();
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState('EN');
     const [notificationsEnabled, setNotificationsEnabled] = useState(true)

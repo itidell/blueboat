@@ -1,63 +1,84 @@
-import { useState, useEffect } from 'react';
+// --- START OF FILE GoogleAuth.js ---
+
+import { useState } from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { Platform, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useAuth } from '../api/authContext';
+import { useAuth } from '../api/authContext'; // Adjust path if necessary
 
 // Register the redirect handler
 WebBrowser.maybeCompleteAuthSession();
 
 // Your backend URL
-const API_URL = "https://7cb2-2c0f-f3a0-12a-75fe-4c14-568a-da64-fcf2.ngrok-free.app";
-
+const API_URL = "https://a949-2c0f-f3a0-9d-378e-35cd-758e-9e01-8c3b.ngrok-free.app"; // Make sure this is correct
 
 export const useGoogleAuth = (onSuccess, onError) => {
   const [loading, setLoading] = useState(false);
-  const { googleLogin } = useAuth();
+  const { googleLogin } = useAuth(); // Get the context function
 
   const signInWithGoogle = async () => {
     try {
       setLoading(true);
-      
-      // Step 1: Open the web browser to your backend's Google login endpoint
       const authUrl = `${API_URL}/auth/google/login`;
-      
-      // Start the auth flow - this will redirect to Google login page
-      const result = await WebBrowser.openAuthSessionAsync(
-        authUrl,
-        'exp://192.168.37.93:8081/--/oauth-callback'
-      );
-      
-      // Check the result
-      if (result.type === 'success') {
-        // Extract the token from the URL
+      // Ensure this EXACT redirect URI is configured in your Google Cloud Console
+      // AND is used by your backend when calling oauth.google.authorize_redirect
+      const redirectUri = 'exp://192.168.37.93:8081/--/oauth-callback';
+
+      console.log("Starting Google Auth. Opening URL:", authUrl, "Expecting redirect to:", redirectUri);
+
+      // Start the auth flow
+      const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
+      console.log("WebBrowser result:", result);
+
+      if (result.type === 'success' && result.url) {
         const { url } = result;
-        const tokenParam = url.match(/[?&]token=([^&]+)/);
-        
-        if (tokenParam && tokenParam[1]) {
-          const accessToken = decodeURIComponent(tokenParam[1]);
-          
-          // Store the token
-          await AsyncStorage.setItem('access_token', accessToken);
-          
-          // Process login with your auth context
-          const userData = await googleLogin({ 
-            access_token: accessToken,
-            refresh_token: accessToken, // Your backend likely handles refresh tokens internally
+        console.log("OAuth Success URL received:", url);
+
+        // --- MODIFIED: Extract BOTH tokens using simple regex ---
+        const backendTokenMatch = url.match(/[?&]token=([^&]+)/);
+        const firebaseTokenMatch = url.match(/[?&]firebase_token=([^&]+)/); // Look for firebase_token
+
+        const backendAccessToken = backendTokenMatch ? decodeURIComponent(backendTokenMatch[1]) : null;
+        const firebaseToken = firebaseTokenMatch ? decodeURIComponent(firebaseTokenMatch[1]) : null; // Extract it
+
+        console.log("Extracted backend access token:", backendAccessToken ? 'OK' : 'MISSING');
+        console.log("Extracted firebase token:", firebaseToken ? 'OK' : 'MISSING');
+
+        // --- MODIFIED: Check if BOTH tokens are present ---
+        if (backendAccessToken && firebaseToken) {
+
+          // Store the backend access token (needed for API calls)
+          await AsyncStorage.setItem('access_token', backendAccessToken);
+          console.log("Backend access token stored.");
+
+          // Call the context login function, passing BOTH tokens
+          // The authService will handle storing refresh token (if any) and signing into Firebase
+          console.log("Calling context googleLogin with extracted tokens...");
+          const userData = await googleLogin({
+            access_token: backendAccessToken,
+            firebase_token: firebaseToken,
+             // If your backend also includes refresh_token in the redirect, extract and pass it too:
+             // refresh_token: extractedRefreshToken,
           });
-          
+
+          console.log("Context googleLogin completed successfully.");
           if (onSuccess) onSuccess(userData);
+
         } else {
-          throw new Error('No token found in response');
+          // Throw error if tokens are missing
+          console.error("CRITICAL: Missing backend or firebase token in OAuth callback URL:", url);
+          throw new Error('Authentication failed: Required tokens not found in response URL.');
         }
       } else if (result.type === 'cancel') {
-        if (onError) onError(new Error('Authentication was canceled'));
+         console.log("Google Auth cancelled by user.");
+        if (onError) onError(new Error('Authentication was canceled by user.'));
       } else {
-        if (onError) onError(new Error('Authentication failed'));
+         console.error("Google Auth failed or was dismissed, result:", result);
+        throw new Error(`Authentication failed or was dismissed. Type: ${result.type}`);
       }
     } catch (error) {
-      console.error("Google sign-in error:", error);
-      if (onError) onError(error);
+      // Catch errors from WebBrowser or token extraction/processing
+      console.error("Google sign-in hook error:", error);
+      if (onError) onError(error); // Pass the error to the component
     } finally {
       setLoading(false);
     }
@@ -65,3 +86,5 @@ export const useGoogleAuth = (onSuccess, onError) => {
 
   return { signInWithGoogle, loading };
 };
+
+// --- END OF FILE GoogleAuth.js ---

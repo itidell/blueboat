@@ -128,5 +128,51 @@ export const robotService = {
                 throw error;
             }
         }
+    },
+    sendControlCommand: async (robotId, command) =>{
+        try{
+            const payload = { command: command.toLowerCase()};
+            console.log(`Sending command '${command}' to robot '${robotId}'`);
+            const response = await apiClient.post(`/robots/${robotId}/control`, payload); 
+            return response.data;
+        }catch (error) {
+            console.error(`Error sending command '${command}' to robot '${robotId}':`, error.response?.data || error);
+            const errorMessage = error.response?.data?.detail || error.message || `Failed to send command '${command}'.`;
+             throw new Error(errorMessage);
+        }
+    },
+    acquireControl: async (robotId) => {
+        try {
+            console.log(`Attempting to acquire control of robot '${robotId}'`);
+            const response = await apiClient.post(`/robots/${robotId}/control/acquire`);
+            return response.data;
+        } catch (error){
+            console.error(`Error acquiring control for robot '${robotId}':`, error.response?.data || error);
+            const errorMessage = error.response?.data?.detail || error.message || "Failed to acquire control.";
+            throw new Error(errorMessage);
+        }
+    },
+    releaseControl: async (robotId) => {
+        try {
+            console.log(`Attempting to release control of robot '${robotId}'`);
+            const response = await apiClient.post(`/robots/${robotId}/control/release`);
+            return response.data;
+        } catch (error){
+            console.error(`Error releasing control for robot '${robotId}':`, error.response?.data || error);
+            const errorMessage = error.response?.data?.detail || error.message || "Failed to release control.";
+            throw new Error(errorMessage);
+        }
+    },
+    getControlHistory: async(robotId, skip = 0, limit = 20) =>{
+        try{
+            console.log(`Fetching control history for ${robotId}, skip: ${skip}, limit: ${limit}`)
+            const response = await apiClient.get(`/robots/${robotId}/control/history`, {params: {skip, limit}});
+            
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching control history for robot '${robotId}':`, error.response?.data || error);
+            const errorMessage = error.response?.data?.detail || error.message || "Failed to fetch control history.";
+            throw new Error(errorMessage);
+        }
     }
 };

@@ -1,5 +1,5 @@
 // src/api/notificationContext.js
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiClient from './api';
 import { useAuth } from './authContext';
@@ -41,20 +41,24 @@ export const NotificationProvider = ({ children }) => {
     });
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [lastFetchTime, setLastFetchTime] = useState(null);
- 
   // Load saved notification state and settings on mount
   useEffect(() => {
     if (isAuthenticated){
         loadNotificationState();
         loadNotifications();
-    
+        checkForNewNotifications(true); // Initial fetch
         // Set up polling for real-time notifications
         const interval = setInterval(checkForNewNotifications, 30000); // Check every 30 seconds
     
         return () => clearInterval(interval);
+    } else {
+      // Clear notifications if user logs out
+      setNotifications([]);
+      setUnreadCount(0);
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, notificationsEnabled]);
 
   // Load notification state from storage
   const loadNotificationState = async () => {
@@ -104,25 +108,27 @@ export const NotificationProvider = ({ children }) => {
   };
 
   // Poll for new notifications from the server
-  const checkForNewNotifications = async (forceRefresh = false) => {
-    if (!notificationsEnabled && !forceRefresh) return;
-    if (!isAuthenticated) return;
-    
-    try {
-      // Fetch new notifications from API
-      const response = await apiClient.get('/notifications');
+  const checkForNewNotifications = useCallback(
+    async (forceRefresh = false) => {
+      if (!isAuthenticated || (!notificationsEnabled && !forceRefresh)) return;
+        console.log("NotificationContext: Checking for notifications...");
+        setLoading(true);
+        try{
+          const response = await apiClient.get('/notifications')
+          if (response && response.data){
+            setNotifications(response.data);
+            setUnreadCount(response.data.filter(n => !n.read).length);
+            setLastFetchTime(new Date());
+            console.log(`NotificationContext: Fetched ${response.data.length} notifications.`); 
+          }
+        }catch (error) {
+          console.error('NotificationContext: Failed to fetch notifications:', error);
+        }finally {
+          setLoading(false);
+        }
+      },[isAuthenticated, notificationsEnabled])
       
-      if (response && response.data) {
-        // Process new notifications
-        processServerNotifications(response.data);
-        setLastFetchTime(new Date());
-      }
-    } catch (error) {
-      console.error('Failed to fetch notifications:', error);
-    }
-  };
-
-  // Process notifications from the server
+      // Process notifications from the server
   const processServerNotifications = (serverNotifications) => {
     if (!serverNotifications || serverNotifications.length === 0) return;
     
@@ -196,48 +202,47 @@ export const NotificationProvider = ({ children }) => {
 
   // Mark a notification as read
   const markAsRead = async (notificationId) => {
+    if (!Number.isInteger(parseInt(notificationId))){
+      console.warn(`Cannot mark non-server notification ${notificationId} as read.`);
+      return false;
+    }
+    setLoading(true);
     try {
       // First update locally
-      const updatedNotifications = notifications.map(notification => 
-        notification.id === notificationId ? {...notification, read: true} : notification
-      );
-      setNotifications(updatedNotifications);
-      setUnreadCount(updatedNotifications.filter(n => !n.read).length);
-      saveNotifications(updatedNotifications);
-      
-      if (Number.isInteger(parseInt(notificationId))) {
-        await apiClient.put(`/notifications/${notificationId}/read`);
-      }
-      return true;
-    } catch (error) {
+      await apiClient.put(`/notifications/${notificationId}/mark-read`);
+      await checkForNewNotifications(true); // Refresh notifications after marking as read
+      setLoading(false);
+      return true
+    } catch (error){
       console.error('Error marking notification as read:', error);
-      // If server update fails, we keep the local update
+      setLoading(false);
+      Alert.alert("Error", "Could not mark notification as read.");
       return false;
     }
   };
 
   // Mark all notifications as read
   const markAllAsRead = async () => {
+    setLoading(true);
     try {
-      // First update locally
-      const updatedNotifications = notifications.map(notification => ({ ...notification, read: true }));
-      setNotifications(updatedNotifications);
-      setUnreadCount(0);
-      saveNotifications(updatedNotifications);
-      
-      // Then sync with server
       await apiClient.put('/notifications/mark-all-read');
+      await checkForNewNotifications(true);
+      setLoading(false);
       return true;
     } catch (error) {
       console.error('Error marking all notifications as read:', error);
-      // If server update fails, we keep the local update
+      setLoading(false);
+      Alert.alert("Error", "Could not mark all notifications as read.");
       return false;
     }
   };
 
   // Clear all notifications
-  const clearAllNotifications =async () => {
-    try{
+  const clearAllNotifications = async () => {
+    const serverNotifications = notifications.filter(n => Number.isInteger(parseInt(n.id)));
+    if (serverNotifications.length === 0) return true; // Nothing to clear
+    setLoading(true);
+    try {
       setNotifications([]);
       setUnreadCount(0);
       await saveNotifications([]);
@@ -249,36 +254,40 @@ export const NotificationProvider = ({ children }) => {
           await apiClient.delete(`/notifications/${notification.id}`)
         }catch (error) {
           console.error(`Failed to delete notification ${notification.id}:`, error);
+          success = false;
         }
       }
-      return true;
+      await checkForNewNotifications(true); 
     } catch (error){
       console.error('Error clearing notifications:', error);
-      return false;
+      success = false;
+      Alert.alert("Error", "Could not clear all notifications.");
+
+    }finally{
+      setLoading(false)
     }
+    return success;
   };
 
   // Delete a specific notification
   const deleteNotification = async (notificationId) => {
+    if (!Number.isInteger(parseInt(notificationId))) {
+      console.warn(`Cannot delete non-server notification ${notificationId}.`);
+       // Just remove locally if it was purely local
+       setNotifications(prev => prev.filter(n => n.id !== notificationId));
+       setUnreadCount(prev => prev - (notifications.find(n => n.id === notificationId && !n.read) ? 1 : 0));
+      return true;
+    }
+    setLoading(true);
     try {
-      // Update locally first
-      const updatedNotifications = notifications.filter(
-        notification => notification.id !== notificationId
-      );
-      
-      setNotifications(updatedNotifications);
-      setUnreadCount(updatedNotifications.filter(n => !n.read).length);
-      saveNotifications(updatedNotifications);
-      
-      // Delete from server if it's a server notification
-      if (Number.isInteger(parseInt(notificationId))) {
-        await apiClient.delete(`/notifications/${notificationId}`);
-      }
-      
+      await apiClient.delete(`/notifications/${notificationId}`);
+      await checkForNewNotifications(true); // Refresh notifications after deletion
+      setLoading(false);
       return true;
     } catch (error) {
       console.error('Error deleting notification:', error);
-      // Keep local deletion even if server deletion fails
+      setLoading(false);
+             Alert.alert("Error", "Could not delete notification.");
       return false;
     }
   };
@@ -514,6 +523,7 @@ export const NotificationProvider = ({ children }) => {
         notifyRobotAccessed,
         notifyAccessRequestSent,
         notifyAccessDenied,
+        checkForNewNotifications,
       }}
     >
       {children}

@@ -27,16 +27,20 @@
               "host": "oauth-callback"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
     "web": {
-       "bundler": "metro"
+      "bundler": "metro"
     },
     "plugins": [
       "expo-font",
-      "expo-router"
+      "expo-router",
+      "expo-video"
     ]
   }
 }

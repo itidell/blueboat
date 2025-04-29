@@ -43,6 +43,15 @@ const HomeScreen = () => {
         loadRobots();
     }, []);
 
+    useEffect(() => {
+        if (robotError) {
+          console.error(
+            "Error Loading Robots",
+            robotError // Removed the alert and error handling
+          );
+        }
+      }, [robotError, clearError]); // Depend on error and clearError
+      
     // Refresh robots when screen comes into focus
     useFocusEffect(
         useCallback(() => {

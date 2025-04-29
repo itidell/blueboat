@@ -6,14 +6,14 @@ import * as Font from 'expo-font';
 import Header from '../../Components/Header';
 import BottomNavBar from '../../Components/BottomNavBar';
 import RobotStatusHeader from '../../Components/RobotStatusHeader';
-
+import { useRobot } from '../../api/robotContext';
 const { width, height } = Dimensions.get('window');
 const CIRCLE_RADIUS = width * 0.38; // Increased from 0.28 to 0.38
 
 const RobotHomeScreen = ({ robotBatteryLevel , route }) => {
   const navigation = useNavigation();
+  const {currentRobot} = useRobot();
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [batteryLevel, setBatteryLevel] = useState(robotBatteryLevel);
   const [activeTab, setActiveTab] = useState('home');
   const [selectedLanguage, setSelectedLanguage] = useState('EN');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -22,6 +22,7 @@ const RobotHomeScreen = ({ robotBatteryLevel , route }) => {
   // Animation for menu items
   const scaleAnim = useState(new Animated.Value(0))[0];
   const rotateAnim = useState(new Animated.Value(0))[0];
+  const batteryLevel = currentRobot?.realtime?.battery?.level_percentage ?? 'N/A';
   
   useEffect(() => {
     const loadFonts = async () => {
@@ -31,12 +32,6 @@ const RobotHomeScreen = ({ robotBatteryLevel , route }) => {
       setFontsLoaded(true);
     };
     loadFonts();
-    
-    const batteryMonitor = setInterval(() => {
-      setBatteryLevel(currentLevel => {
-        return robotBatteryLevel;
-      });
-    }, 30000); // Check every 30 seconds
     
     // Animate menu appearance
     Animated.parallel([
@@ -53,7 +48,7 @@ const RobotHomeScreen = ({ robotBatteryLevel , route }) => {
       })
     ]).start();
     
-    return () => clearInterval(batteryMonitor);
+    return () => clearInterval();
   }, [robotBatteryLevel]);
 
   const spin = rotateAnim.interpolate({

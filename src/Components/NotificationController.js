@@ -62,7 +62,7 @@ const NotificationController = ({ onNotificationChange, initialState }) => {
     const requesterId = notification.actor_id; // Use optional chaining
 
     if (!robotId || !requesterId) {
-      Alert.alert("Error", "Missing data to approve this request.");
+      console.log("Error", "Missing data to approve this request.");
       return;
     }
 
@@ -72,7 +72,7 @@ const NotificationController = ({ onNotificationChange, initialState }) => {
     try {
       console.log("Approving access via NotificationController for robot:", robotId, "requester:", requesterId);
       await approveRobotAccess(robotId, requesterId);
-      Alert.alert("Success", "Access request approved successfully.");
+      console.log("Success", "Access request approved successfully.");
       // Mark as read locally and attempt server update
       await markAsRead(notification.id);
       // Refresh the notification list from the server
@@ -90,7 +90,7 @@ const NotificationController = ({ onNotificationChange, initialState }) => {
     const requesterId = notification.actor_id // Use optional chaining
 
     if (!robotId || !requesterId) {
-      Alert.alert("Error", "Missing data to deny this request.");
+      console.log("Error", "Missing data to deny this request.");
       return;
     }
 
@@ -100,7 +100,7 @@ const NotificationController = ({ onNotificationChange, initialState }) => {
     try {
       console.log("Denying access via NotificationController for robot:", robotId, "requester:", requesterId);
       await denyRobotAccess(robotId, requesterId);
-      Alert.alert("Success", "Access request denied.");
+      console.log("Success", "Access request denied.");
       // Mark as read locally and attempt server update
       await markAsRead(notification.id);
       // Refresh the notification list from the server

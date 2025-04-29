@@ -12,6 +12,7 @@ import { Alert } from 'react-native';
 import BottomNavBar from '../../Components/BottomNavBar';
 import { useRobot } from '../../api/robotContext';
 import { useNotifications } from '../../api/notificationContext';
+import { set } from 'date-fns';
 // --- Icons ---
 const ErrorIcon = () => (
     <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginRight: 5, marginTop: 1 }}>
@@ -38,13 +39,25 @@ const AddRobotScreen = () => {
   const [joinRobotId, setJoinRobotId] = useState('');
   const [ownerEmail, setOwnerEmail] = useState('');
   const [joinErrorMessage, setJoinErrorMessage] = useState('');
-  const [joiLoading, setJoinLoading] = useState(false)
+  const [joinLoading, setJoinLoading] = useState(false)
 
 
   // Shared State (original Header component state if needed)
   const [activeTab, setActiveTab] = useState('add'); // For BottomNavBar
   const [selectedLanguage, setSelectedLanguage] = useState('EN');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+
+  const switchMode = (newMode) => {
+    if (newMode !== mode) {
+      setMode(newMode);
+      setCreateErrorMessage(''); // Clear error message when switching modes
+      setJoinErrorMessage(''); // Clear error message when switching modes
+      setNewRobotId(''); // Clear input when switching modes
+      setJoinRobotId(''); // Clear input when switching modes
+      setOwnerEmail(''); // Clear input when switching modes
+    }
+
+  };
 
   useEffect(() => {
     const loadFonts = async () => {
@@ -76,6 +89,7 @@ const AddRobotScreen = () => {
       console.log('Attempting to create robot with ID:', newRobotId);
       await addRobot({ robot_id: newRobotId, status: 'inactive' });
       navigation.navigate('AddRobotLoading', { robotId: newRobotId, action: 'create' });
+    
     } catch (error) {
       console.error('Error creating robot:', error);
       setCreateErrorMessage(error.message || 'Failed to create robot. ID might be taken.');
@@ -93,13 +107,13 @@ const AddRobotScreen = () => {
       setJoinErrorMessage(errors.join(' '));
       return;
     }
-    
+    setJoinLoading(true);
     try {
       setJoinLoading(true);
       console.log('Attempting to join robot:', joinRobotId, 'owned by:', ownerEmail);
       
       // Use the actual API function from context instead of the timeout
-      const result = await requestRobotAccess(joinRobotId, ownerEmail);
+      await requestRobotAccess(joinRobotId, ownerEmail);
       
       setJoinLoading(false);
       
@@ -160,14 +174,14 @@ const AddRobotScreen = () => {
                     <View style={styles.tabContainer}>
                         <TouchableOpacity
                             style={[styles.tabButton, mode === 'create' ? styles.activeTabButton : styles.inactiveTabButton]}
-                            onPress={() => setMode('create')}
+                            onPress={() => switchMode('create')}
                             activeOpacity={0.7}
                         >
                             <Text style={[styles.tabText, mode === 'create' ? styles.activeTabText : styles.inactiveTabText]}>NEW</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.tabButton, mode === 'join' ? styles.activeTabButton : styles.inactiveTabButton]}
-                            onPress={() => setMode('join')}
+                            onPress={() => switchMode('join')}
                             activeOpacity={0.7}
                         >
                             <Text style={[styles.tabText, mode === 'join' ? styles.activeTabText : styles.inactiveTabText]}>JOIN</Text>
@@ -188,6 +202,7 @@ const AddRobotScreen = () => {
                                         onChangeText={setNewRobotId}
                                         onFocus={() => setCreateErrorMessage('')}
                                         autoCapitalize="none"
+                                        editable={!apiLoading} 
                                     />
                                 </View>
                                 {createErrorMessage ? (
@@ -214,6 +229,7 @@ const AddRobotScreen = () => {
                                         onChangeText={setJoinRobotId}
                                         onFocus={() => setJoinErrorMessage('')}
                                          autoCapitalize="none"
+                                         editable={!apiLoading} 
                                     />
                                 </View>
                                 {/* Minimal space before next input */}
@@ -246,13 +262,13 @@ const AddRobotScreen = () => {
 
 
                     {/* Loading Indicator (like image) */}
-                    { (apiLoading || joiLoading) && <LoadingDots />}
+                    { (apiLoading || joinLoading) && <LoadingDots />}
 
                     {/* Action Button (like image, but using original blue) */}
                     <TouchableOpacity
                         style={[styles.actionButton, apiLoading ? styles.buttonDisabled : {}]}
                         onPress={mode === 'create' ? handleCreateRobot : handleJoinRobot}
-                        disabled={apiLoading || joiLoading}
+                        disabled={apiLoading || joinLoading}
                         activeOpacity={0.8}
                     >
                         <Text style={styles.actionButtonText}>

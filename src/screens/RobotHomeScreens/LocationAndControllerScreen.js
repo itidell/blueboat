@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar, Switch, Alert, ActivityIndicator } from 'react-native';
 import * as Font from 'expo-font';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Header from '../../Components/Header';
 import BottomNavBar from '../../Components/BottomNavBar';
 import RobotStatusHeader from '../../Components/RobotStatusHeader';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { useFocusEffect } from '@react-navigation/native';
 import { useRobot } from '../../api/robotContext';
 import { useAuth } from '../../api/authContext';
+import { Video } from 'expo-av'
 // Constants
+console.log('--- LocationScreen: Checking Video Import ---');
+console.log('Typeof Video:', typeof Video);
+console.log('Video component itself:', Video);
 const VIEW_MODES = {
   MAP: 'map',
   LIVESTREAM: 'livestream'
@@ -71,6 +74,11 @@ const LocationAndControllerScreen = ({ route }) => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
   const [activeView, setActiveView] = useState(VIEW_MODES.MAP);
+  const [commandError, setCommandError] = useState(null); 
+  const [isVideoBuffering, setIsVideoBuffering] = useState(false);
+
+  const commandErrorTimeout = useRef(null);
+  const videoRef = useRef(null);
   
   const isCurrentUserControlling = currentRobot?.control?.controller_user_id === user?.id;
   const isControlAcquiredBySomeone = !!currentRobot?.control?.controller_user_id;
@@ -78,16 +86,50 @@ const LocationAndControllerScreen = ({ route }) => {
   const controlAquirerName = currentRobot?.control?.controller_user_name || "another user";
   const batteryLevel = currentRobot?.realtime?.battery?.level_percentage ?? 'N/A';
   const location = currentRobot?.realtime?.location;
-  const robotCoordinates = location?.latitude && location?.longitude 
-    ? { latitude: location.latitude, longitude: location.longitude } 
-    : null;
+  const robotCoordinates = location?.latitude != null && location?.longitude != null // More robust check
+      ? { latitude: location.latitude, longitude: location.longitude }
+      : null;
   const currentPositionText = robotCoordinates 
     ? `Lat: ${robotCoordinates.latitude.toFixed(4)}, Lon: ${robotCoordinates.longitude.toFixed(4)}` 
     : 'Position Unknown';
-  const streamActive = currentRobot?.realtime?.live_stream?.is_active ?? false;
-  const streamUrl = currentRobot?.realtime?.live_stream?.stream_url;
+  const streamActive = true; // Example URL, replace with actual stream URL
   const mapRef = useRef(null);
+  const [streamUrl, setStreamUrl] = useState("");
   
+  useEffect(() => {
+    // Get the stream URL from your backend or use configuration
+    const streamUrl = "http://192.168.186.93:8080/stream"; // Replace with dynamic source
+    
+    // Validate the URL before setting it
+    if (streamUrl && typeof streamUrl === 'string') {
+      try {
+        // Test if the URL is valid
+        new URL(streamUrl);
+        setStreamUrl(streamUrl);
+      } catch (e) {
+        console.error("Invalid stream URL:", e);
+        setCommandError('Invalid stream URL format');
+      }
+    }
+  }, [robotId]);
+const retryCount = useRef(0);
+const MAX_RETRIES = 3;
+
+const retryPlayback = useCallback(() => {
+  if (retryCount.current < MAX_RETRIES && videoRef.current) {
+    console.log(`Retrying video playback (${retryCount.current + 1}/${MAX_RETRIES})...`);
+    setTimeout(() => {
+      videoRef.current.loadAsync({ uri: streamUrl })
+        .then(() => videoRef.current.playAsync())
+        .catch(err => console.error("Retry failed:", err));
+    }, 2000); // Wait 2 seconds before retrying
+    retryCount.current += 1;
+  } else if (retryCount.current >= MAX_RETRIES) {
+    console.error("Maximum retry attempts reached");
+    setCommandError('Failed to load video after multiple attempts');
+  }
+}, [streamUrl]);
+
   // Load fonts
   useEffect(() => {
     const loadFonts = async () => {
@@ -99,6 +141,47 @@ const LocationAndControllerScreen = ({ route }) => {
     
     loadFonts();
   }, []);
+
+  const handleVideoLoad = () => {
+    console.log("Video loaded");
+    setIsVideoBuffering(false);
+  };
+
+  const handleVideoBuffer = ({ isBuffering }) => {
+    console.log("Video buffering:", isBuffering);
+    setIsVideoBuffering(isBuffering);
+  };
+
+  const handleVideoError = (error) => {
+    console.error("Video Error:", error);
+  if (error && error.error) {
+    console.error("Detailed error:", JSON.stringify(error.error));
+  }
+  setCommandError('Video playback failed: ' + (error?.error?.message || 'Unknown error'));
+  setIsVideoBuffering(false);
+  
+  // Automatically retry on error
+  retryPlayback();
+  };
+  
+  useEffect(() => {
+    if (commandError) {
+      // Clear previous timeout if exists
+      if (commandErrorTimeout.current) {
+        clearTimeout(commandErrorTimeout.current);
+      }
+      // Set a new timeout
+      commandErrorTimeout.current = setTimeout(() => {
+        setCommandError(null);
+      }, 4000); // Clear error after 4 seconds
+    }
+    return () => {
+      if (commandErrorTimeout.current) {
+        clearTimeout(commandErrorTimeout.current);
+      }
+    };
+  }, [commandError]);
+
   
   // Robot data fetching when screen is focused
   useFocusEffect(
@@ -106,6 +189,7 @@ const LocationAndControllerScreen = ({ route }) => {
       if (robotId) {
         console.log(`LocationScreen focused, fetching data for robot: ${robotId}`);
         getRobot(robotId);
+        
         
         // Set up periodic battery check
         const interval = setInterval(() => {
@@ -121,30 +205,66 @@ const LocationAndControllerScreen = ({ route }) => {
     }, [robotId, getRobot])
   );
 
+  useFocusEffect(
+    useCallback(() => {
+        // Logic to fetch robot data (getRobot(robotId))
+         if (robotId) {
+            console.log(`LocationScreen focused, fetching data for robot: ${robotId}`);
+            getRobot(robotId);
+         } else {
+             console.error("LocationScreen focus: robotId is missing!");
+         }
+
+        // Attempt to play video when screen is focused AND stream is active
+        if (videoRef.current && streamActive && streamUrl) {
+            console.log("Screen focused, ensuring video plays...");
+            videoRef.current.playAsync();
+        }
+
+        return () => {
+            // Pause video when screen loses focus
+            if (videoRef.current) {
+                console.log("Screen unfocused, pausing video...");
+                videoRef.current.pauseAsync();
+            }
+             // Optional: Cleanup for battery check interval if set here
+        };
+    }, [robotId, getRobot, streamActive, streamUrl]) // Add stream dependencies
+);
+
   // Center map on robot position when coordinates change
   useEffect(() => {
     if (robotCoordinates && mapRef.current && activeView === VIEW_MODES.MAP) {
+      console.log("Animating map to:", robotCoordinates)
       mapRef.current.animateToRegion({
         latitude: robotCoordinates.latitude,
         longitude: robotCoordinates.longitude,
         latitudeDelta: 0.005, // Zoom level
         longitudeDelta: 0.005, // Zoom level
       }, 1000); // Animation duration in ms
-    }
+    } else if (!robotCoordinates && activeView === VIEW_MODES.MAP) {
+      console.log("No robot coordinates available for map centering.");
+   }
   }, [robotCoordinates, activeView]);
 
   // Handlers as memoized callbacks for better performance
   const handleDirectionPress = useCallback(async (direction) => {
+    setCommandError(null); // Reset command error state
     if (!controllerEnabled) {
-      Alert.alert('Controller Disabled', 'Please enable the controller first.');
+      setCommandError('Controller is disabled.');
       return;
     }
+    console.log(`Sending command: ${direction} for robot ${robotId}`);
     const success = await sendRobotCommand(robotId, direction);
     if (!success) {
-      Alert.alert('Command Failed', robotError || 'Could not send command.');
+      const specificError = robotError || 'Failed to send command. Please try again.';
+      setCommandError(specificError); 
+      Alert.alert('Command Failed', specificError);
     }
     
-    console.log(`Robot moving: ${direction}`);
+    else {
+      console.log(`Command ${direction} sent successfully.`); // Log success
+    }
   }, [robotId, controllerEnabled, sendRobotCommand, robotError]);
 
   const handleSavePosition = useCallback(() => {
@@ -199,12 +319,12 @@ const LocationAndControllerScreen = ({ route }) => {
       ]
     );
   }, [robotId, sendRobotCommand, robotError]);
-
   const toggleView = useCallback((mode) => {
     setActiveView(mode);
   }, []);
-
+  
   const handleControllerToggle = useCallback(async (value) => {
+    setCommandError
     if (!currentRobot || !robotId) return;
 
     if (value === true) {
@@ -252,7 +372,7 @@ const LocationAndControllerScreen = ({ route }) => {
       <RobotStatusHeader 
         robotId={robotId} 
         batteryLevel={batteryLevel} 
-      />
+        />
 
       {/* View Toggle Component */}
       <View style={styles.toggleContainerWrapper}>
@@ -312,24 +432,16 @@ const LocationAndControllerScreen = ({ route }) => {
               style={styles.mapView}
               ref={mapRef}
               provider={PROVIDER_GOOGLE}
-              initialRegion={
-                robotCoordinates 
-                  ? { 
-                      latitude: robotCoordinates.latitude, 
-                      longitude: robotCoordinates.longitude, 
-                      latitudeDelta: 0.005, 
-                      longitudeDelta: 0.005
-                    }
-                  : { 
-                      latitude: 36.8981, 
-                      longitude: 10.1879, 
-                      latitudeDelta: 0.0922, 
-                      longitudeDelta: 0.0421
-                    }
-              } 
+              initialRegion={{
+                latitude: robotCoordinates?.latitude ?? 36.8981, 
+                longitude: robotCoordinates?.longitude ?? 10.1879, 
+                latitudeDelta: 0.005, 
+                longitudeDelta: 0.005
+              }}
+              
               mapType="standard" 
               showsUserLocation={false}
-              showsMyLocationButton={false}
+              draggable={false}
             >
               {robotCoordinates && (
                 <Marker
@@ -342,24 +454,72 @@ const LocationAndControllerScreen = ({ route }) => {
                       source={require('../../../assets/images/location.png')}
                       style={styles.mapMarkerIcon}
                     />
-                    <ActivityIndicator 
-                      style={styles.realtimeLoader} 
-                      size="small" 
-                      color="#57C3EA"
-                    />
                   </View>
                 </Marker>
               )}
             </MapView>
           ) : (
             <View style={styles.livestreamView}>
-              <Text style={styles.placeholderText}>
-                {streamActive ? 'Streaming...' : 'Live Stream Offline'}
-              </Text>
-              {streamActive && streamUrl && (
-                <Text style={styles.subtext}>URL: {streamUrl}</Text>
-              )}
-              <Text style={styles.subtext}>Status: {streamActive ? 'Active' : 'Inactive'}</Text>
+              {realtimeLoading && !currentRobot ? (
+                 <ActivityIndicator size="large" color="#57C3EA" />
+              ):
+              streamActive && streamUrl ? (
+                <>
+                                    <Video
+                                       source={{ 
+    uri: streamUrl,
+    headers: {
+      // Add any required headers for authentication
+      'User-Agent': 'ExpoVideoPlayer',
+    }
+  }}
+  style={styles.videoPlayer}
+  resizeMode="contain"
+  useNativeControls
+  shouldPlay={true}
+  isLooping={false}
+  rate={1.0}
+  volume={1.0}
+  isMuted={false}
+  onLoadStart={() => setIsVideoBuffering(true)}
+  onLoad={handleVideoLoad}
+  onError={handleVideoError}
+  onPlaybackStatusUpdate={(status) => {
+    // Monitor playback status for debugging
+    if (status.isLoaded) {
+      if (status.isPlaying) {
+        console.log("Video is playing");
+      } else {
+        console.log("Video is paused");
+      }
+    }
+  }}
+
+                                    />
+                                    {/* Buffering Indicator */}
+                                    {isVideoBuffering && (
+                                        <View style={styles.videoBufferingOverlay}>
+                                            <ActivityIndicator size="large" color="#FFFFFF" />
+                                        </View>
+                                    )}
+                                </>
+                            ) : (
+                                // --- Placeholder When Stream Inactive or No URL ---
+                                <>
+                                    <Text style={styles.livestreamStatusText}>
+                                        {/* More specific status */}
+                                        {streamActive && !streamUrl ? 'Stream Active (Connecting...)' : 'Live Stream Offline'}
+                                    </Text>
+                                    {robotError && (
+                                        <Text style={styles.livestreamErrorText}>Error: {robotError}</Text>
+                                    )}
+                                    {!streamActive && !robotError && (
+                                        <Text style={styles.livestreamInfoText}>Waiting for robot to start stream...</Text>
+                                    )}
+                                </>
+                            )
+              }
+
             </View>
           )}
           {realtimeLoading && activeView === VIEW_MODES.MAP && (
@@ -616,7 +776,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     flexDirection: 'column',
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     paddingBottom: 8,
     marginBottom: 66,
   },
@@ -635,14 +795,25 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   mapView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    ...StyleSheet.absoluteFillObject,
+  },
+  mapMarkerIcon: {
+    width: 35, // Adjust marker size
+    height: 35,
+    resizeMode: 'contain',
+  },
+  mapLoadingIndicator: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -20, // Center based on size
+    marginLeft: -20,
   },
   livestreamView: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#000000',
   },
   placeholderText: {
     fontSize: 17,
@@ -858,6 +1029,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     alignItems: 'center', 
     borderRadius: 15, 
+  },
+  videoPlayer: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  videoBufferingOverlay: {
+    ...StyleSheet.absoluteFillObject, // Cover the entire video area
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

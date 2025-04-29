@@ -19,6 +19,7 @@ const StorageScreen = ({ route }) => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
+  
   useEffect(() => {
       const loadFonts = async () => {
         await Font.loadAsync({

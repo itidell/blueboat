@@ -4,7 +4,6 @@ import { robotService } from "./robotService";
 import { useNotifications } from "./notificationContext";
 import { database } from '../utils/firebaseConfig';
 import { ref, onValue, off } from "firebase/database";
-import { Alert } from "react-native";
 import { getAuth } from "firebase/auth";
 import { app } from "../utils/firebaseConfig"; // Ensure this is the correct import for your Firebase app
 const RobotContext = createContext();
@@ -17,14 +16,18 @@ export const RobotProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [realtimeLoading, setRealtimeLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [realtimeError, setRealtimeError] = useState(null);
+  const [controlError, setControlError] = useState(null);
   const [currentRobot, setCurrentRobot] = useState(null);
-  const [pendingRequests, setPendingRequests] = useState([]);
   const [commandLoading, setCommandLoading] = useState(false);
   const [controlHistory, setControlHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyError, setHistoryError] = useState(null);
   const [historyPage, setHistoryPage] = useState(0);
   const [hasMoreHistory, setHasMoreHistory] = useState(true);
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [pendingRequestError, setPendingRequestError] = useState(null); // Separate error state
+  const [pendingRequestLoading, setPendingRequestLoading] = useState(false); // Separate loading state
   const HISTORY_PAGE_LIMIT = 20;
   const realtimeListenerRef = useRef(null);
   const controlListenerRef = useRef(null);
@@ -37,6 +40,18 @@ export const RobotProvider = ({ children }) => {
     notifyAccessDenied,
     refreshNotifications
   } = useNotifications();
+
+  const clearError = useCallback(() =>{
+    setError(null);
+  }, []);
+
+  const clearHistoryError = useCallback(() =>{
+    setHistoryError(null);
+  }, []);
+
+  const clearPendingRequestError = useCallback(() =>{
+    setPendingRequestError(null);
+  }, []);
 
   const checkRobotBatteryLevel = useCallback((robot) =>{
     if (!robot) return;
@@ -74,9 +89,10 @@ export const RobotProvider = ({ children }) => {
     if(!robotId) return;
     if(historyLoading && !loadMore) return;
     if(loading && loadMore) return;
+  
     console.log(`Loading control history for ${robotId}. Load More: ${loadMore}, Current Page: ${historyPage}`);
     setHistoryLoading(true);
-    setHistoryError(null);
+    setHistoryError();
     const pageToLoad = loadMore ? historyPage + 1 : 0;
     const skip = pageToLoad * HISTORY_PAGE_LIMIT;
     try{
@@ -106,10 +122,12 @@ export const RobotProvider = ({ children }) => {
     } finally{
       setHistoryLoading(false);
     }
-  }, [ historyLoading, historyPage, hasMoreHistory, HISTORY_PAGE_LIMIT]);
+  }, [ historyLoading, historyPage, hasMoreHistory, HISTORY_PAGE_LIMIT, clearHistoryError]);
   
   useEffect(() => {
     detachFirebaseListener();
+    setControlError(null);
+    setRealtimeError(null);
     if ( currentRobot && currentRobot.robot_id){
       console.log("Setting up Firebase listeners for robot:", currentRobot.robot_id);
       setRealtimeLoading(true);
@@ -122,6 +140,7 @@ export const RobotProvider = ({ children }) => {
         const realtimeDBRef = ref(database, realtimePath);
         const controlDBRef = ref(database, controlPath);
         const onRealtimeValueChange = (snapshot) =>{
+          setRealtimeError(null);
           const realtimeData = snapshot.val();
           console.log(`Firebase realtime_data update for ${robotId}:`, realtimeData ? "Data received" : "No data/null");
           setCurrentRobot(prevRobot =>{
@@ -219,10 +238,6 @@ export const RobotProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       const newRobot = await robotService.createRobot(robotData);
-      setRobots(prev => [...prev, newRobot]);
-      const userId = getAuth(app).currentUser.uid;
-      const robotId = newRobot.robot_id;
-      await set(ref(database, `user_robot_access/${userId}/${robotId}`), true);
       checkRobotBatteryLevel(newRobot);
       await loadRobots();
       return newRobot;
@@ -295,7 +310,7 @@ export const RobotProvider = ({ children }) => {
     console.log(`Fetching static data for robot: ${robotId}`);
     setLoading(true);
     setRealtimeLoading(true);
-    setError(null);
+    clearError();
     try {
       const robotStaticData = await robotService.getRobot(robotId);
       if (robotStaticData){
@@ -325,7 +340,7 @@ export const RobotProvider = ({ children }) => {
       setRealtimeLoading(false);
       return null;
     }
-  },[detachFirebaseListener]);
+  },[detachFirebaseListener, clearError]);
 
   const recordRobotAccess = async (robotId) => {
     try {
@@ -357,7 +372,6 @@ export const RobotProvider = ({ children }) => {
       notifyAccessGranted(robotId, "You")
       // Refresh data after successful approval
       await loadRobots();
-      await loadPendingAccessRequests();
       
       // Make sure to refresh notifications to update the UI
       await refreshNotifications();
@@ -375,20 +389,34 @@ export const RobotProvider = ({ children }) => {
 
   const loadPendingAccessRequests = useCallback( async () => {
     try {
-      setLoading(true);
-      setError(null);
+      setPendingRequestLoading(true);
+      setPendingRequestError();
       const requests = await robotService.getPendingAccessRequest();
+      console.log("Attempting to load pending access requests...");
       setPendingRequests(requests || []);
+      console.log(`Successfully loaded ${requests?.length || 0} pending requests.`);
       return requests;
     } catch (error) {
       console.error("Error loading access requests:", error);
-      const errorMessage = error.response?.data?.detail || error.message || "Failed to load access requests";
-      setError(errorMessage);
-      return [];
+      let specificErrorMsg = "Failed to load pending access requests.";
+            if (error && error.detail && typeof error.detail === 'string' && !error.detail.toLowerCase().includes('not authorized')) {
+                 // Only use backend detail if it's informative and not a generic auth issue
+                 // Let's avoid showing "Robot not found" as it's confusing here.
+                 if (!error.detail.includes("Robot not found")) {
+                    specificErrorMsg = error.detail;
+                 } else {
+                    specificErrorMsg = "An issue occurred while checking for pending requests."; // More generic
+                 }
+            } else if (error && error.message && !error.message.toLowerCase().includes('401')) {
+                 specificErrorMsg = error.message;
+            }
+
+            setPendingRequestError(specificErrorMsg);
+            setPendingRequests([]); // Clear requests on error
     } finally {
-      setLoading(false);
+      setPendingRequestLoading(false);
     }
-  }, []);
+  }, [clearPendingRequestError]);
   
   const requestRobotAccess = async (robotId, ownerEmail) => {
     try {
@@ -418,8 +446,6 @@ export const RobotProvider = ({ children }) => {
       const result = await robotService.denyRobotAccess(robotId, requesterId);
       
       notifyAccessDenied(robotId, "You")
-      // Refresh data after successful denial
-      await loadPendingAccessRequests();
       
       // Make sure to refresh notifications to update the UI
       await refreshNotifications();
@@ -443,23 +469,26 @@ export const RobotProvider = ({ children }) => {
   const sendRobotCommand = useCallback(async (robotId, command) => {
     if (!robotId){
       console.error("sendRobotCommand: robotId is missing");
-      setError("Cannot send command: No robot selected.");
       return false;
     }
 
     setCommandLoading(true);
+    let success = false;
     try {
       await robotService.sendControlCommand(robotId, command);
+      success = true ; 
       setCommandLoading(false);
       return true;
     }catch (err){
       console.error("Error in sendRobotCommand context:", err);
-      Alert.alert("Command Failed", err.message || "Could not send command.");
       setError(err.message || "Failed to send command.");
-      setCommandLoading(false);
+      success = false
       return false;
+    } finally {
+      setCommandLoading(false);
     }
-  }, []);
+    return success;
+  }, [setError]);
 
   const acquireRobotControl = useCallback(async (robotId) =>{
     if (!robotId){
@@ -519,6 +548,12 @@ export const RobotProvider = ({ children }) => {
         historyLoading,
         historyError,
         hasMoreHistory,
+        pendingRequests,
+        pendingRequestError,
+        pendingRequestLoading,
+        clearPendingRequestError,
+        clearError,
+        clearHistoryError,
         loadControlHistory,
         loadRobots,
         addRobot,

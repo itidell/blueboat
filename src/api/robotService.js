@@ -91,8 +91,8 @@ export const robotService = {
             const response = await apiClient.get('/robots/pending-access-requests');
             return response.data;
         } catch (error) {
-            console.error("Get pending requests error:", error.response?.data || error);
-            throw error.response?.data || error;
+            console.error(`Error fetching ${error.config?.url}:`, error.response?.data || error);
+        throw error.response?.data || error;
         }
     },
     
@@ -133,7 +133,7 @@ export const robotService = {
         try{
             const payload = { command: command.toLowerCase()};
             console.log(`Sending command '${command}' to robot '${robotId}'`);
-            const response = await apiClient.post(`/robots/${robotId}/control`, payload); 
+            const response = await apiClient.post(`/robots/${robotId}/control/command`, payload); 
             return response.data;
         }catch (error) {
             console.error(`Error sending command '${command}' to robot '${robotId}':`, error.response?.data || error);

@@ -32,6 +32,8 @@ import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RobotProvider } from './src/api/robotContext.js';
 import { NotificationProvider } from './src/api/notificationContext.js';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './src/i18n/i18n.config.js';
 
 const Stack = createStackNavigator();
 const customTransition = {
@@ -46,6 +48,7 @@ export default function App(){
   return(
     
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <I18nextProvider i18n={i18n}>
       <AuthProvider>
       <NotificationProvider>
       <RobotProvider>
@@ -559,6 +562,7 @@ export default function App(){
       </RobotProvider>
       </NotificationProvider>
       </AuthProvider>
+      </I18nextProvider>
     </GestureHandlerRootView>
   )
 }

@@ -1,9 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Modal, Image } from 'react-native';
+import { useTranslation } from 'react-i18next'; // Import the hook
 
 const LanguageSelector = ({ onLanguageChange, initialLanguage = 'EN' }) => {
+  const { i18n } = useTranslation();
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState(initialLanguage);
+  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
+
+
+  useEffect(() => {
+    setSelectedLanguage(i18n.language);
+    const langChangeListener = (lng) => {
+        setSelectedLanguage(lng);
+    };
+    i18n.on('languageChanged', langChangeListener);
+    // Cleanup
+    return () => {
+        i18n.off('languageChanged', langChangeListener);
+    };
+  }, [i18n]);
 
   const toggleLanguageModal = () => {
     setLanguageModalVisible(!languageModalVisible);
@@ -11,6 +26,7 @@ const LanguageSelector = ({ onLanguageChange, initialLanguage = 'EN' }) => {
 
   const selectLanguage = (language) => {
     setSelectedLanguage(language);
+    i18n.changeLanguage(language);
     setLanguageModalVisible(false);
     if (onLanguageChange) {
       onLanguageChange(language);
@@ -52,27 +68,27 @@ const LanguageSelector = ({ onLanguageChange, initialLanguage = 'EN' }) => {
 
               {/* Language Options */}
               <TouchableOpacity 
-                style={[styles.languageOption, selectedLanguage === 'EN' && styles.selectedLanguage]}
-                onPress={() => selectLanguage('EN')}
+                style={[styles.languageOption, selectedLanguage === 'en' && styles.selectedLanguage]}
+                onPress={() => selectLanguage('en')}
               >
-                <Text style={[styles.languageOptionText, selectedLanguage === 'EN' && styles.selectedLanguageText]}>English (EN)</Text>
-                {selectedLanguage === 'EN' && <Text style={styles.checkmark}>✓</Text>}
+                <Text style={[styles.languageOptionText, selectedLanguage === 'en' && styles.selectedLanguageText]}>English (EN)</Text>
+                {selectedLanguage === 'en' && <Text style={styles.checkmark}>✓</Text>}
               </TouchableOpacity>
 
               <TouchableOpacity 
-                style={[styles.languageOption, selectedLanguage === 'AR' && styles.selectedLanguage]}
-                onPress={() => selectLanguage('AR')}
+                style={[styles.languageOption, selectedLanguage === 'ar' && styles.selectedLanguage]}
+                onPress={() => selectLanguage('ar')}
               >
-                <Text style={[styles.languageOptionText, selectedLanguage === 'AR' && styles.selectedLanguageText]}>العربية (AR)</Text>
-                {selectedLanguage === 'AR' && <Text style={styles.checkmark}>✓</Text>}
+                <Text style={[styles.languageOptionText, selectedLanguage === 'ar' && styles.selectedLanguageText]}>العربية (AR)</Text>
+                {selectedLanguage === 'ar' && <Text style={styles.checkmark}>✓</Text>}
               </TouchableOpacity>
 
               <TouchableOpacity 
-                style={[styles.languageOption, selectedLanguage === 'FR' && styles.selectedLanguage]}
-                onPress={() => selectLanguage('FR')}
+                style={[styles.languageOption, selectedLanguage === 'fr' && styles.selectedLanguage]}
+                onPress={() => selectLanguage('fr')}
               >
-                <Text style={[styles.languageOptionText, selectedLanguage === 'FR' && styles.selectedLanguageText]}>Français (FR)</Text>
-                {selectedLanguage === 'FR' && <Text style={styles.checkmark}>✓</Text>}
+                <Text style={[styles.languageOptionText, selectedLanguage === 'fr' && styles.selectedLanguageText]}>Français (FR)</Text>
+                {selectedLanguage === 'fr' && <Text style={styles.checkmark}>✓</Text>}
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.applyButton} onPress={toggleLanguageModal}>

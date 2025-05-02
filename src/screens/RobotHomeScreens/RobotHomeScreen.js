@@ -7,6 +7,7 @@ import Header from '../../Components/Header';
 import BottomNavBar from '../../Components/BottomNavBar';
 import RobotStatusHeader from '../../Components/RobotStatusHeader';
 import { useRobot } from '../../api/robotContext';
+import { useTranslation } from 'react-i18next';
 const { width, height } = Dimensions.get('window');
 const CIRCLE_RADIUS = width * 0.38; // Increased from 0.28 to 0.38
 
@@ -15,10 +16,9 @@ const RobotHomeScreen = ({ robotBatteryLevel , route }) => {
   const {currentRobot} = useRobot();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
-  const [selectedLanguage, setSelectedLanguage] = useState('EN');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const {robotId} = route.params;
-  
+  const {t} = useTranslation();
   // Animation for menu items
   const scaleAnim = useState(new Animated.Value(0))[0];
   const rotateAnim = useState(new Animated.Value(0))[0];
@@ -60,7 +60,7 @@ const RobotHomeScreen = ({ robotBatteryLevel , route }) => {
   const menuItems = [
     {
       id: 'location',
-      title: 'Location & Controller',
+      title: t('robotHome.menuLocation'),
       icon: require('../../../assets/images/location.png'),
       onPress: () => navigation.navigate('LocationAndController', {robotId}),
       color: '#E8F4EA',
@@ -68,7 +68,7 @@ const RobotHomeScreen = ({ robotBatteryLevel , route }) => {
     },
     {
       id: 'emergency',
-      title: 'Emergency Stop',
+      title: t('robotHome.menuEmergency'),
       icon: require('../../../assets/images/emergency-stop.png'), // You'll need this image
       onPress: handleEmergencyStop,
       color: '#FF3B30',
@@ -76,7 +76,7 @@ const RobotHomeScreen = ({ robotBatteryLevel , route }) => {
     },
     {
       id: 'storage',
-      title: 'Storage',
+      title: t('robotHome.menuStorage'),
       icon: require('../../../assets/images/storage.png'),
       onPress: () => navigation.navigate('Storage', {robotId}),
       color: '#E8F4EA',
@@ -84,7 +84,7 @@ const RobotHomeScreen = ({ robotBatteryLevel , route }) => {
     },
     {
       id: 'historic',
-      title: 'Historic',
+      title: t('robotHome.menuHistoric'),
       icon: require('../../../assets/images/historic.png'),
       onPress: () => navigation.navigate('Historic', {robotId}),
       color: '#E8F4EA',
@@ -98,7 +98,7 @@ const RobotHomeScreen = ({ robotBatteryLevel , route }) => {
       "Are you sure you want to stop the robot immediately?",
       [
         {
-          text: "Cancel",
+          text: t('common.cancel'),
           style: "cancel"
         },
         { 
@@ -112,29 +112,18 @@ const RobotHomeScreen = ({ robotBatteryLevel , route }) => {
       ]
     );
   }
-
-  const handleLanguageChange = (language) => {
-    setSelectedLanguage(language);
-    console.log('Language selected:', language);
-  };
-  
   const handleNotificationChange = (isEnabled) => {
     setNotificationsEnabled(isEnabled);
   };
   
-  if (!fontsLoaded) return <View style={styles.container}><Text>Loading...</Text></View>;
+  if (!fontsLoaded) return <View style={styles.container}><Text>{t('common.loading')}</Text></View>;
   
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#57C3EA" barStyle="dark-content" />
       
       {/* Header */}
-      <Header
-        selectedLanguage={selectedLanguage}
-        onLanguageChange={handleLanguageChange}
-        notificationsEnabled={notificationsEnabled}
-        onNotificationChange={handleNotificationChange}
-      />
+      <Header/>
       <RobotStatusHeader
         robotId={robotId}
         batteryLevel={batteryLevel}

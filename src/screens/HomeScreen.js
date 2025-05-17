@@ -2,16 +2,16 @@ import React, {useState, useEffect, useCallback} from "react";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Alert, StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar, ActivityIndicator } from "react-native";
 import * as Font from 'expo-font';
-
 import Header from "../Components/Header";
 import { useRobot } from "../api/robotContext";
+import { useTranslation } from 'react-i18next';
 
 const HomeScreen = () => {
     const navigation = useNavigation();
     const {robots, loading, error: robotError, loadRobots, clearError} = useRobot();
     const [fontsLoaded, setFontsLoaded] = useState(false);
-    const [selectedLanguage, setSelectedLanguage] = useState('EN');
     const [notificationsEnabled, setNotificationsEnabled] = useState(true)
+    const {t} = useTranslation();
     
     const navigateToRobotHome = (robotId) =>{
         navigation.navigate('RobotHome', {robotId});
@@ -19,14 +19,10 @@ const HomeScreen = () => {
     const handleAddNewRobotPress = () =>{
         navigation.navigate('MainAddRobot', { screen: 'AddRobotMain' });
     };
-    const handleLanguageChange = (language) => {
-        setSelectedLanguage(language);
-        console.log('Language selected:', language);
+    const handleNotificationChange = (enabled) => {
+        setNotificationsEnabled(enabled);
+        // Add logic here to update notification settings in backend/AsyncStorage etc.
     };
-    const handleNotificationChange = (isEnabled) =>{
-        setNotificationsEnabled(isEnabled);
-    }
-
     // Load fonts when component mounts
     useEffect(() => {
         const loadFonts = async () => {
@@ -50,7 +46,7 @@ const HomeScreen = () => {
             robotError // Removed the alert and error handling
           );
         }
-      }, [robotError, clearError]); // Depend on error and clearError
+      }, [robotError, clearError, t]); // Depend on error and clearError
       
     // Refresh robots when screen comes into focus
     useFocusEffect(
@@ -76,8 +72,8 @@ const HomeScreen = () => {
         if (robots.length === 0) {
             return (
                 <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyText}>No robots added yet</Text>
-                    <Text style={styles.emptySubText}>Tap the + button below to add your first robot</Text>
+                    <Text style={styles.emptyText}>{t('home.noRobots')}</Text>
+                    <Text style={styles.emptySubText}>{t('home.noRobotsSub')}</Text>
                 </View>
             );
         }
@@ -107,8 +103,8 @@ const HomeScreen = () => {
                                     (robot.status === 'ON' || robot.status === 'active') ? styles.statusOn : styles.statusOff
                                 ]} />
                                 <Text style={styles.statusText}>
-                                    {(robot.status === 'ON' || robot.status === 'active') ? 'ON' : 'OFF'}
-                                </Text>   
+                                    {(robot.status === 'ON' || robot.status === 'active') ? t('home.statusOn') : t('home.statusOff')}
+                                </Text>
                             </View>                           
                         </TouchableOpacity>
                     ))}
@@ -127,8 +123,6 @@ const HomeScreen = () => {
             <StatusBar backgroundColor="#57C3EA" barStyle="dark-content" />
 
             <Header
-                selectedLanguage={selectedLanguage}
-                onLanguageChange={handleLanguageChange}
                 notificationsEnabled={notificationsEnabled}
                 onNotificationChange={handleNotificationChange}
             />

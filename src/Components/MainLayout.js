@@ -7,7 +7,7 @@ import BottomNavBar from './BottomNavBar';
 
 
 import HomeScreen from '../screens/HomeScreen';
-import SearchScreen from '../screens/RobotHomeScreens/SearchScreen';
+import RobotsMapScreen from '../screens/RobotHomeScreens/SearchScreen';
 import AddRobotScreen from '../screens/RobotHomeScreens/AddRobotScreen';
 import ProfileScreen from '../screens/RobotHomeScreens/ProfileScreen';
 import RobotHomeScreen from '../screens/RobotHomeScreens/RobotHomeScreen';
@@ -36,7 +36,7 @@ const HomeStack = () => (
 // Search Stack Navigator
 const SearchStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="SearchMain" component={SearchScreen} />
+    <Stack.Screen name="SearchMain" component={RobotsMapScreen} />
   </Stack.Navigator>
 );
 

@@ -102,7 +102,7 @@ const RobotHomeScreen = ({ robotBatteryLevel , route }) => {
           style: "cancel"
         },
         { 
-          text: "STOP", 
+          text: t("STOP"), 
           onPress: () => {
             // Add your emergency stop logic here
             console.log('Emergency stop activated for robot ID:', robotId);

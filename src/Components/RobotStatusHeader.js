@@ -3,11 +3,12 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
 import * as Font from "expo-font";
 import { useNavigation } from "@react-navigation/native";
-
+import { useTranslation } from 'react-i18next';
 
 const RobotStatusHeader = ({ robotId, batteryLevel, onLogout }) => {
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const navigation = useNavigation();
+    const { t } = useTranslation();
     const handlenavigateTohomePress = () => {
         navigation.reset({
             index: 0,
@@ -29,7 +30,7 @@ const RobotStatusHeader = ({ robotId, batteryLevel, onLogout }) => {
     return(
         <View style={styles.container}>
             <View style={styles.robotInfo}>
-                <Text style={styles.robotIdLabel}>ROBOT_ID:</Text>
+                <Text style={styles.robotIdLabel}>{t('robotStatus.robotIdLabel')}</Text>
                 <Text style={styles.robotIdText}>{robotId}</Text>
             </View>
             <View style={styles.batteryContainer}>

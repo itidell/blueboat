@@ -5,17 +5,20 @@ import { useNavigation } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import Svg, {Circle, Path} from "react-native-svg";
 import * as Font from 'expo-font';
+import { useTranslation } from 'react-i18next'
 
 import Header from "../../Components/Header";
 
 const AddRobotLoadingScreen = ({route}) => {
     const navigation = useNavigation();
+    const { t } = useTranslation();
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState('EN');
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
     const [activeTab, setActiveTab] = useState('add');
     const [isLoading, setIsLoading] = useState(true);
     const { robotId } = route.params;
+
 
     const checkmarkScale = useRef(new Animated.Value(0)).current;
     const checkmarkOpacity = useRef(new Animated.Value(0)).current;
@@ -275,7 +278,7 @@ const AddRobotLoadingScreen = ({route}) => {
                                 { opacity: loadingTextOpacity }
                             ]}
                         >
-                            Conting your robot...
+                            {t('addRobot.loadingConnect')} 
                         </Animated.Text>
                     </View>
                 )}
@@ -332,9 +335,9 @@ const AddRobotLoadingScreen = ({route}) => {
                 
                     {/* Confirmation Text */}
                         <Animated.View style={[styles.confirmationContainer, { opacity: textOpacity, transform: [{ translateY: textPosition }] }]}>
-                            <Text style={styles.confirmationText}>Connected</Text>
+                            <Text style={styles.confirmationText}>{t('common.success')}</Text> 
                             <Text style={styles.successText}>
-                              Your Robot is ready to use
+                                {t('verification.successMessage')} 
                             </Text>
                         </Animated.View>
                         </>

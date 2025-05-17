@@ -98,7 +98,7 @@ const LocationAndControllerScreen = ({ route }) => {
   
   useEffect(() => {
     // Get the stream URL from your backend or use configuration
-    const streamUrl = "http://192.168.186.93:8080/stream"; // Replace with dynamic source
+    const streamUrl = "http://192.168.186.224:8080/stream"; // Replace with dynamic source
     
     // Validate the URL before setting it
     if (streamUrl && typeof streamUrl === 'string') {

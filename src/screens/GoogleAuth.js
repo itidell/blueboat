@@ -9,7 +9,7 @@ import { useAuth } from '../api/authContext'; // Adjust path if necessary
 WebBrowser.maybeCompleteAuthSession();
 
 // Your backend URL
-const API_URL = "https://0e48-2c0f-f3a0-97-8719-ecb4-ca40-e3aa-bc34.ngrok-free.app"; // Make sure this is correct
+const API_URL = "https://222d-2c0f-f3a0-9a-207e-2114-465d-bda2-1fb4.ngrok-free.app"; // Make sure this is correct
 
 export const useGoogleAuth = (onSuccess, onError) => {
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,7 @@ export const useGoogleAuth = (onSuccess, onError) => {
       const authUrl = `${API_URL}/auth/google/login`;
       // Ensure this EXACT redirect URI is configured in your Google Cloud Console
       // AND is used by your backend when calling oauth.google.authorize_redirect
-      const redirectUri = 'exp://192.168.186.93:8081/--/oauth-callback';
+      const redirectUri = 'exp://192.168.186.224:8081/--/oauth-callback';
 
       console.log("Starting Google Auth. Opening URL:", authUrl, "Expecting redirect to:", redirectUri);
 

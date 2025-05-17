@@ -22,6 +22,7 @@ import LanguageSelector from '../../Components/LanguageSelector';
 import NotificationController from '../../Components/NotificationController';
 import { useAuth } from '../../api/authContext';
 import { authService } from '../../api/authService';
+import { useTranslation } from 'react-i18next';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -53,7 +54,7 @@ const ProfileScreen = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [selectedLanguage, setSelectedLanguage] = useState('EN');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  
+  const { t } = useTranslation();
   // State for username
   const [username, setUsername] = useState(user?.full_name || '');
   
@@ -109,9 +110,9 @@ const ProfileScreen = () => {
         setUsernameEditModalVisible(false);
     } catch (error) {
         Alert.alert(
-            'Update Failed',
-            error.message || 'Failed to update profile. Please try again',
-            [{ text: 'OK' }]  // Fixed missing closing parenthesis here
+            t('errors.updateFailed'), 
+            error.message || t('profile.updateFailed'),
+            [{ text: t('common.ok') }] 
         );
     }
 };
@@ -146,10 +147,10 @@ const ProfileScreen = () => {
         setPasswordVerificationModalVisible(false);
         setModalVisible(true);
       }else{
-        setPasswordVerificationError('Incorrect password. Please try again');
+        setPasswordVerificationError(t('profile.incorrectPassword'));
       }
     } catch (error){
-      setPasswordVerificationError('Verification failed. Please try again')
+      setPasswordVerificationError(t('profile.verificationFailed'));
       console.error("Password verification error:", error);
     }
   };
@@ -165,7 +166,7 @@ const ProfileScreen = () => {
       }, 150);
     } catch (error){
       setLogoutButtonPressed(false)
-      Alert.alert('Logout Failed', 'Unable to logout. Please try again');
+      Alert.alerts(t('errors.logoutFailed') || t('errors.generic'), t('profile.logoutFail')); 
       console.error("Logout error:", error)
     }
   };
@@ -198,7 +199,7 @@ const ProfileScreen = () => {
       
       {updateSuccess && (
         <View style={styles.successNotification}>
-          <Text style = {styles.successText}>Profile updated successfully</Text>
+          <Text style = {styles.successText}>{t('profile.updateSuccess')}</Text>
         </View>
       )}
       {/* Header with Logo, Notifications and Language */}
@@ -211,7 +212,7 @@ const ProfileScreen = () => {
             />
           </TouchableOpacity>
           <View>
-            <Text style={styles.welcomeText}>Hi, Welcome</Text>
+            <Text style={styles.welcomeText}>{t('header.welcome')}</Text> 
             <Text style={styles.usernameText}>{username}</Text>
           </View>
         </View>
@@ -242,7 +243,7 @@ const ProfileScreen = () => {
             style={styles.verifiedBadge}
             onPress={handleUsernameEdit}
           >
-            <Text style={styles.verifiedText}>Verified</Text>
+            <Text style={styles.verifiedText}>{t('profile.verified')}</Text> 
             <Image 
               source={require('../../../assets/images/edit.png')}
               style={styles.verifiedIcon}
@@ -252,7 +253,7 @@ const ProfileScreen = () => {
 
         {/* Email Input */}
         <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Email</Text>
+          <Text style={styles.inputLabel}>{t('profile.emailLabel')}</Text> 
           <View style={styles.inputBox}>
             <TextInput
               style={styles.inputField}
@@ -266,7 +267,7 @@ const ProfileScreen = () => {
         
         {/* Phone Number Input */}
         <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Phone Number</Text>
+          <Text style={styles.inputLabel}>{t('profile.phoneLabel')}</Text> 
           <View style={styles.inputBox}>
             <TextInput
               style={styles.inputField}
@@ -286,7 +287,7 @@ const ProfileScreen = () => {
 
         {/* Password Input */}
         <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Password</Text>
+          <Text style={styles.inputLabel}>{t('profile.passwordLabel')}</Text>
           <View style={styles.inputBox}>
             <TextInput
               style={styles.inputField}
@@ -320,7 +321,7 @@ const ProfileScreen = () => {
               logoutButtonPressed && styles.logoutButtonTextPressed
             ]}
           >
-            Logout
+            {t('profile.logoutButton')} 
           </Text>
         </TouchableOpacity>
 
@@ -337,7 +338,7 @@ const ProfileScreen = () => {
            
                   <View style={styles.modalView}>
                     <View style={styles.modalHeader}>
-                      <Text style={styles.modalTitle}>Verify Password</Text>
+                      <Text style={styles.modalTitle}>{t('profile.verifyPasswordTitle')}</Text> 
                       <TouchableOpacity
                         style={styles.closeButton}
                         onPress={() => setPasswordVerificationModalVisible(false)}
@@ -348,14 +349,14 @@ const ProfileScreen = () => {
                     
                     <View style={styles.modalContent}>
                       <Text style={styles.passwordVerificationText}>
-                        Please enter your current password to continue editing
+                        {t('profile.verifyPasswordPrompt')} 
                       </Text>
                       <TextInput
                         style={styles.modalInput}
                         value={currentPasswordInput}
                         onChangeText={setCurrentPasswordInput}
                         secureTextEntry={true}
-                        placeholder="Enter current password"
+                        placeholder={t('profile.enterCurrentPasswordPlaceholder')}
                         autoFocus={true}
                       />
                       
@@ -367,7 +368,7 @@ const ProfileScreen = () => {
                         style={styles.saveButton}
                         onPress={verifyPassword}
                       >
-                        <Text style={styles.saveButtonText}>Verify</Text>
+                        <Text style={styles.saveButtonText}>{t('common.verify')}</Text> 
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -404,20 +405,28 @@ const ProfileScreen = () => {
                     
                     <View style={styles.modalContent}>
                       <TextInput
-                        style={styles.modalInput}
-                        value={editingValue}
-                        onChangeText={setEditingValue}
-                        keyboardType={editingField === 'phoneNumber' ? 'phone-pad' : editingField === 'email' ? 'email-address' : 'default'}
-                        autoCapitalize={editingField === 'email' ? 'none' : 'sentences'}
-                        placeholder={`Enter your ${editingField}`}
-                        autoFocus={true}
-                      />
-                      
+                      style={styles.modalInput}
+                      value={editingValue}
+                      onChangeText={setEditingValue}
+                      keyboardType={editingField === 'phoneNumber' ? 'phone-pad' : editingField === 'email' ? 'email-address' : 'default'}
+                      autoCapitalize={editingField === 'email' ? 'none' : 'sentences'}
+                      // Translate placeholder dynamically based on editingField
+                      // This requires specific placeholder keys like profile.phoneNumberPlaceholder or using a generic one
+                       placeholder={
+                           editingField === 'phoneNumber' 
+                           ? t('signup.mobilePlaceholder') // Reusing signup placeholder
+                           : editingField === 'username'
+                             ? t('signup.fullNamePlaceholder') // Reusing signup placeholder
+                             : t('common.enterValue') // Fallback if no specific key (needs adding)
+                       }
+                      autoFocus={true}
+                       disabled={loading} // Disable while auth is loading
+                    />
                       <TouchableOpacity
                         style={styles.saveButton}
                         onPress={saveChanges}
                       >
-                        <Text style={styles.saveButtonText}>Save Changes</Text>
+                        <Text style={styles.saveButtonText}>{t('profile.saveChanges')}</Text>
                       </TouchableOpacity>
                     </View>
                   </View>

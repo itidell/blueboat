@@ -2,10 +2,11 @@ import { View, Text, Image, StyleSheet } from "react-native";
 import LanguageSelector from "./LanguageSelector";
 import NotificationController from "./NotificationController";
 import { useAuth } from "../api/authContext";
+import { useTranslation } from 'react-i18next';
 
 
 const Header = ({
-    welcomeText = "Hi, Welcome",
+    welcomeText = "",
     userName ,
     selectedLanguage,
     onLanguageChange,
@@ -13,7 +14,10 @@ const Header = ({
     onNotificationChange,
     }) => {
         const { user } = useAuth();
-        const displayName = userName || user?.full_name || 'Guest';
+        const { t } = useTranslation();
+        const displayedWelcomeText = welcomeText || t('header.welcome'); 
+
+        const displayName = userName || user?.full_name || t('common.guest'); 
         
         return (
             <View style={styles.header}>
@@ -23,7 +27,7 @@ const Header = ({
                         source={require("../../assets/images/Logoo.png")} 
                     />
                     <View>
-                        <Text style={styles.welcomeText}>{welcomeText}</Text>
+                        <Text style={styles.welcomeText}>{displayedWelcomeText}</Text>
                         <Text style={styles.userNameText}>{displayName}</Text>
                     </View>
                 </View>

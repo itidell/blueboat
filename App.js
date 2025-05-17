@@ -23,7 +23,7 @@ import MainLayout from './src/Components/MainLayout.js';
 import ProfileScreen from './src/screens/RobotHomeScreens/ProfileScreen.js';
 import LocationAndControllerScreen from './src/screens/RobotHomeScreens/LocationAndControllerScreen.js';
 import PasswordSettingScreen from './src/screens/SignupScreens/PasswordSettingScreen.js';
-import SplashScreen from './src/screens/SplashScreen.js';
+import SplashScreen from './src/screens/splashscreen.js';
 import HistoricScreen from './src/screens/RobotHomeScreens/HistoricScreen.js';
 import HomeScreen from './src/screens/HomeScreen.js';
 import { AuthProvider } from './src/api/authContext.js';

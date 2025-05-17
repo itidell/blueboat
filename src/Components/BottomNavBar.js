@@ -80,8 +80,8 @@ const BottomNavBar =({activeTab, setActiveTab, navigation}) =>{
                 onPress={handleSearchPress}
             >
                 <Image 
-                    source={require('../../assets/images/search.png')}
-                    style={styles.navbarIcon}
+                    source={require('../../assets/images/loca.png')}
+                    style={styles.loca}
                 />
             </TouchableOpacity>
       
@@ -128,6 +128,11 @@ const styles = StyleSheet.create({
     navbarIcon: {
       width: 30,
       height: 30,
+      resizeMode: 'contain',
+    },
+    loca: {
+      width: 35,
+      height:35,
       resizeMode: 'contain',
     },
     navbarCenterButton: {

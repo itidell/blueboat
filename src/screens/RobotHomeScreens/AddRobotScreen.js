@@ -13,9 +13,11 @@ import BottomNavBar from '../../Components/BottomNavBar';
 import { useRobot } from '../../api/robotContext';
 import { useNotifications } from '../../api/notificationContext';
 import { set } from 'date-fns';
+import { useTranslation } from 'react-i18next'
+
 // --- Icons ---
 const ErrorIcon = () => (
-    <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginRight: 5, marginTop: 1 }}>
+  <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginRight: 5, marginTop: 1 }}>
         <G id="SVGRepo_iconCarrier">
             <Path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#FF3830" strokeWidth="2" />
             <Path d="M12 8L12 13" stroke="#FF3830" strokeWidth="2" strokeLinecap="round" />
@@ -30,23 +32,24 @@ const AddRobotScreen = () => {
   const { notifyAccessRequestSent } = useNotifications();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [mode, setMode] = useState('create'); // 'create' or 'join'
-
+  
   // State for Create Mode
   const [newRobotId, setNewRobotId] = useState('');
   const [createErrorMessage, setCreateErrorMessage] = useState('');
-
+  
   // State for Join Mode
   const [joinRobotId, setJoinRobotId] = useState('');
   const [ownerEmail, setOwnerEmail] = useState('');
   const [joinErrorMessage, setJoinErrorMessage] = useState('');
   const [joinLoading, setJoinLoading] = useState(false)
-
-
+  
+  
   // Shared State (original Header component state if needed)
   const [activeTab, setActiveTab] = useState('add'); // For BottomNavBar
   const [selectedLanguage, setSelectedLanguage] = useState('EN');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-
+  const { t } = useTranslation(); 
+  
   const switchMode = (newMode) => {
     if (newMode !== mode) {
       setMode(newMode);
@@ -82,7 +85,7 @@ const AddRobotScreen = () => {
   const handleCreateRobot = async () => {
     setCreateErrorMessage('');
     if (!newRobotId.trim()) {
-      setCreateErrorMessage("Please enter a Robot ID");
+      setCreateErrorMessage(t('errors.requiredField', { fieldName: t('addRobot.robotIdLabel') }));
       return;
     }
     try {
@@ -92,17 +95,24 @@ const AddRobotScreen = () => {
     
     } catch (error) {
       console.error('Error creating robot:', error);
-      setCreateErrorMessage(error.message || 'Failed to create robot. ID might be taken.');
+      setCreateErrorMessage(error.message || t('errors.robotIdTaken'));
     }
   };
 
   const handleJoinRobot = async () => {
     setJoinErrorMessage('');
     let errors = [];
-    if (!joinRobotId.trim()) errors.push("Robot ID required.");
-    if (!ownerEmail.trim()) errors.push("Owner's Email required.");
-    else if (!/\S+@\S+\.\S+/.test(ownerEmail)) errors.push("Invalid email format.");
-
+    if (!joinRobotId.trim()) {
+        errors.push(t('errors.requiredField', { fieldName: t('addRobot.robotIdLabel') }));
+    }
+   if (!ownerEmail.trim()) {
+        // Translate validation error
+        errors.push(t('errors.requiredField', { fieldName: t('addRobot.ownerEmailLabel') }));
+    }
+    else if (!/\S+@\S+\.\S+/.test(ownerEmail)) {
+        // Translate invalid email error
+        errors.push(t('errors.invalidEmail'));
+    }
     if (errors.length > 0) {
       setJoinErrorMessage(errors.join(' '));
       return;
@@ -119,10 +129,10 @@ const AddRobotScreen = () => {
       
       // Show success alert
       Alert.alert(
-        "Request Sent",
-        "Your access request has been sent to the robot owner. You'll be notified when they respond.",
+        t('addRobot.requestSentTitle'), // Translated title
+        t('addRobot.requestSentMessage'), // Translated message
         [{ 
-          text: "OK", 
+          text: t('common.ok'), // Translated button text
           onPress: () => navigation.navigate('MainHome', { screen: 'HomeMain' })
         }]
       );
@@ -132,7 +142,7 @@ const AddRobotScreen = () => {
       setJoinErrorMessage(
         error.response?.data?.detail || 
         error.message || 
-        'Failed to join robot. Check details and try again.'
+        t('errors.generic')
       );
     }
   };
@@ -164,7 +174,7 @@ const AddRobotScreen = () => {
                         onNotificationChange={handleNotificationChange}
           />
             <View style={styles.searchTitleContainer}>
-                    <Text style={styles.searchTitle}>Add Robot</Text>
+                    <Text style={styles.searchTitle}>{t('addRobot.title')}</Text>
             </View>
             {/* Main Content Area - Centered */}
             <View style={styles.contentContainer}>
@@ -177,14 +187,14 @@ const AddRobotScreen = () => {
                             onPress={() => switchMode('create')}
                             activeOpacity={0.7}
                         >
-                            <Text style={[styles.tabText, mode === 'create' ? styles.activeTabText : styles.inactiveTabText]}>NEW</Text>
+                            <Text style={[styles.tabText, mode === 'create' ? styles.activeTabText : styles.inactiveTabText]}>{t('addRobot.tabNew')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.tabButton, mode === 'join' ? styles.activeTabButton : styles.inactiveTabButton]}
                             onPress={() => switchMode('join')}
                             activeOpacity={0.7}
                         >
-                            <Text style={[styles.tabText, mode === 'join' ? styles.activeTabText : styles.inactiveTabText]}>JOIN</Text>
+                            <Text style={[styles.tabText, mode === 'join' ? styles.activeTabText : styles.inactiveTabText]}>{t('addRobot.tabJoin')}</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -192,11 +202,11 @@ const AddRobotScreen = () => {
                     {mode === 'create' && (
                         <>
                             <View style={styles.inputGroup}>
-                                <Text style={styles.inputLabel}>ROBOT ID</Text>
+                                <Text style={styles.inputLabel}>{t('addRobot.robotIdLabel')}</Text>
                                 <View style={[styles.inputBox, createErrorMessage ? styles.inputBoxError : {}]}>
                                     <TextInput
                                         style={styles.inputField}
-                                        placeholder="Enter robot identifier"
+                                        placeholder={t('addRobot.robotIdPlaceholder')}
                                         placeholderTextColor="#888" // From original style
                                         value={newRobotId}
                                         onChangeText={setNewRobotId}
@@ -212,18 +222,18 @@ const AddRobotScreen = () => {
                                     </View>
                                 ) : <View style={styles.errorPlaceholder} />}
                             </View>
-                            <Text style={styles.infoText}>You will become the owner of this robot</Text>
+                            <Text style={styles.infoText}>{t('addRobot.createInfo')}</Text>
                         </>
                     )}
 
                     {mode === 'join' && (
                         <>
                             <View style={styles.inputGroup}>
-                                <Text style={styles.inputLabel}>ROBOT ID</Text>
-                                <View style={[styles.inputBox, joinErrorMessage && (joinErrorMessage.includes("ID") || joinErrorMessage.includes("details")) ? styles.inputBoxError : {}]}>
+                                 <Text style={styles.inputLabel}>{t('addRobot.robotIdLabel')}</Text> 
+                                <View style={[styles.inputBox, joinErrorMessage && (joinErrorMessage.includes(t('addRobot.robotIdLabel')) || joinErrorMessage.includes(t('errors.generic')) || joinErrorMessage.includes(t('errors.robotNotFound'))) ? styles.inputBoxError : {}]}>
                                     <TextInput
                                         style={styles.inputField}
-                                        placeholder="Enter robot identifier"
+                                        placeholder={t('addRobot.robotIdPlaceholder')}
                                         placeholderTextColor="#888"
                                         value={joinRobotId}
                                         onChangeText={setJoinRobotId}
@@ -236,11 +246,11 @@ const AddRobotScreen = () => {
                             </View>
 
                             <View style={styles.inputGroup}>
-                                <Text style={styles.inputLabel}>OWNER'S EMAIL</Text>
-                                <View style={[styles.inputBox, joinErrorMessage && (joinErrorMessage.includes("Email") || joinErrorMessage.includes("email") || joinErrorMessage.includes("details")) ? styles.inputBoxError : {}]}>
+                                <Text style={styles.inputLabel}>{t('addRobot.ownerEmailLabel')}</Text>
+                                <View style={[styles.inputBox, joinErrorMessage && (joinErrorMessage.includes(t('addRobot.ownerEmailLabel')) || joinErrorMessage.includes(t('errors.invalidEmail')) || joinErrorMessage.includes(t('errors.generic'))) ? styles.inputBoxError : {}]}>
                                     <TextInput
                                         style={styles.inputField}
-                                        placeholder="Enter owner's email address"
+                                        placeholder={t('addRobot.ownerEmailPlaceholder')}
                                         placeholderTextColor="#888"
                                         value={ownerEmail}
                                         onChangeText={setOwnerEmail}
@@ -256,7 +266,7 @@ const AddRobotScreen = () => {
                                     </View>
                                 ) : <View style={styles.errorPlaceholder} />}
                             </View>
-                            <Text style={styles.infoText}>Enter details of the robot you want to join.</Text>
+                             <Text style={styles.infoText}>{t('addRobot.joinInfo')}</Text>
                         </>
                     )}
 
@@ -272,13 +282,13 @@ const AddRobotScreen = () => {
                         activeOpacity={0.8}
                     >
                         <Text style={styles.actionButtonText}>
-                            {mode === 'create' ? 'CREATE' : 'JOIN'}
+                            {mode === 'create' ? t('addRobot.createButton') : t('addRobot.joinButton')}
                         </Text>
                     </TouchableOpacity>
 
                     {/* Cancel Link (like image) */}
                     <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-                        <Text style={styles.cancelButtonText}>Cancel</Text>
+                        <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
                     </TouchableOpacity>
 
                 </View>

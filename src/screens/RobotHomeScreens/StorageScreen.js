@@ -186,17 +186,7 @@ const StorageScreen = ({ route }) => {
           </View>
           
           <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
-              <Image 
-                source={require('../../../assets/images/percentage.png')} 
-                style={styles.statIcon} 
-              />
-              <View>
-                <Text style={styles.statLabel}>overall Full</Text>
-                <Text style={styles.statValue}>{`${overallPercentage}%`}</Text>
-              </View>
-            </View>
-            
+           
             <View style={styles.statItem}>
               <Image 
                 source={require('../../../assets/images/types.png')} 
@@ -338,8 +328,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statIcon: {
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 60,
     marginRight: 8,
     resizeMode: 'contain',
   },

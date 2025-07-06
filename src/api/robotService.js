@@ -129,7 +129,8 @@ export const robotService = {
             }
         }
     },
-    sendControlCommand: async (robotId, command) =>{
+    sendControlCommand: async (robotId, command, value = {}) =>{
+        
         try{
             const payload = { command: command.toLowerCase()};
             console.log(`Sending command '${command}' to robot '${robotId}'`);

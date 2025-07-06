@@ -15,8 +15,7 @@ import NewPasswordScreen from './src/screens/ForgetPasswordScreens/NewPasswordSc
 import SuccessOperationScreen from './src/screens/ForgetPasswordScreens/SuccessOperationScreen.js'; 
 import StorageScreen from './src/screens/RobotHomeScreens/StorageScreen.js';
 import RobotHomeScreen from './src/screens/RobotHomeScreens/RobotHomeScreen.js';
-import LiveStreamingScreen from './src/screens/RobotHomeScreens/LiveStreamingScreen.js';
-import SearchScreen from './src/screens/RobotHomeScreens/SearchScreen.js';
+import RobotsMapScreen from './src/screens/RobotHomeScreens/RobotsMapScreen.js';
 import AddRobotScreen from './src/screens/RobotHomeScreens/AddRobotScreen.js';
 import AddRobotLoadingScreen from './src/screens/RobotHomeScreens/AddRobotLoadingScreen.js';
 import MainLayout from './src/Components/MainLayout.js';
@@ -84,11 +83,6 @@ export default function App(){
       <Stack.Screen name="Storage" component={StorageScreen} />
       <Stack.Screen name="Historic" component={HistoricScreen} />
 
-
-        <Stack.Screen 
-          name="LiveStreaming" 
-          component={LiveStreamingScreen} 
-        />
         <Stack.Screen 
           name="Welcome" 
           component={WelcomeScreen}

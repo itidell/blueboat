@@ -145,7 +145,7 @@
       "lastEmptied": "آخر تفريغ: {{timestamp}}",
       "wasteDistribution": "توزيع أنواع النفايات",
       "noTypeData": "لا توجد بيانات محددة للأنواع",
-      "percentageFull": "ممتلئ بنسبة {{percent}}%"
+      "percentageFull": "ممتلئ بنسبة"
     },
     "history": {
       "title": "سجل التحكم",

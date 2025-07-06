@@ -37,7 +37,7 @@ export const authService = {
         try{
             console.log("Sending login request with:", JSON.stringify(credentials));
             const response = await apiClient.post('/auth/login', credentials);
-            const {access_token, refresh_token, firebase_token, expires_in, id, full_name, email, mobile_number, is_active, loggedin_at, profile_picture} = response.data;
+            const {access_token, refresh_token, firebase_token, id, full_name, email, mobile_number, is_active, loggedin_at, profile_picture} = response.data;
             
             if (!firebase_token) {
                 console.error("CRITICAL: Firebase token missing from backend login response!");
@@ -46,6 +46,7 @@ export const authService = {
 
             await AsyncStorage.setItem('access_token', access_token);
             await AsyncStorage.setItem('refresh_token', refresh_token);
+            apiClient.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
             const userData = { id, full_name, email, mobile_number, is_active, loggedin_at, profile_picture};
             // If no profile picture, set Gravatar
             try{
@@ -57,6 +58,7 @@ export const authService = {
                 console.error("Firebase sign-in failed:", firebaseError);
                 await AsyncStorage.removeItem('access_token'); 
                 await AsyncStorage.removeItem('refresh_token');
+                delete apiClient.defaults.headers.common['Authorization'];
                 throw new Error(`Firebase authentication failed: ${firebaseError.message}`);
             }
             if (!profile_picture) {
@@ -78,19 +80,55 @@ export const authService = {
             return userData;
         } catch(error) {
             console.error("Login Error:", error.response?.data || error);
-            throw error.response?.data || error;
+            delete apiClient.defaults.headers.common['Authorization'];
+            let errorMessage = "An unexpected error occurred. Please try again."; // Default fallback message
+            let errorCode = "login_error_unknown"; // Custom code for frontend to map to translations
+
+            if (error.response?.data?.detail) {
+                const backendDetail = error.response.data.detail;
+
+                // Map specific backend messages to our custom error codes/messages
+                if (backendDetail === "Email not found") {
+                    errorMessage = "The email address you entered is not registered.";
+                    errorCode = "login_error_email_not_found";
+                } else if (backendDetail === "Incorrect email or password.") {
+                    errorMessage = "Incorrect email or password. Please double-check your credentials and try again.";
+                    errorCode = "login_error_incorrect_credentials";
+                } else if (backendDetail.includes("Your account is not verified.")) {
+                    errorMessage = "Your account is not verified. Please check your email inbox for a verification link.";
+                    errorCode = "login_error_unverified";
+                } else if (backendDetail.includes("Your account has been deactivated.")) {
+                    errorMessage = "Your account has been deactivated. For assistance, please contact our support team.";
+                    errorCode = "login_error_deactivated";
+                } else {
+                    // If it's a backend error we haven't specifically mapped, use its detail
+                    errorMessage = backendDetail;
+                    errorCode = "login_error_backend_generic";
+                }
+            } else if (error.message) {
+                // This catches network errors (e.g., server unreachable) or unexpected JS errors
+                errorMessage = "Could not connect to the server. Please check your internet connection and try again.";
+                errorCode = "login_error_network";
+            }
+
+            // Throw a custom error object that the LoginScreen can easily consume
+            throw {
+                message: errorMessage, // User-friendly message
+                code: errorCode,     // A code for potential i18n mapping
+                originalError: error // Keep original error for debugging purposes if needed
+            };
         }
     },
 
     processOAuthLogin: async (tokens) => {
         try{
-            const { access_token, refresh_token, id_token} = tokens;
-            const firebaseTokenFromRedirect = tokens.firebase_token;
+            const { access_token, refresh_token, firebase_token} = tokens;
             if (!access_token) {
                 throw new Error("Authentication failed: Backend access token is missing.");
             }
 
             await AsyncStorage.setItem('access_token', access_token);
+            apiClient.defaults.headers.common['Authorization'] = `Bearer ${access_token}`; 
             if (refresh_token !== undefined && refresh_token !== null) {
                 console.log("Storing refresh token received via OAuth:", refresh_token); // Log if you get one
                 await AsyncStorage.setItem('refresh_token', refresh_token);
@@ -98,21 +136,21 @@ export const authService = {
                 console.log("No refresh token received via OAuth, skipping storage.");
             }
             const response = await apiClient.get('/users/me');
-            const userData = response.data;
                 // --- SIGN IN TO FIREBASE ---
             try {
                 console.log("Attempting Firebase sign-in with custom token after OAuth...");
-                const userCredential = await signInWithCustomToken(auth, firebaseTokenFromRedirect);
+                const userCredential = await signInWithCustomToken(auth, firebase_token);
                 console.log("Firebase sign-in successful after OAuth. User UID:", userCredential.user.uid);
             } catch (firebaseError) {
                 console.error("Firebase sign-in failed after OAuth:", firebaseError);
                 // Clean up partial login
                 await AsyncStorage.removeItem('access_token');
                 await AsyncStorage.removeItem('refresh_token');
+                delete apiClient.defaults.headers.common['Authorization'];
                 throw new Error(`Firebase authentication failed after OAuth: ${firebaseError.message}`);
             }
                 // --- END SIGN IN TO FIREBASE ---
-            
+            const userData = await authService.getCurrentUser()
             if(!userData.profile_picture && id_token){
                 try{
                     const [,payload] = id_token.split('.');
@@ -133,6 +171,11 @@ export const authService = {
             
         }catch(error){
             console.error("OAuth Login Error:", error);
+            // Ensure full cleanup on any failure during OAuth processing
+            await AsyncStorage.removeItem('access_token');
+            await AsyncStorage.removeItem('refresh_token');
+            await AsyncStorage.removeItem('user_data');
+            delete apiClient.defaults.headers.common['Authorization'];
             throw error.response?.data || error;
         }
     },
@@ -172,6 +215,7 @@ export const authService = {
             await AsyncStorage.removeItem('access_token');
             await AsyncStorage.removeItem('refresh_token');
             await AsyncStorage.removeItem('user_data');
+            delete apiClient.defaults.headers.common['Authorization'];
             return true;
         } catch (error) {
             throw error;
@@ -198,6 +242,7 @@ export const authService = {
     getCurrentUser: async() =>{
         try{
             const response = await apiClient.get('/users/me');
+            const userData = response.data;
             // If we have user data but no profile picture, set Gravatar
             if (userData && userData.email && !userData.profile_picture) {
                 const gravatarUrl = getGravatarUrl(userData.email);

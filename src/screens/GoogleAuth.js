@@ -9,8 +9,7 @@ import { useAuth } from '../api/authContext'; // Adjust path if necessary
 WebBrowser.maybeCompleteAuthSession();
 
 // Your backend URL
-const API_URL = "https://222d-2c0f-f3a0-9a-207e-2114-465d-bda2-1fb4.ngrok-free.app"; // Make sure this is correct
-
+const API_URL = "https://9572-2c0f-f3a0-124-ac6b-cd49-4e10-b90e-3165.ngrok-free.app"
 export const useGoogleAuth = (onSuccess, onError) => {
   const [loading, setLoading] = useState(false);
   const { googleLogin } = useAuth(); // Get the context function
@@ -21,7 +20,7 @@ export const useGoogleAuth = (onSuccess, onError) => {
       const authUrl = `${API_URL}/auth/google/login`;
       // Ensure this EXACT redirect URI is configured in your Google Cloud Console
       // AND is used by your backend when calling oauth.google.authorize_redirect
-      const redirectUri = 'exp://192.168.186.224:8081/--/oauth-callback';
+      const redirectUri = 'exp://192.168.20.224:8081/--/oauth-callback';
 
       console.log("Starting Google Auth. Opening URL:", authUrl, "Expecting redirect to:", redirectUri);
 
@@ -36,12 +35,15 @@ export const useGoogleAuth = (onSuccess, onError) => {
         // --- MODIFIED: Extract BOTH tokens using simple regex ---
         const backendTokenMatch = url.match(/[?&]token=([^&]+)/);
         const firebaseTokenMatch = url.match(/[?&]firebase_token=([^&]+)/); // Look for firebase_token
+        const refreshTokenMatch = url.match(/[?&]refresh_token=([^&]+)/);
 
         const backendAccessToken = backendTokenMatch ? decodeURIComponent(backendTokenMatch[1]) : null;
         const firebaseToken = firebaseTokenMatch ? decodeURIComponent(firebaseTokenMatch[1]) : null; // Extract it
+        const extractedRefreshToken = refreshTokenMatch ? decodeURIComponent(refreshTokenMatch[1]) : null;
 
         console.log("Extracted backend access token:", backendAccessToken ? 'OK' : 'MISSING');
         console.log("Extracted firebase token:", firebaseToken ? 'OK' : 'MISSING');
+        console.log("Extracted refresh token:", extractedRefreshToken ? 'OK' : 'MISSING');
 
         // --- MODIFIED: Check if BOTH tokens are present ---
         if (backendAccessToken && firebaseToken) {
@@ -57,7 +59,7 @@ export const useGoogleAuth = (onSuccess, onError) => {
             access_token: backendAccessToken,
             firebase_token: firebaseToken,
              // If your backend also includes refresh_token in the redirect, extract and pass it too:
-             // refresh_token: extractedRefreshToken,
+             refresh_token: extractedRefreshToken,
           });
 
           console.log("Context googleLogin completed successfully.");

@@ -12,6 +12,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { format, formatDistanceToNowStrict } from 'date-fns';
 import { FlatList } from 'react-native';
 import * as Font from 'expo-font';
+import { useTranslation } from 'react-i18next'
 
 const HistoricScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -32,7 +33,7 @@ const HistoricScreen = ({ route }) => {
   const [activeTab, setActiveTab] = useState('history');
   const [selectedLanguage, setSelectedLanguage] = useState('EN');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-
+  const { t } = useTranslation();
   useEffect(() => {
     const loadFonts = async () => {
       try {
@@ -118,15 +119,15 @@ const HistoricScreen = ({ route }) => {
     if (!item) return null;
     
     try {
-      const startTime = item.start_time ? format(new Date(item.start_time), 'MMM d, HH:mm') : 'Unknown Time';
-      const endTime = item.end_time ? format(new Date(item.end_time), 'HH:mm') : 'Ongoing';
+      const startTime = item.start_time ? format(new Date(item.start_time), 'MMM d, HH:mm') : t('history.unknownTime');
+      const endTime = item.end_time ? format(new Date(item.end_time), 'HH:mm') : t('history.ongoing');
       const duration = item.start_time && item.end_time
         ? formatDistanceToNowStrict(new Date(item.start_time), { unit: 'minute', addSuffix: false }).replace(' minutes', 'min')
         : '-';
 
-      const controllerName = item.user?.full_name || item.user?.email || (item.user_id ? `User ID: ${item.user_id}` : 'Unknown User');
+      const controllerName = item.user?.full_name || item.user?.email || (item.user_id ? `User ID: ${item.user_id}` : t('history.unknownUser'));
       const formatLocation = (lat, lon) => {
-        if (lat == null || lon == null) return 'N/A';
+        if (lat == null || lon == null) return t('history.locationNA');
         try {
           return `Lat: ${lat.toFixed(3)}, Lon: ${lon.toFixed(3)}`;
         } catch (e) {
@@ -144,10 +145,14 @@ const HistoricScreen = ({ route }) => {
                 <Text style={styles.userName} numberOfLines={1}>{controllerName}</Text>
                 <Text style={styles.durationText}>{duration}</Text>
               </View>
-              <Text style={styles.timeText}>{startTime} - {endTime}</Text>
+              <Text style={styles.timeText}>
+                 {item.start_time ? startTime : t('history.unknownTime')} - {item.end_time ? endTime : t('history.ongoing')} 
+              </Text>
               <View style={styles.locationContainer}>
                   <Image source={require('../../../assets/images/location.png')} style={styles.locationIconSmall} />
-                  <Text style={styles.locationText} numberOfLines={1}>Start: {startLoc} | End: {endLoc}</Text>
+                  <Text style={styles.locationText} numberOfLines={1}>
+                     {t('history.start')}: {startLoc} | {t('history.end')}: {endLoc}
+                  </Text>
               </View>
           </View>
         </View>
@@ -156,7 +161,7 @@ const HistoricScreen = ({ route }) => {
       console.error('Error rendering history item:', error);
       return (
         <View style={styles.historyItem}>
-          <Text>Error displaying item</Text>
+          <Text>{t('common.error')}</Text>
         </View>
       );
     }
@@ -167,7 +172,7 @@ const HistoricScreen = ({ route }) => {
       return <ActivityIndicator style={{ marginVertical: 20 }} size="small" color="#57C3EA" />;
     }
     if (!hasMoreHistory && controlHistory.length > 0) {
-      return <Text style={styles.endOfListText}>End of history</Text>;
+      return <Text style={styles.endOfListText}>{t('history.endOfList')}</Text>;
     }
     return null;
   };
@@ -184,9 +189,9 @@ const HistoricScreen = ({ route }) => {
     if (historyError){
       return (
         <View style={styles.emptyListContainer}>
-          <Text style={styles.emptyListText}>Error loading history</Text>
+          <Text style={styles.emptyListText}>{t('history.errorLoading')}</Text>
           <TouchableOpacity onPress={handleRefresh} style={styles.retryButton}>
-            <Text style={styles.retryButtonText}>Retry</Text>
+            <Text style={styles.retryButtonText}>{t('common.retry')}</Text>
           </TouchableOpacity>
         </View>
       );
@@ -195,7 +200,7 @@ const HistoricScreen = ({ route }) => {
     if (!historyLoading && controlHistory.length === 0){
       return (
         <View style={styles.emptyListContainer}>
-          <Text style={styles.emptyListText}>No control history found.</Text>
+          <Text style={styles.emptyListText}>{t('history.noHistory')}</Text>
         </View>
       );
     }
@@ -226,12 +231,12 @@ const HistoricScreen = ({ route }) => {
       {/* Robot Status Header */}
       <RobotStatusHeader 
         robotId={robotId} 
-        batteryLevel={currentRobot?.realtime?.battery?.level_percentage ?? 'N/A'}
+        batteryLevel={currentRobot?.realtime?.battery?.level_percentage ?? t('common.na')}
       />
       
       {/* History Container */}
       <View style={styles.historyContainer}>
-        <Text style={styles.screenTitle}>Control History</Text>
+        <Text style={styles.screenTitle}>{t('history.title')}</Text>
         <FlatList
           data={controlHistory}
           renderItem={renderHistoryItem}

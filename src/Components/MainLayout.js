@@ -7,7 +7,7 @@ import BottomNavBar from './BottomNavBar';
 
 
 import HomeScreen from '../screens/HomeScreen';
-import RobotsMapScreen from '../screens/RobotHomeScreens/SearchScreen';
+import RobotsMapScreen from '../screens/RobotHomeScreens/RobotsMapScreen';
 import AddRobotScreen from '../screens/RobotHomeScreens/AddRobotScreen';
 import ProfileScreen from '../screens/RobotHomeScreens/ProfileScreen';
 import RobotHomeScreen from '../screens/RobotHomeScreens/RobotHomeScreen';

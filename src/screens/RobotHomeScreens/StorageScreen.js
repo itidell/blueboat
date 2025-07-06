@@ -9,6 +9,7 @@ import RobotStatusHeader from '../../Components/RobotStatusHeader';
 import { useRobot } from '../../api/robotContext';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Font from 'expo-font';
+import { useTranslation } from 'react-i18next';
 
 const StorageScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -18,8 +19,7 @@ const StorageScreen = ({ route }) => {
   const [selectedLanguage, setSelectedLanguage] = useState('EN');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [fontsLoaded, setFontsLoaded] = useState(false);
-
-  
+  const { t } = useTranslation();
   useEffect(() => {
       const loadFonts = async () => {
         await Font.loadAsync({
@@ -43,11 +43,11 @@ const StorageScreen = ({ route }) => {
   )
 
   const storageData = currentRobot?.realtime?.storage;
-  const overallPercentage = storageData?.type_percentage ?? 0;
-  const typePercentages = storageData?.type_percentage ?? {};
-  const lastEmptied = storageData?.last_emptied_timestamp ? new Date(storageData.last_emptied_timestamp).toLocaleString() : 'N/A';
+  const overallPercentage = storageData?.overall_fill_percentage ?? 0;
+  const typePercentages = storageData?.type_percentages ?? {};
+  const lastEmptied = storageData?.last_emptied_timestamp ? new Date(storageData.last_emptied_timestamp).toLocaleString() : t('common.na');
   const typesCount = Object.keys(typePercentages).length;
-  const batteryLevel = currentRobot?.realtime?.battery?.level_percentage ?? 'N/A';
+  const batteryLevel = currentRobot?.realtime?.battery?.level_percentage ?? t('common.na');
   const typeColors = { 
     plastic: '#1E90FF', 
     metal: '#6A5ACD', 
@@ -122,7 +122,7 @@ const StorageScreen = ({ route }) => {
           <Text style={styles.percentageText}>
             {`${clampedPercentage}%`}
           </Text>
-          <Text style={styles.percentageLabel}>Full</Text>
+          <Text style={styles.percentageLabel}>{t('storage.percentageFull')}</Text>
         </View>
       </View>
     );
@@ -133,7 +133,7 @@ const StorageScreen = ({ route }) => {
     if (totalPercentage === 0){
       return <View style={styles.pieChartContainer}>
         <Text style={styles.noDataText}>
-          No waste type data
+          {t('storage.noTypeData')}
         </Text>
       </View>
     }
@@ -193,7 +193,7 @@ const StorageScreen = ({ route }) => {
                 style={styles.statIcon} 
               />
               <View>
-                <Text style={styles.statLabel}>Waste Types</Text>
+                <Text style={styles.statLabel}>{t('storage.wasteTypes')}</Text>
                 <Text style={styles.statValue}>{typesCount}</Text>
               </View>
             </View>
@@ -202,11 +202,11 @@ const StorageScreen = ({ route }) => {
           {/* Last Emptied Info */}
           <View style={styles.lastEmptiedContainer}>
               <Image source={require('../../../assets/images/historic.png')} style={styles.lastEmptiedIcon} />
-              <Text style={styles.lastEmptiedText}>Last Emptied: {lastEmptied}</Text>
+              <Text style={styles.lastEmptiedText}>{t('storage.lastEmptied', { timestamp: lastEmptied })}</Text>
           </View>
 
           {/* Pie Chart and Legend */}
-          <Text style={styles.chartTitle}>Waste Type Distribution</Text>
+          <Text style={styles.chartTitle}>{t('storage.wasteDistribution')}</Text>
           <PieChartDisplay data={legendData}/>
           <View style = {styles.legendContainer}>
             {legendData.map((item, index) => (

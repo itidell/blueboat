@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from "react";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { Alert, StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar, ActivityIndicator } from "react-native";
+import { Alert, StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar, ActivityIndicator, ScrollView } from "react-native";
 import * as Font from 'expo-font';
 import Header from "../Components/Header";
 import { useRobot } from "../api/robotContext";
@@ -127,7 +127,8 @@ const HomeScreen = () => {
                 onNotificationChange={handleNotificationChange}
             />
 
-            <View style={styles.robotGridContainer}>
+            <ScrollView style={styles.robotGridContainer}
+            contentContainerStyle={styles.scrollViewContent}>
                 <View style={styles.robotGrid}>
                     {renderRobotGrid()}
                 </View>
@@ -140,7 +141,7 @@ const HomeScreen = () => {
                         style={styles.addRobot}
                     />
                 </TouchableOpacity>
-            </View>
+            </ScrollView>
 
         </SafeAreaView>
     );
@@ -156,11 +157,13 @@ const styles = StyleSheet.create({
         backgroundColor: '#F1FFF3',
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
+        top: 100,
+        bottom: 0,
+    },
+    scrollViewContent: {
         paddingTop: 30,
         paddingHorizontal: 20,
         alignItems: 'center',
-        top: 100,
-        bottom: 0,
     },
     robotGrid:{
         width:'100%',

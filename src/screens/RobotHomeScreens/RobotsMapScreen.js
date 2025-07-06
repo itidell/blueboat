@@ -47,7 +47,7 @@ const RobotsMapScreen = () => {
     };
     loadFonts();
   }, []);
-
+  console.log("RobotsMapScreen rendering...");
   // Load robots when the screen is focused
   useFocusEffect(
     useCallback(() => {
@@ -200,7 +200,7 @@ const RobotsMapScreen = () => {
                   >
                      {/* Optional: Custom Marker Icon */}
                      <Image
-                       source={require('../../../assets/images/location.png')} // Use location icon or custom robot icon
+                       source={require('../../../assets/images/bb.png')} // Use location icon or custom robot icon
                        style={styles.markerIcon}
                        resizeMode="contain"
                      />
@@ -273,9 +273,8 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject, // Fill the parent container
   },
   markerIcon: {
-    width: 30, // Size of the marker icon
-    height: 30,
-    tintColor: '#098BEA', // Optional: tint color
+    width: 45, // Size of the marker icon
+    height: 42, // Optional: tint color
   },
    overlayLoader: {
      ...StyleSheet.absoluteFillObject,

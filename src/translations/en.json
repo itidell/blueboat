@@ -145,7 +145,7 @@
       "lastEmptied": "Last Emptied: {{timestamp}}",
       "wasteDistribution": "Waste Type Distribution",
       "noTypeData": "No specific type data",
-      "percentageFull": "{{percent}}% Full"
+      "percentageFull": "% Full"
     },
     "history": {
       "title": "Control History",

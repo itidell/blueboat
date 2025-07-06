@@ -49,10 +49,10 @@ const CreateAccountScreen = () => {
         email: email,
         mobile_number: mobileNumber
       });
+      setTimeout(() => {
+          navigation.navigate('PasswordSetting');
+        }, 150);
     }
-    setTimeout(() => {
-        navigation.navigate('PasswordSetting');
-      }, 150);
   };
   const handleBackHome = () => {
     setTimeout(() => {

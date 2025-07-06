@@ -9,12 +9,14 @@ const RobotStatusHeader = ({ robotId, batteryLevel, onLogout }) => {
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const navigation = useNavigation();
     const { t } = useTranslation();
+    
     const handlenavigateTohomePress = () => {
         navigation.reset({
             index: 0,
             routes: [{ name: 'MainHome', screen: 'HomeMain' }]
         });
-      };
+    };
+    
     useEffect(() => {
         const loadFonts = async () => {
             await Font.loadAsync({
@@ -26,6 +28,18 @@ const RobotStatusHeader = ({ robotId, batteryLevel, onLogout }) => {
         loadFonts();
     }, []);
     
+    // Get battery color based on level
+    const getBatteryColor = () => {
+        if (batteryLevel <= 20) {
+            return "#E53935"; // Brighter red for low battery
+        } else if (batteryLevel <= 40) {
+            return "#FB8C00"; // Brighter orange for medium-low battery
+        }else {
+            return "#43A047"; // Brighter green for healthy battery
+        }
+    };
+    
+    const batteryColor = getBatteryColor();
     
     return(
         <View style={styles.container}>
@@ -40,11 +54,27 @@ const RobotStatusHeader = ({ robotId, batteryLevel, onLogout }) => {
                         source={require("../../assets/images/logout.png")}
                     />
                 </TouchableOpacity>
-                <Image
-                    style={styles.icon}
-                    source={require("../../assets/images/battery.png")}
-                />
-                <Text style={styles.batteryText}>{batteryLevel}%</Text>
+                
+                {/* Vertical battery indicator */}
+                <View style={styles.batteryWrapper}>
+                    <View style={styles.batteryTip} />
+                    <View style={styles.batteryBody}>
+                        <View 
+                            style={[
+                                styles.batteryFill, 
+                                { 
+                                    height: `${batteryLevel}%`,
+                                    backgroundColor: batteryColor,
+                                    bottom: 0 // Position from bottom
+                                }
+                            ]} 
+                        />
+                    </View>
+                </View>
+                
+                <Text style={[styles.batteryText]}>
+                    {batteryLevel}%
+                </Text>
             </View>
         </View>
     );
@@ -80,10 +110,40 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         resizeMode: "contain",
+        marginRight: 8,
+    },
+    batteryWrapper: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        width: 18,
+        height: 30,
         marginRight: 5,
     },
+    batteryBody: {
+        borderWidth: 2,
+        borderColor: '#000',
+        borderRadius: 3,
+        width: '100%',
+        height: 26,
+        overflow: 'hidden',
+        backgroundColor: '#333', // Darker background to make colors pop
+        position: 'relative',
+    },
+    batteryFill: {
+        width: '100%',
+        position: 'absolute',
+    },
+    batteryTip: {
+        width: 8,
+        height: 2,
+        backgroundColor: '#000',
+        borderTopLeftRadius: 2,
+        borderTopRightRadius: 2,
+        marginBottom: 1,
+    },
     batteryText: {
-        fontSize: 12,
+        fontSize: 15,
+        color: '#000',
         marginLeft: 2,
         fontFamily: "Poppins_semibold",
     },

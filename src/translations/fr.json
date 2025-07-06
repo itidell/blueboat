@@ -145,7 +145,7 @@
       "lastEmptied": "Dernier Vidage : {{timestamp}}",
       "wasteDistribution": "Répartition des Déchets",
       "noTypeData": "Aucune donnée spécifique par type",
-      "percentageFull": "{{percent}}% Plein"
+      "percentageFull": "% Plein"
     },
     "history": {
       "title": "Historique de Contrôle",

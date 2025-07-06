@@ -9,6 +9,7 @@ import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useRobot } from '../../api/robotContext';
 import { useAuth } from '../../api/authContext';
 import { Video } from 'expo-av'
+import { useTranslation } from 'react-i18next'
 // Constants
 console.log('--- LocationScreen: Checking Video Import ---');
 console.log('Typeof Video:', typeof Video);
@@ -31,6 +32,7 @@ const BATTERY_CHECK_INTERVAL = 30000; // 30 seconds
 const LocationAndControllerScreen = ({ route }) => {
   const navigation = useNavigation();
   const { robotId } = route?.params || {};
+  const { t } = useTranslation();
   
   // Check for robotId early
   useEffect(() => {
@@ -44,13 +46,13 @@ const LocationAndControllerScreen = ({ route }) => {
     // Return early if no robotId is provided
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorTitle}>Error</Text>
-        <Text style={styles.errorText}>Robot ID not provided.</Text>
+        <Text style={styles.errorTitle}>{t('common.error')}</Text>
+        <Text style={styles.errorText}>{t('errors.robotNotFound')}</Text>
         <TouchableOpacity 
           style={styles.returnHomeButton}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.returnHomeButtonText}>GO BACK</Text>
+          <Text style={styles.returnHomeButtonText}>{t('common.back')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -83,35 +85,37 @@ const LocationAndControllerScreen = ({ route }) => {
   const isCurrentUserControlling = currentRobot?.control?.controller_user_id === user?.id;
   const isControlAcquiredBySomeone = !!currentRobot?.control?.controller_user_id;
   const controllerEnabled = isCurrentUserControlling;
-  const controlAquirerName = currentRobot?.control?.controller_user_name || "another user";
-  const batteryLevel = currentRobot?.realtime?.battery?.level_percentage ?? 'N/A';
+  const controlAquirerName = currentRobot?.control?.controller_user_name || t('locationController.anotherUser');
+  const batteryLevel = currentRobot?.realtime?.battery?.level_percentage ??  t('common.na');
   const location = currentRobot?.realtime?.location;
-  const robotCoordinates = location?.latitude != null && location?.longitude != null // More robust check
+  const robotCoordinates = location?.latitude != null && location?.longitude != null // Check existence and null/undefined
       ? { latitude: location.latitude, longitude: location.longitude }
       : null;
-  const currentPositionText = robotCoordinates 
-    ? `Lat: ${robotCoordinates.latitude.toFixed(4)}, Lon: ${robotCoordinates.longitude.toFixed(4)}` 
-    : 'Position Unknown';
-  const streamActive = true; // Example URL, replace with actual stream URL
+  const currentPositionText = robotCoordinates
+    ? `Lat: ${robotCoordinates.latitude.toFixed(4)}, Lon: ${robotCoordinates.longitude.toFixed(4)}`
+    : t('locationController.positionUnknown');
+  const streamActive = currentRobot?.realtime?.live_stream?.is_active ?? false; // Example URL, replace with actual stream URL
+  const robotStreamUrl = currentRobot?.realtime?.live_stream?.stream_url; 
   const mapRef = useRef(null);
   const [streamUrl, setStreamUrl] = useState("");
   
   useEffect(() => {
-    // Get the stream URL from your backend or use configuration
-    const streamUrl = "http://192.168.186.224:8080/stream"; // Replace with dynamic source
-    
-    // Validate the URL before setting it
-    if (streamUrl && typeof streamUrl === 'string') {
+    if (robotStreamUrl && typeof robotStreamUrl === 'string') {
       try {
-        // Test if the URL is valid
-        new URL(streamUrl);
-        setStreamUrl(streamUrl);
+        new URL(robotStreamUrl); // Validate URL format
+        setStreamUrl(robotStreamUrl);
+        setCommandError(null); // Clear error if URL becomes valid
       } catch (e) {
-        console.error("Invalid stream URL:", e);
-        setCommandError('Invalid stream URL format');
-      }
+        console.error("Invalid stream URL from Firebase:", e);
+        setCommandError('Invalid stream URL format from robot.');
+        setStreamUrl(""); // Clear invalid URL state
+      } 
+    } else {
+       setStreamUrl(""); // Clear state if robot reports null/empty URL
+       // Optional: set an info message if stream is expected but URL is missing
+       // setCommandError('Live stream URL not available from robot.');
     }
-  }, [robotId]);
+  }, [robotStreamUrl]); // Depend on the value read from Firebase
 const retryCount = useRef(0);
 const MAX_RETRIES = 3;
 
@@ -157,7 +161,7 @@ const retryPlayback = useCallback(() => {
   if (error && error.error) {
     console.error("Detailed error:", JSON.stringify(error.error));
   }
-  setCommandError('Video playback failed: ' + (error?.error?.message || 'Unknown error'));
+  setCommandError(t('locationController.videoPlaybackFailed') + (error?.error?.message || 'Unknown error'));
   setIsVideoBuffering(false);
   
   // Automatically retry on error
@@ -251,74 +255,75 @@ const retryPlayback = useCallback(() => {
   const handleDirectionPress = useCallback(async (direction) => {
     setCommandError(null); // Reset command error state
     if (!controllerEnabled) {
-      setCommandError('Controller is disabled.');
+      setCommandError(t('locationController.controllerDisabledMessage'));
       return;
     }
     console.log(`Sending command: ${direction} for robot ${robotId}`);
     const success = await sendRobotCommand(robotId, direction);
     if (!success) {
-      const specificError = robotError || 'Failed to send command. Please try again.';
+      const specificError = robotError ||  t('errors.commandFailed'); ;
       setCommandError(specificError); 
-      Alert.alert('Command Failed', specificError);
     }
     
     else {
       console.log(`Command ${direction} sent successfully.`); // Log success
     }
-  }, [robotId, controllerEnabled, sendRobotCommand, robotError]);
+  }, [robotId, controllerEnabled, sendRobotCommand, robotError],t);
 
   const handleSavePosition = useCallback(() => {
     // Implement position saving functionality
     if (!robotCoordinates) {
-      Alert.alert('Error', 'Cannot save position: robot location unknown.');
+      Alert.alert(t('common.error'), t('locationController.cannotSavePosition') || t('errors.generic'));
       return;
     }
     
     Alert.alert(
-      'Save Position',
-      'Do you want to save the current robot position?',
+      t('locationController.savePositionConfirmTitle'), 
+      t('locationController.savePositionConfirmMessage'),
       [
         {
-          text: 'Cancel',
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Save',
+          text: t('common.save'),
           onPress: () => {
-            // Here you would save the position to your backend
-            // For now, just show a confirmation
-            Alert.alert('Success', 'Position saved successfully!');
+            // Implement your actual API call to save position here
+            // For now, show a translated success confirmation
+            Alert.alert(t('common.success'), t('locationController.positionSaveSuccess'));
           },
         },
       ]
     );
-  }, [robotCoordinates]);
+  }, [robotCoordinates, t]);
 
   const handleReturnToHome = useCallback(() => {
-    // Implement return to home functionality
+     // Translate alert messages and buttons
     Alert.alert(
-      'Return Home',
-      'Do you want to send the robot back to its home position?',
+      t('locationController.returnHomeConfirmTitle'), 
+      t('locationController.returnHomeConfirmMessage'),
       [
         {
-          text: 'Cancel',
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Confirm',
+          text: t('common.confirm'),
           onPress: async () => {
-            // Here you would call an API to make the robot return home
+            // Call API to make the robot return home
             const success = await sendRobotCommand(robotId, 'return_home');
             if (success) {
-              Alert.alert('Success', 'Robot is returning to home position.');
+              // Translate success alert
+              Alert.alert(t('common.success'), t('locationController.returnHomeCommandSent'));
             } else {
-              Alert.alert('Error', robotError || 'Failed to send return home command.');
+              // Translate error alert
+              Alert.alert(t('common.error'), robotError || t('errors.commandFailed'));
             }
           },
         },
       ]
     );
-  }, [robotId, sendRobotCommand, robotError]);
+  }, [robotId, sendRobotCommand, robotError, t]); 
   const toggleView = useCallback((mode) => {
     setActiveView(mode);
   }, []);
@@ -331,26 +336,30 @@ const retryPlayback = useCallback(() => {
       if (!isControlAcquiredBySomeone) {
         const success = await acquireRobotControl(robotId);
         if (!success) {
-          Alert.alert('Control Acquisition Failed', 'Could not acquire control of the robot.');
+          Alert.alert(t('locationController.controlAcquireFail'), t('locationController.controlAcquireFail')); // Title and message use same key
         } else {
-          Alert.alert('Control Acquired', 'You have acquired control of the robot.');
+          Alert.alert(t('locationController.controlAcquireSuccess'), t('locationController.controlAcquireSuccess')); // Title and message use same key
         }
       } else if (!isCurrentUserControlling) {
-        Alert.alert("Control Busy", `Robot is currently controlled by ${controlAquirerName}.`);
+         Alert.alert(t('locationController.controlBusy'), t('locationController.controlBusy', { name: controlAquirerName })); 
       }
     } else {
       if (isCurrentUserControlling) {
         const success = await releaseRobotControl(robotId);
-        if (!success) {
-          Alert.alert("Release Failed", robotError || "Could not release control.");
-        }
+         if (!success) {
+            console.error("Control release failed.");
+            Alert.alert(t('locationController.controlReleaseFail'), robotError || t('locationController.controlReleaseFail')); // Title and message use same key, fallback for message
+         } else {
+             console.log("Control released successfully.");
+             Alert.alert(t('locationController.controlReleaseSuccess'), t('locationController.controlReleaseSuccess')); // Title and message use same key
+         }
       }
     }
   }, [
-    currentRobot, robotId, isCurrentUserControlling, 
+    currentRobot, robotId, user, isCurrentUserControlling, 
     isControlAcquiredBySomeone, controlAquirerName, 
-    acquireRobotControl, releaseRobotControl, robotError
-  ]);
+    acquireRobotControl, releaseRobotControl, robotError, t
+  ]); 
 
   if (!fontsLoaded) {
     return (
@@ -395,7 +404,7 @@ const retryPlayback = useCallback(() => {
               styles.toggleText, 
               activeView === VIEW_MODES.MAP ? styles.toggleTextActive : styles.toggleTextInactive
             ]}>
-              Map View
+               {t('locationController.mapView')} 
             </Text>
           </TouchableOpacity>
           
@@ -417,7 +426,7 @@ const retryPlayback = useCallback(() => {
               styles.toggleText, 
               activeView === VIEW_MODES.LIVESTREAM ? styles.toggleTextActive : styles.toggleTextInactive
             ]}>
-              Live Stream
+              {t('locationController.liveStream')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -451,7 +460,7 @@ const retryPlayback = useCallback(() => {
                 >
                   <View>
                     <Image
-                      source={require('../../../assets/images/location.png')}
+                      source={require('../../../assets/images/bb.png')}
                       style={styles.mapMarkerIcon}
                     />
                   </View>
@@ -508,13 +517,13 @@ const retryPlayback = useCallback(() => {
                                 <>
                                     <Text style={styles.livestreamStatusText}>
                                         {/* More specific status */}
-                                        {streamActive && !streamUrl ? 'Stream Active (Connecting...)' : 'Live Stream Offline'}
+                                        {streamActive && !streamUrl ? t('locationController.streamConnecting') : t('locationController.streamOffline')}
                                     </Text>
                                     {robotError && (
-                                        <Text style={styles.livestreamErrorText}>Error: {robotError}</Text>
+                                        <Text style={styles.livestreamErrorText}>{t('common.error')}: {robotError}</Text>
                                     )}
                                     {!streamActive && !robotError && (
-                                        <Text style={styles.livestreamInfoText}>Waiting for robot to start stream...</Text>
+                                        <Text style={styles.livestreamInfoText}>{t('locationController.waitingForStream')}</Text>
                                     )}
                                 </>
                             )
@@ -539,7 +548,7 @@ const retryPlayback = useCallback(() => {
                 source={require('../../../assets/images/storage.png')}
                 style={styles.saveButtonIcon}
               />
-              <Text style={styles.saveButtonText}>SAVE POSITION</Text>
+              <Text style={styles.saveButtonText}>{t('locationController.savePosition')}</Text>
             </TouchableOpacity>
             
             <TouchableOpacity 
@@ -550,7 +559,7 @@ const retryPlayback = useCallback(() => {
                 source={require('../../../assets/images/home.png')}
                 style={styles.returnHomeButtonIcon}
               />
-              <Text style={styles.returnHomeButtonText}>RETURN HOME</Text>
+              <Text style={styles.returnHomeButtonText}>{t('locationController.returnHomeConfirmTitle')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -558,18 +567,18 @@ const retryPlayback = useCallback(() => {
         {/* Controller Section */}
         <View style={styles.bottomSection}>
           <View style={styles.controllerHeader}>
-            <Text style={styles.controllerTitle}>Robot Controller</Text>
+            <Text style={styles.controllerTitle}>{t('locationController.controllerTitle')}</Text>
             <View style={styles.controllerToggleContainer}>
               {!isCurrentUserControlling && isControlAcquiredBySomeone && (
                 <Text style={styles.controlAcquiredByText} numberOfLines={1}>
-                  Controlled by: {controlAquirerName}
+                   {t('locationController.controlledBy', {controlAquirerName})}
                 </Text>
               )}
               <Text style={[
                 styles.controllerToggleLabel,
                 controllerEnabled ? styles.controllerEnabledText : styles.controllerDisabledText
               ]}>
-                {controllerEnabled ? 'ENABLED' : 'DISABLED'}
+                {controllerEnabled ?  t('common.enabled') : t('common.disabled')} 
               </Text>
               <Switch
                 value={isCurrentUserControlling}
@@ -631,7 +640,7 @@ const retryPlayback = useCallback(() => {
                   styles.stopText, 
                   (!controllerEnabled || commandLoading) && styles.stopTextDisabled
                 ]}>
-                  STOP
+                  {t('common.stop')} 
                 </Text>
               </TouchableOpacity>
               
@@ -798,8 +807,8 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
   mapMarkerIcon: {
-    width: 35, // Adjust marker size
-    height: 35,
+    width: 45, // Adjust marker size
+    height: 42,
     resizeMode: 'contain',
   },
   mapLoadingIndicator: {

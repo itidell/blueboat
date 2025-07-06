@@ -119,7 +119,7 @@ const LoginScreen = () => {
       <View style={styles.formContainer}>
         {/* Username Input */}
         <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Username or Email</Text>
+          <Text style={styles.inputLabel}>Email</Text>
           <View style={styles.inputBox}>
             <TextInput
               style={styles.inputField}
